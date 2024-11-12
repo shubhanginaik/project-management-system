@@ -1,4 +1,4 @@
-package fs19.java.backend.presentation.global;
+package fs19.java.backend.presentation.global.response;
 
 import java.util.List;
 
