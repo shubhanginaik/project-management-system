@@ -2,7 +2,7 @@ package fs19.java.backend.presentation.controller;
 
 import fs19.java.backend.application.dto.CompanyDTO;
 import fs19.java.backend.application.service.CompanyService;
-import fs19.java.backend.presentation.global.response.GlobalStatus;
+import fs19.java.backend.presentation.shared.response.GlobalStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

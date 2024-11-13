@@ -1,4 +1,4 @@
-package fs19.java.backend.presentation.global.exception;
+package fs19.java.backend.presentation.shared.exception;
 
 public class CompanyNotFoundException extends RuntimeException {
     public CompanyNotFoundException(String message) {

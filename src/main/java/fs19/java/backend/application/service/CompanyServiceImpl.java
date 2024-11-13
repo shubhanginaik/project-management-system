@@ -4,7 +4,7 @@ import fs19.java.backend.application.dto.CompanyDTO;
 import fs19.java.backend.application.mapper.CompanyMapper;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.abstraction.CompanyRepository;
-import fs19.java.backend.presentation.global.exception.CompanyNotFoundException;
+import fs19.java.backend.presentation.shared.exception.CompanyNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;

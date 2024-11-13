@@ -1,7 +1,7 @@
-package fs19.java.backend.presentation.global.exception;
+package fs19.java.backend.presentation.shared.exception;
 
-import fs19.java.backend.presentation.global.response.ErrorItem;
-import fs19.java.backend.presentation.global.response.GlobalStatus;
+import fs19.java.backend.presentation.shared.response.ErrorItem;
+import fs19.java.backend.presentation.shared.response.GlobalStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
