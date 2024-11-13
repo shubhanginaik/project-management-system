@@ -1,8 +1,8 @@
-package fs19.java.backend.presentation.global.response;
+package fs19.java.backend.presentation.shared.response;
 
 import java.util.List;
 
-public class GlobalStatus <T>{
+public class GlobalResponse<T>{
     public final static  String SUCCESS = "SUCCESS";
     public final static String ERROR = "ERROR";
 
@@ -12,14 +12,14 @@ public class GlobalStatus <T>{
     private final List<ErrorItem> errors;
 
 
-    public GlobalStatus(int code, List<ErrorItem> errors) {
+    public GlobalResponse(int code, List<ErrorItem> errors) {
         this.status = ERROR;
         this.code = code;
         this.data = null;
         this.errors = errors;
     }
 
-    public GlobalStatus(int code, T data) {
+    public GlobalResponse(int code, T data) {
         this.status = SUCCESS;
         this.code = code;
         this.data = data;
