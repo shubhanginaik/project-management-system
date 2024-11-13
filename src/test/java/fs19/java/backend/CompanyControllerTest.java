@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
@@ -20,7 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-
 public class CompanyControllerTest {
 
     @Autowired
@@ -39,25 +37,23 @@ public class CompanyControllerTest {
 
     @Test
     public void testCreateCompany() throws Exception {
-        CompanyDTO companyDTO = new CompanyDTO(null, "New Company", null, UUID.randomUUID());
+        UUID createdBy = UUID.randomUUID();
 
         mockMvc.perform(post("/v1/api/companies")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"New Company\",\"createdBy\":\"123e4567-e89b-12d3-a456-426614174000\"}"))
+                        .content("{\"name\":\"New Company\",\"createdBy\":\"" + createdBy + "\"}"))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.status", is("SUCCESS")))
+                .andExpect(jsonPath("$.code", is(201)))
                 .andExpect(jsonPath("$.data.name", is("New Company")));
     }
 
     @Test
     public void testUpdateCompany() throws Exception {
-        CompanyDTO companyDTO = new CompanyDTO(null, "Updated Company", null, existingCompany.getCreatedBy());
-
         mockMvc.perform(put("/v1/api/companies/" + existingCompany.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"Updated Company\",\"createdBy\":\"" + existingCompany.getCreatedBy() + "\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is("SUCCESS")))
+                .andExpect(jsonPath("$.code", is(200)))
                 .andExpect(jsonPath("$.data.name", is("Updated Company")));
     }
 
@@ -65,7 +61,7 @@ public class CompanyControllerTest {
     public void testGetCompanyById() throws Exception {
         mockMvc.perform(get("/v1/api/companies/" + existingCompany.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is("SUCCESS")))
+                .andExpect(jsonPath("$.code", is(200)))
                 .andExpect(jsonPath("$.data.name", is(existingCompany.getName())));
     }
 
@@ -73,12 +69,14 @@ public class CompanyControllerTest {
     public void testGetAllCompanies() throws Exception {
         mockMvc.perform(get("/v1/api/companies"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is("SUCCESS")));
+                .andExpect(jsonPath("$.code", is(200)))
+                .andExpect(jsonPath("$.data").isArray());
     }
 
     @Test
     public void testDeleteCompany() throws Exception {
         mockMvc.perform(delete("/v1/api/companies/" + existingCompany.getId()))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.code", is(204)));
     }
 }

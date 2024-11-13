@@ -1,7 +1,8 @@
 package fs19.java.backend.presentation.shared.exception;
 
+import fs19.java.backend.presentation.shared.exception.CompanyNotFoundException;
 import fs19.java.backend.presentation.shared.response.ErrorItem;
-import fs19.java.backend.presentation.shared.response.GlobalStatus;
+import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,16 +14,16 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CompanyNotFoundException.class)
-    public ResponseEntity<GlobalStatus<Void>> handleCompanyNotFoundException(CompanyNotFoundException ex) {
+    public ResponseEntity<GlobalResponse<Void>> handleCompanyNotFoundException(CompanyNotFoundException ex) {
         ErrorItem error = new ErrorItem(ex.getMessage());
-        GlobalStatus<Void> status = new GlobalStatus<>(HttpStatus.NOT_FOUND.value(), List.of(error));
-        return new ResponseEntity<>(status, HttpStatus.NOT_FOUND);
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<GlobalStatus<Void>> handleGenericException(Exception ex) {
+    public ResponseEntity<GlobalResponse<Void>> handleGenericException(Exception ex) {
         ErrorItem error = new ErrorItem(ex.getMessage());
-        GlobalStatus<Void> status = new GlobalStatus<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), List.of(error));
-        return new ResponseEntity<>(status, HttpStatus.INTERNAL_SERVER_ERROR);
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
