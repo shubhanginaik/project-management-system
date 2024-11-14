@@ -27,21 +27,6 @@ public class GlobalResponse<T> {
         this.data = null;
         this.errors = errors;
     }
- 
 
-    public String getStatus() {
-        return status;
-    }
 
-    public int getCode() {
-        return code;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public List<ErrorItem> getErrors() {
-        return errors;
-    }
 }
