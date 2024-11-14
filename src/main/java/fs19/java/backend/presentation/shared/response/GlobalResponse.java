@@ -2,7 +2,6 @@ package fs19.java.backend.presentation.shared.response;
 
 
 import lombok.Getter;
-
 import java.util.List;
 
 @Getter
@@ -21,14 +20,14 @@ public class GlobalResponse<T> {
         this.data = data;
         this.errors = null;
     }
-
+  
     public GlobalResponse(int code, List<ErrorItem> errors) {
         this.status = ERROR;
         this.code = code;
         this.data = null;
         this.errors = errors;
     }
-
+ 
 
     public String getStatus() {
         return status;
@@ -46,4 +45,3 @@ public class GlobalResponse<T> {
         return errors;
     }
 }
-
