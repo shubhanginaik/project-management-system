@@ -1,12 +1,8 @@
 package fs19.java.backend.presentation.shared.status;
 
-
-public enum Priority {
-
 import lombok.Getter;
 
 import java.awt.*;
-
 @Getter
 public enum Priority {
     LOW_PRIORITY(1, new Color(10, 20, 30)),

@@ -1,11 +1,6 @@
 package fs19.java.backend.presentation.shared.status;
 
 import lombok.Getter;
-
-
-@Getter
-public enum ResponseStatus {
-    // Success status
 /**
  * These statuses can use only internal usages, and when it passes to end user please convert it into global status
  */
