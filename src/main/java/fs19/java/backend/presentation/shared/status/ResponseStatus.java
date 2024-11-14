@@ -2,6 +2,10 @@ package fs19.java.backend.presentation.shared.status;
 
 import lombok.Getter;
 
+
+@Getter
+public enum ResponseStatus {
+    // Success status
 /**
  * These statuses can use only internal usages, and when it passes to end user please convert it into global status
  */
@@ -16,14 +20,15 @@ public enum ResponseStatus {
     SUCCESSFULLY_CREATED(4),
     SUCCESSFULLY_UPDATED(5),
 
-    //Error status
+
+    // Error status
     INVALID_INFORMATION(-1000),
     DELETE_REQUEST_FAILED(-1001);
 
-    final private int status;
+    private final int status;
 
     ResponseStatus(int status) {
         this.status = status;
     }
-
 }
+
