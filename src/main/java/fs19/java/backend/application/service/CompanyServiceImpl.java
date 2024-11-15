@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 @Service
 public class CompanyServiceImpl implements CompanyService {
 
+    private static final String COMPANY_NOT_FOUND_MESSAGE = "Company with ID %s not found";
+
     private final CompanyRepository companyRepository;
 
     public CompanyServiceImpl(CompanyRepository companyRepository) {
@@ -33,7 +35,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public CompanyDTO updateCompany(UUID id, CompanyDTO companyDTO) {
         Company existingCompany = companyRepository.findById(id)
-                .orElseThrow(() -> new CompanyNotFoundException("Company with ID " + id + " not found"));
+                .orElseThrow(() -> new CompanyNotFoundException(String.format(COMPANY_NOT_FOUND_MESSAGE, id)));
         existingCompany.setName(companyDTO.getName());
         companyRepository.save(existingCompany);
         return CompanyMapper.toDTO(existingCompany);
@@ -42,7 +44,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public CompanyDTO getCompanyById(UUID id) {
         Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new CompanyNotFoundException("Company with ID " + id + " not found"));
+                .orElseThrow(() -> new CompanyNotFoundException(String.format(COMPANY_NOT_FOUND_MESSAGE, id)));
         return CompanyMapper.toDTO(company);
     }
 
@@ -56,7 +58,7 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public void deleteCompany(UUID id) {
         if (!companyRepository.existsById(id)) {
-            throw new CompanyNotFoundException("Company with ID " + id + " not found");
+            throw new CompanyNotFoundException(String.format(COMPANY_NOT_FOUND_MESSAGE, id));
         }
         companyRepository.deleteById(id);
     }
