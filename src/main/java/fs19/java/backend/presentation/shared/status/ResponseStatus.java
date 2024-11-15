@@ -19,12 +19,6 @@ public enum ResponseStatus {
     INVALID_INFORMATION(-1000),
     DELETE_REQUEST_FAILED(-1001);
 
-    final private int status;
-
-    // Error status
-    INVALID_INFORMATION(-1000),
-    DELETE_REQUEST_FAILED(-1001);
-
     private final int status;
 
     ResponseStatus(int status) {
