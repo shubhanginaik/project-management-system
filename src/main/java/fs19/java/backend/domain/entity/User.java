@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Users {
+public class User {
   private UUID id;
   private String firstName;
   private String lastName;
