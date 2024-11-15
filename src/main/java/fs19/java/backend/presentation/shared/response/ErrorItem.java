@@ -17,4 +17,9 @@ public class ErrorItem {
     public ErrorItem(String message) {
         this.message = message;
     }
+
+    public ErrorItem(String message, String errorCode) {
+        this.message = message;
+        this.errorCode = errorCode;
+    }
 }
