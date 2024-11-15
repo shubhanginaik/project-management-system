@@ -6,5 +6,3 @@ public class CompanyNotFoundException extends RuntimeException {
         super(message);
     }
 }
-
-

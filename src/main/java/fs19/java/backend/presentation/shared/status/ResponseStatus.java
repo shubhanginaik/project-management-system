@@ -14,7 +14,11 @@ public enum ResponseStatus {
     SUCCESSFULLY_FOUND(3),
     SUCCESSFULLY_CREATED(4),
     SUCCESSFULLY_UPDATED(5),
+    //Error status
+    INVALID_INFORMATION(-1000),
+    DELETE_REQUEST_FAILED(-1001);
 
+    final private int status;
 
     // Error status
     INVALID_INFORMATION(-1000),
