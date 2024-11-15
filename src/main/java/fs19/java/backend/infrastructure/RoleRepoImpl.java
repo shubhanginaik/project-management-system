@@ -4,71 +4,45 @@ import fs19.java.backend.application.dto.role.RoleRequestDTO;
 import fs19.java.backend.domain.abstraction.RoleRepository;
 import fs19.java.backend.domain.entity.Role;
 import fs19.java.backend.infrastructure.tempMemory.RoleInMemoryDB;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.UUID;
 
-/**
- * Role Repo implementation
- */
 @Repository
 public class RoleRepoImpl implements RoleRepository {
+    private final RoleInMemoryDB tempRoleDB;
 
-    @Autowired
-    private RoleInMemoryDB tempRoleDB;
+    public RoleRepoImpl(RoleInMemoryDB tempRoleDB) {
+        this.tempRoleDB = tempRoleDB;
+    }
 
-    /**
-     * Create a new role according to user specified details
-     *
-     * @param role RoleRequestDTO
-     * @return Role
-     */
     @Override
     public Role createRole(RoleRequestDTO role) {
-        return tempRoleDB.createRole(role);
-    }
-
-    /**
-     * Update role according to user specified data
-     *
-     * @param roleId
-     * @param role
-     * @return
-     */
-    @Override
-    public Role updateRole(UUID roleId, RoleRequestDTO role) {
-        return tempRoleDB.updateRole(roleId, role);
+        return tempRoleDB.saveRole(role);
     }
 
     @Override
-    public Role deleteRole(UUID roleId) {
-        return tempRoleDB.deleteRole(roleId);
+    public Role updateRole(RoleRequestDTO role) {
+        return tempRoleDB.updateRole(role);
     }
 
-    /**
-     * Return all roles
-     *
-     * @return
-     */
+    @Override
+    public Role deleteRole(RoleRequestDTO role) {
+        return tempRoleDB.deleteRole(role);
+    }
+
     @Override
     public List<Role> getRoles() {
         return tempRoleDB.findAllRoles();
     }
 
     @Override
-    public Role getRoleByName(String roleName) {
-        return tempRoleDB.findRoleByName(roleName);
+    public Role getRoleByName(RoleRequestDTO role) {
+        return tempRoleDB.findRoleByName(role.getName());
     }
 
-    /**
-     * Get role By Id
-     * @param roleId
-     * @return
-     */
     @Override
-    public Role getRoleById(UUID roleId) {
-        return tempRoleDB.findRoleById(roleId);
+    public Role getRoleById(RoleRequestDTO role) {
+        return tempRoleDB.getRoleById(role.getId());
     }
 }

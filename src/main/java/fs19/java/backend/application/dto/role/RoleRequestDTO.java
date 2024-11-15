@@ -1,22 +1,27 @@
 package fs19.java.backend.application.dto.role;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.Date;
 import java.util.UUID;
 
-/**
- * This DTO will responsible to handle the request level of role related changes
- */
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class RoleRequestDTO {
 
-    @Schema(type = "uuid", format = "uuid", description = "Unique identifier")
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
-    @Schema(type = "string", format = "string", description = "System roles name defines here")
+    @NotNull
     private String name;
+    private Date created_date;
+
+    public RoleRequestDTO(String name, Date created_date) {
+        this.created_date = created_date;
+        this.name = name;
+    }
 }

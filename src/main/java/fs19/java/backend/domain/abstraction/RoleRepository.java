@@ -4,23 +4,19 @@ import fs19.java.backend.application.dto.role.RoleRequestDTO;
 import fs19.java.backend.domain.entity.Role;
 
 import java.util.List;
-import java.util.UUID;
 
-/**
- * Define the role repository
- */
 public interface RoleRepository {
 
     Role createRole(RoleRequestDTO role);
 
-    Role updateRole(UUID roleId, RoleRequestDTO role);
+    Role updateRole(RoleRequestDTO role);
 
-    Role deleteRole(UUID roleId);
+    Role deleteRole(RoleRequestDTO role);
 
     List<Role> getRoles();
 
-    Role getRoleByName(String roleName);
+    Role getRoleByName(RoleRequestDTO role);
 
-    Role getRoleById(UUID roleId);
+    Role getRoleById(RoleRequestDTO role);
 
 }

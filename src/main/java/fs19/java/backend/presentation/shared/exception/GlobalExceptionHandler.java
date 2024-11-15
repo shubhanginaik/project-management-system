@@ -1,5 +1,6 @@
 package fs19.java.backend.presentation.shared.exception;
 
+import fs19.java.backend.presentation.shared.exception.CompanyNotFoundException;
 import fs19.java.backend.presentation.shared.response.ErrorItem;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
@@ -14,13 +15,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CompanyNotFoundException.class)
     public ResponseEntity<GlobalResponse<Void>> handleCompanyNotFoundException(CompanyNotFoundException ex) {
-        ErrorItem error = new ErrorItem(ex.getMessage());
-        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), List.of(error));
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(RoleNotFoundException.class)
-    public ResponseEntity<GlobalResponse<Void>> handleRoleNotFoundException(Exception ex) {
         ErrorItem error = new ErrorItem(ex.getMessage());
         GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), List.of(error));
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);

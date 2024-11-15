@@ -28,10 +28,5 @@ public class GlobalResponse<T> {
         this.errors = errors;
     }
 
-    public GlobalResponse(int code, T data, List<ErrorItem> errors) {
-        this.status = errors.isEmpty() ? SUCCESS : ERROR;
-        this.code = code;
-        this.data = data;
-        this.errors = errors;
-    }
+
 }
