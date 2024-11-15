@@ -1,7 +1,7 @@
 package fs19.java.backend.presentation.controller;
 
 import fs19.java.backend.application.dto.UserDTO;
-import fs19.java.backend.application.service.UserServiceImpl;
+import fs19.java.backend.application.UserServiceImpl;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import jakarta.validation.Valid;
 import java.util.List;

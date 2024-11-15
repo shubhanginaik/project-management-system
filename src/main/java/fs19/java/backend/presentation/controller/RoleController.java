@@ -2,7 +2,7 @@ package fs19.java.backend.presentation.controller;
 
 import fs19.java.backend.application.dto.role.RoleRequestDTO;
 import fs19.java.backend.application.dto.role.RoleResponseDTO;
-import fs19.java.backend.application.service.RoleServiceImpl;
+import fs19.java.backend.application.RoleServiceImpl;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
