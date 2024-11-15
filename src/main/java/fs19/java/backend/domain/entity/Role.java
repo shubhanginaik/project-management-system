@@ -1,11 +1,12 @@
 package fs19.java.backend.domain.entity;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 /**
@@ -18,7 +19,8 @@ import java.util.UUID;
 public class Role {
 
     private UUID id;
+    @NotNull
     private String name;
-    private Date created_date;
+    private ZonedDateTime created_date;
 
 }
