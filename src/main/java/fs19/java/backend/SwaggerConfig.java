@@ -1,4 +1,4 @@
-package fs19.java.backend.presentation;
+package fs19.java.backend;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -10,6 +10,7 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
+        System.out.println("SwaggerConfig.customOpenAPI");
         return new OpenAPI()
                 .info(new Info()
                 .title("Project Management App API Docs")
