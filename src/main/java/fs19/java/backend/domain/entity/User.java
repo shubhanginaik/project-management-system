@@ -1,5 +1,6 @@
 package fs19.java.backend.domain.entity;
 
+//import jakarta.persistence.*; // need need to add dependency
 import java.time.ZonedDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class User {
+//  @Id
+//  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private UUID id;
   private String firstName;
   private String lastName;
