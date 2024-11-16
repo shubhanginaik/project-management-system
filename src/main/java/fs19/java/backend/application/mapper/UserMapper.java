@@ -1,14 +1,14 @@
 package fs19.java.backend.application.mapper;
 
 import fs19.java.backend.application.dto.UserDTO;
-import fs19.java.backend.domain.entity.Users;
+import fs19.java.backend.domain.entity.User;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class UserMapper {
 
 
-  public static UserDTO toDTO(Users user) {
+  public static UserDTO toDTO(User user) {
     return new UserDTO(
         user.getId(),
         user.getFirstName(),
@@ -21,8 +21,8 @@ public class UserMapper {
     );
   }
 
-  public static Users toEntity(UserDTO dto) {
-    return new Users(
+  public static User toEntity(UserDTO dto) {
+    return new User(
         dto.getId(),
         dto.getFirstName(),
         dto.getLastName(),

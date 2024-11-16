@@ -32,7 +32,6 @@ public class UserDTO {
   @Size(min = 8, message = "Password should be at least 8 characters long")
   private String password;
 
-  @NotNull(message = "Phone number is required")
   private String phone;
 
   private ZonedDateTime createdDate;

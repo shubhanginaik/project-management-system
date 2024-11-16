@@ -1,7 +1,8 @@
-package fs19.java.backend.application.service;
+package fs19.java.backend.application;
 
 import fs19.java.backend.application.dto.CompanyDTO;
 import fs19.java.backend.application.mapper.CompanyMapper;
+import fs19.java.backend.application.service.CompanyService;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.abstraction.CompanyRepository;
 import fs19.java.backend.presentation.shared.exception.CompanyNotFoundException;

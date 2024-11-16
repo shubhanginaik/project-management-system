@@ -1,4 +1,4 @@
-package fs19.java.backend.application.service;
+package fs19.java.backend.application;
 
 import fs19.java.backend.application.dto.role.RoleRequestDTO;
 import fs19.java.backend.application.dto.role.RoleResponseDTO;
