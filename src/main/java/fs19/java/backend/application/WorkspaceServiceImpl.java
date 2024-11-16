@@ -1,9 +1,10 @@
-package fs19.java.backend.application.service;
+package fs19.java.backend.application;
 
 import fs19.java.backend.application.dto.workspace.WorkspaceRequestDTO;
 import fs19.java.backend.application.dto.workspace.WorkspaceResponseDTO;
 import fs19.java.backend.application.dto.workspace.WorkspaceUpdateDTO;
 import fs19.java.backend.application.mapper.WorkspaceMapper;
+import fs19.java.backend.application.service.WorkspaceService;
 import fs19.java.backend.domain.abstraction.WorkspaceRepository;
 import fs19.java.backend.domain.entity.Workspace;
 import fs19.java.backend.presentation.shared.exception.WorkspaceNotFoundException;
