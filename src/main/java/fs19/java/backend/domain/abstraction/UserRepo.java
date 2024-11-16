@@ -1,14 +1,14 @@
 package fs19.java.backend.domain.abstraction;
 
-import fs19.java.backend.domain.entity.Users;
+import fs19.java.backend.domain.entity.User;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 
 public interface UserRepo {
-  void saveUser(Users user);
-  List<Users> findAllUsers();
-  Optional<Users> findById(UUID id);
-  void deleteUser(Users user);
+  void saveUser(User user);
+  List<User> findAllUsers();
+  Optional<User> findById(UUID id);
+  void deleteUser(User user);
 }
