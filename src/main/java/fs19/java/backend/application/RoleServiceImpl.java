@@ -3,6 +3,7 @@ package fs19.java.backend.application;
 import fs19.java.backend.application.dto.role.RoleRequestDTO;
 import fs19.java.backend.application.dto.role.RoleResponseDTO;
 import fs19.java.backend.application.mapper.RoleMapper;
+import fs19.java.backend.application.service.RoleService;
 import fs19.java.backend.domain.entity.Role;
 import fs19.java.backend.infrastructure.RoleRepoImpl;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
@@ -16,7 +17,7 @@ import java.util.UUID;
  * Role entity service layer
  */
 @Service
-public class RoleServiceImpl {
+public class RoleServiceImpl implements RoleService {
 
     private final RoleRepoImpl roleRepo;
 
@@ -30,6 +31,7 @@ public class RoleServiceImpl {
      * @param roleRequestDTO
      * @return
      */
+    @Override
     public RoleResponseDTO createRole(@Valid RoleRequestDTO roleRequestDTO) {
         Role myRole;
         if (roleRequestDTO.getName().isEmpty()) { // expected valid name only and that validation is enough
@@ -57,6 +59,7 @@ public class RoleServiceImpl {
      * @param roleMDDTO
      * @return
      */
+    @Override
     public RoleResponseDTO updateRole(UUID roleId, @Valid RoleRequestDTO roleMDDTO) {
         Role myRole;
         if (roleId == null) {
@@ -85,9 +88,10 @@ public class RoleServiceImpl {
      * @param roleId UUID
      * @return RoleResponseDTO
      */
+    @Override
     public RoleResponseDTO deleteRole(UUID roleId) {
         if (roleId.toString() == null) {
-            System.out.println("Role ID is null, cannot proceed with update.");
+            System.out.println("Role ID is null, cannot proceed with delete.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.ROLE_ID_NOT_FOUND);
         }
         Role myRole = this.roleRepo.deleteRole(roleId);
@@ -98,6 +102,11 @@ public class RoleServiceImpl {
         return RoleMapper.toRoleResponseDTO(myRole, ResponseStatus.SUCCESSFULLY_DELETED);
     }
 
+    /**
+     * Return all roles
+     * @return
+     */
+    @Override
     public List<RoleResponseDTO> getRoles() {
         return RoleMapper.toRoleResponseDTOs(this.roleRepo.getRoles(), ResponseStatus.SUCCESSFULLY_FOUND);
     }
@@ -108,6 +117,7 @@ public class RoleServiceImpl {
      * @param roleId
      * @return
      */
+    @Override
     public RoleResponseDTO getRoleById(UUID roleId) {
         if (roleId.toString() == null) {
             System.out.println("Role ID is null, cannot proceed with search.");
@@ -126,6 +136,7 @@ public class RoleServiceImpl {
      * @param name
      * @return
      */
+    @Override
     public RoleResponseDTO getRoleByName(String name) {
         if (name.isEmpty()) {
             System.out.println("Role Name is null, cannot proceed with search.");
