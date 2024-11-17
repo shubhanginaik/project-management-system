@@ -1,7 +1,7 @@
 package fs19.java.backend.application;
 
-import fs19.java.backend.application.dto.user.UserCreateDto;
-import fs19.java.backend.application.dto.user.UserReadDto;
+import fs19.java.backend.application.dto.user.UserCreateDTO;
+import fs19.java.backend.application.dto.user.UserReadDTO;
 import fs19.java.backend.application.mapper.UserMapper;
 
 import fs19.java.backend.application.service.UserService;
@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserReadDto createUser(UserCreateDto createUserDTO) {
+  public UserReadDTO createUser(UserCreateDTO createUserDTO) {
     if (createUserDTO.getFirstName() == null || createUserDTO.getFirstName().isEmpty()) {
       throw new UserValidationException("First name is required");
     }
@@ -43,33 +43,31 @@ public class UserServiceImpl implements UserService {
       throw new UserValidationException("Phone number must be between 10 and 15 characters long");
       }
 
-
-
     User user = UserMapper.toEntity(createUserDTO);
     user.setId(UUID.randomUUID());
     user.setCreatedDate(ZonedDateTime.now());
     userRepository.saveUser(user);
-    return UserMapper.toReadDto(user);
+    return UserMapper.toReadDTO(user);
   }
 
   @Override
-  public List<UserReadDto> findAllUsers() {
+  public List<UserReadDTO> findAllUsers() {
     List<User> users = userRepository.findAllUsers();
     return users.stream()
-        .map(UserMapper::toReadDto)
+        .map(UserMapper::toReadDTO)
         .toList();
 
   }
 
   @Override
-  public UserReadDto findUserById(UUID id) {
+  public UserReadDTO findUserById(UUID id) {
     User user = userRepository.findById(id)
         .orElseThrow(() -> new UserNotFoundException(ERROR_MESSAGE + id));
-    return UserMapper.toReadDto(user);
+    return UserMapper.toReadDTO(user);
   }
 
   @Override
-  public UserReadDto updateUser(UUID id, UserReadDto userDTO) {
+  public UserReadDTO updateUser(UUID id, UserReadDTO userDTO) {
     Optional<User> user = userRepository.findById(id);
     if (user.isPresent()) {
       User updatedUser = user.get();
@@ -79,7 +77,7 @@ public class UserServiceImpl implements UserService {
       updatedUser.setPhone(userDTO.getPhone());
       updatedUser.setProfileImage(userDTO.getProfileImage());
       userRepository.saveUser(updatedUser);
-      return UserMapper.toReadDto(updatedUser);
+      return UserMapper.toReadDTO(updatedUser);
     } else {
       throw new UserNotFoundException(ERROR_MESSAGE + id);
     }

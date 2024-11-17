@@ -8,8 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import fs19.java.backend.application.dto.user.UserCreateDto;
-import fs19.java.backend.application.dto.user.UserReadDto;
+import fs19.java.backend.application.dto.user.UserCreateDTO;
+import fs19.java.backend.application.dto.user.UserReadDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +30,12 @@ class UserControllerTest {
   @Autowired
   private ObjectMapper objectMapper;
 
-  private UserCreateDto userCreateDto;
-  private UserReadDto userReadDto;
+  private UserCreateDTO userCreateDto;
+  private UserReadDTO userReadDto;
 
   @BeforeEach
   void setUp() {
-    userCreateDto = UserCreateDto.builder()
+    userCreateDto = UserCreateDTO.builder()
         .firstName("John")
         .lastName("Doe")
         .email("john.doe@example.com")
@@ -44,7 +44,7 @@ class UserControllerTest {
         .profileImage("profile.jpg")
         .build();
 
-    userReadDto = UserReadDto.builder()
+    userReadDto = UserReadDTO.builder()
         .firstName("John")
         .lastName("Doe")
         .email("john.doe@example.com")
@@ -138,7 +138,7 @@ class UserControllerTest {
         .andExpect(jsonPath("$.data.phone", is(userReadDto.getPhone())));
   }
 
-  private ResultActions performPostUser(UserCreateDto userCreateDTO) throws Exception {
+  private ResultActions performPostUser(UserCreateDTO userCreateDTO) throws Exception {
     return mockMvc.perform(post("/v1/api/users")
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(userCreateDTO)));

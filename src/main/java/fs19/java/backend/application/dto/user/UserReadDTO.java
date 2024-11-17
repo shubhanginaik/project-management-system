@@ -18,14 +18,17 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserReadDto {
+public class UserReadDTO {
+    @Schema(type = "uuid", format = "uuid", description = "Unique identifier")
     private UUID id;
 
     @Schema(type = "string", format = "string", description = "First name of the user")
+    @Size(max = 45, message = "Field must be at most 45 characters")
     @NotNull(message = "First name is required")
     private String firstName;
 
     @Schema(type = "string", format = "string", description = "Last name of the user")
+    @Size(max = 45, message = "Field must be at most 45 characters")
     @NotNull(message = "Last name is required")
     private String lastName;
 
@@ -42,5 +45,6 @@ public class UserReadDto {
     private ZonedDateTime createdDate;
 
     @Schema(type = "string", format = "string", description = "Profile image of the user")
+    @Size(max = 2000, message = "Field must be at most 45 characters")
     private String profileImage;
 }

@@ -1,8 +1,8 @@
 package fs19.java.backend.presentation.controller;
 
-import fs19.java.backend.application.dto.user.UserCreateDto;
+import fs19.java.backend.application.dto.user.UserCreateDTO;
 import fs19.java.backend.application.UserServiceImpl;
-import fs19.java.backend.application.dto.user.UserReadDto;
+import fs19.java.backend.application.dto.user.UserReadDTO;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -30,32 +30,32 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<GlobalResponse<UserReadDto>> createUser(@Valid @RequestBody UserCreateDto userCreateDto) {
-    UserReadDto createdUser = userService.createUser(userCreateDto);
+  public ResponseEntity<GlobalResponse<UserReadDTO>> createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
+    UserReadDTO createdUser = userService.createUser(userCreateDTO);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdUser), HttpStatus.CREATED);
   }
 
   @GetMapping
-  public ResponseEntity<GlobalResponse<List<UserReadDto>>> getAllUsers() {
-    List<UserReadDto> users = userService.findAllUsers();
+  public ResponseEntity<GlobalResponse<List<UserReadDTO>>> getAllUsers() {
+    List<UserReadDTO> users = userService.findAllUsers();
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), users), HttpStatus.OK);
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<GlobalResponse<UserReadDto>> getUserById(@PathVariable UUID id) {
-    UserReadDto user = userService.findUserById(id);
+  @GetMapping("/{userId}")
+  public ResponseEntity<GlobalResponse<UserReadDTO>> getUserById(@PathVariable UUID userId) {
+    UserReadDTO user = userService.findUserById(userId);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), user), HttpStatus.OK);
   }
 
-  @PutMapping("/{id}")
-  public ResponseEntity<GlobalResponse<UserReadDto>> updateUser(@PathVariable UUID id, @Valid @RequestBody UserReadDto userToUpdateDTO) {
-    UserReadDto updatedUser = userService.updateUser(id, userToUpdateDTO);
+  @PutMapping("/{userId}")
+  public ResponseEntity<GlobalResponse<UserReadDTO>> updateUser(@PathVariable UUID userId, @Valid @RequestBody UserReadDTO userToUpdateDTO) {
+    UserReadDTO updatedUser = userService.updateUser(userId, userToUpdateDTO);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedUser), HttpStatus.OK);
   }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<GlobalResponse<Void>> deleteUser(@PathVariable  UUID id) {
-    userService.deleteUser(id);
+  @DeleteMapping("/{userId}")
+  public ResponseEntity<GlobalResponse<Void>> deleteUser(@PathVariable  UUID userId) {
+    userService.deleteUser(userId);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null), HttpStatus.NO_CONTENT);
   }
 }
