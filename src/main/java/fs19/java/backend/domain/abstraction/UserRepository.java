@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 
-public interface UserRepo {
+public interface UserRepository {
   void saveUser(User user);
   List<User> findAllUsers();
   Optional<User> findById(UUID id);

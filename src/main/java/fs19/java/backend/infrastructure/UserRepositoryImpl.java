@@ -1,6 +1,6 @@
 package fs19.java.backend.infrastructure;
 
-import fs19.java.backend.domain.abstraction.UserRepo;
+import fs19.java.backend.domain.abstraction.UserRepository;
 import fs19.java.backend.domain.entity.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UserRepositoryImpl implements UserRepo {
+public class UserRepositoryImpl implements UserRepository {
 
   private final Map<UUID, User> inMemoryUserDatabase = new ConcurrentHashMap<>();
 
