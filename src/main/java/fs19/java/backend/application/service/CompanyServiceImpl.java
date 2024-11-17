@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 public class CompanyServiceImpl implements CompanyService {
 
     private static final String COMPANY_NOT_FOUND_MESSAGE = "Company with ID %s not found";
-
     private final CompanyRepository companyRepository;
 
     public CompanyServiceImpl(CompanyRepository companyRepository) {
