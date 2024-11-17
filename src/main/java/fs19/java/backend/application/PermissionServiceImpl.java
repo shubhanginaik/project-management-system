@@ -1,8 +1,9 @@
-package fs19.java.backend.application.service;
+package fs19.java.backend.application;
 
 import fs19.java.backend.application.dto.permission.PermissionRequestDTO;
 import fs19.java.backend.application.dto.permission.PermissionResponseDTO;
 import fs19.java.backend.application.mapper.PermissionMapper;
+import fs19.java.backend.application.service.PermissionService;
 import fs19.java.backend.domain.entity.Permission;
 import fs19.java.backend.infrastructure.PermissionRepoImpl;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
@@ -16,7 +17,7 @@ import java.util.UUID;
  * Permission entity service layer
  */
 @Service
-public class PermissionServiceImpl {
+public class PermissionServiceImpl implements PermissionService {
 
     private final PermissionRepoImpl permissionRepo;
 
@@ -30,6 +31,7 @@ public class PermissionServiceImpl {
      * @param permissionRequestDTO
      * @return
      */
+    @Override
     public PermissionResponseDTO createPermission(@Valid PermissionRequestDTO permissionRequestDTO) {
         Permission myPermission;
         if (permissionRequestDTO.getName().isEmpty()) { // expected valid name only and that validation is enough
@@ -57,6 +59,7 @@ public class PermissionServiceImpl {
      * @param permissionRequestDTO
      * @return
      */
+    @Override
     public PermissionResponseDTO updatePermission(UUID permissionId, @Valid PermissionRequestDTO permissionRequestDTO) {
         Permission myPermission;
         if (permissionId == null) {
@@ -85,9 +88,10 @@ public class PermissionServiceImpl {
      * @param permissionId UUID
      * @return PermissionResponseDTO
      */
+    @Override
     public PermissionResponseDTO deletePermission(UUID permissionId) {
         if (permissionId == null) {
-            System.out.println("Permission ID is null, cannot proceed with update.");
+            System.out.println("Permission ID is null, cannot proceed with delete.");
             return PermissionMapper.toPermissionResponseDTO(new Permission(), ResponseStatus.PERMISSION_ID_NOT_FOUND);
         }
         Permission myPermission = this.permissionRepo.deletePermission(permissionId);
@@ -103,6 +107,7 @@ public class PermissionServiceImpl {
      *
      * @return List<PermissionResponseDTO>
      */
+    @Override
     public List<PermissionResponseDTO> getPermissions() {
         return PermissionMapper.toRoleResponseDTOs(this.permissionRepo.getPermissions(), ResponseStatus.SUCCESSFULLY_FOUND);
     }
@@ -113,6 +118,7 @@ public class PermissionServiceImpl {
      * @param permissionId
      * @return
      */
+    @Override
     public PermissionResponseDTO getPermissionById(UUID permissionId) {
         if (permissionId == null) {
             System.out.println("Permission Id is null, cannot proceed with search.");
@@ -131,6 +137,7 @@ public class PermissionServiceImpl {
      * @param name
      * @return
      */
+    @Override
     public PermissionResponseDTO getPermissionByName(String name) {
         if (name.isEmpty()) {
             System.out.println("Permission Name is null, cannot proceed with search.");

@@ -1,6 +1,7 @@
 package fs19.java.backend.infrastructure.tempMemory;
 
 import fs19.java.backend.application.dto.permission.PermissionRequestDTO;
+import fs19.java.backend.application.dto.role.RolePermissionRequestDTO;
 import fs19.java.backend.application.dto.role.RoleRequestDTO;
 import fs19.java.backend.domain.entity.Permission;
 import fs19.java.backend.domain.entity.Role;
@@ -34,6 +35,8 @@ public class RoleInMemoryDB {
         existing_permission.add(new Permission(UUID.randomUUID(), "WRITE_ACCESS"));
         existing_permission.add(new Permission(UUID.randomUUID(), "ADMIN_ACCESS"));
         existing_permission.add(new Permission(UUID.randomUUID(), "VIEW_ACCESS"));
+
+        existing_role_permission.add(new RolePermission(UUID.randomUUID(), existingPermission.get(0).getId(), existingPermission.get(0).getId()));
 
     }
 
@@ -87,6 +90,25 @@ public class RoleInMemoryDB {
     }
 
 
+    public RolePermission updateRolePermission(UUID rolePermissionId, RolePermissionRequestDTO rolePermissionRequestDTO) {
+        RolePermission myRolePermission = null;
+        Optional<RolePermission> permissionOptional = existing_role_permission.stream()
+                .filter(p -> p.getId().toString().equalsIgnoreCase(rolePermissionId.toString()))
+                .findFirst();
+
+        if (permissionOptional.isPresent()) {
+            myRolePermission = permissionOptional.get();
+            existing_role_permission.remove(myRolePermission);
+            myRolePermission.setPermissionId(rolePermissionRequestDTO.getPermissionId());
+            myRolePermission.setRoleId(rolePermissionRequestDTO.getRoleId());
+            existing_role_permission.add(myRolePermission);
+        } else {
+            System.out.println("Role-Permission with ID " + rolePermissionId + " not found in existing_roles.");
+        }
+        return myRolePermission;
+    }
+
+
     public Role deleteRole(UUID roleId) {
         Role myRole = null;
         Optional<Role> roleOptional = existing_roles.stream()
@@ -124,6 +146,10 @@ public class RoleInMemoryDB {
         return existing_permission;
     }
 
+    public List<RolePermission> finaAllRolePermissions() {
+        return existing_role_permission;
+    }
+
 
     public Role findRoleByName(@NotNull String name) {
         Role myRole = null;
@@ -152,6 +178,15 @@ public class RoleInMemoryDB {
         return permission;
     }
 
+    public RolePermission findRolePermissionById(UUID id) {
+        RolePermission myRolePermission = null;
+        Optional<RolePermission> roleOptional = existing_role_permission.stream().filter(rolePermission -> rolePermission.getId().toString().equalsIgnoreCase(id.toString())).findFirst();
+        if (roleOptional.isPresent()) {
+            myRolePermission = roleOptional.get();
+        }
+        return myRolePermission;
+    }
+
 
     public Permission findPermissionByName(@NotNull String name) {
         Permission permission = null;
@@ -164,8 +199,41 @@ public class RoleInMemoryDB {
 
 
     public RolePermission assignPermission(Role roleById, Permission permissionById) {
-        RolePermission myRolePermission = new RolePermission(UUID.randomUUID(),roleById,permissionById);
+        RolePermission myRolePermission = new RolePermission(UUID.randomUUID(), roleById.getId(), permissionById.getId());
         existing_role_permission.add(myRolePermission);
         return myRolePermission;
+    }
+
+    public RolePermission isAlreadyAssignedPermission(@NotNull UUID roleId, @NotNull UUID permissionId) {
+        RolePermission myRolePermission = null;
+        Optional<RolePermission> roleOptional = existing_role_permission.stream().filter(rolePermission -> (rolePermission.getRoleId().toString().equalsIgnoreCase(roleId.toString()) && rolePermission.getPermissionId().toString().equalsIgnoreCase(permissionId.toString()))).findFirst();
+        if (roleOptional.isPresent()) {
+            myRolePermission = roleOptional.get();
+        }
+        return myRolePermission;
+    }
+
+    public RolePermission deleteRolePermission(UUID rolePermissionId) {
+        RolePermission myRolePermission = null;
+        Optional<RolePermission> rolePermission = existing_role_permission.stream()
+                .filter(p -> p.getId().toString().equalsIgnoreCase(rolePermissionId.toString()))
+                .findFirst();
+        if (rolePermission.isPresent()) {
+            myRolePermission = rolePermission.get();
+            existing_role_permission.remove(myRolePermission);
+        } else {
+            System.out.println("Role-Permission with ID " + rolePermissionId + " not found in existing Permission.");
+        }
+        return myRolePermission;
+    }
+
+    public List<RolePermission> finaAllRolesByPermissionId(UUID permissionId) {
+        return existing_role_permission.stream()
+                .filter(p -> p.getPermissionId().toString().equalsIgnoreCase(permissionId.toString())).toList();
+    }
+
+    public List<RolePermission> findAllPermissionByRoleId(UUID roleId) {
+        return existing_role_permission.stream()
+                .filter(p -> p.getRoleId().toString().equalsIgnoreCase(roleId.toString())).toList();
     }
 }
