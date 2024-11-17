@@ -27,7 +27,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<GlobalResponse<Void>> handleGenericException(Exception ex) {
         ErrorItem error = new ErrorItem(ex.getMessage());
@@ -74,4 +73,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleCommentNotFoundException(CommentNotFoundException ex) {
+        ErrorItem error = new ErrorItem(ex.getMessage());
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }
