@@ -6,11 +6,8 @@ import java.util.UUID;
 
 public interface ProjectService {
     ProjectDTO createProject(ProjectDTO projectDTO);
-    void updateProject(UUID projectId, ProjectDTO projectDTO);
+    ProjectDTO updateProject(UUID projectId, ProjectDTO projectDTO);
     Boolean deleteProject(UUID projectId);
-    void findProjectById();
-    List<ProjectDTO> findAllUsers();
-
-
-
+    ProjectDTO findProjectById(UUID projectId);
+    List<ProjectDTO> findAllProjects();
 }
