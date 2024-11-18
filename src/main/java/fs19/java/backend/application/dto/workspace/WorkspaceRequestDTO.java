@@ -1,7 +1,6 @@
 package fs19.java.backend.application.dto.workspace;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import fs19.java.backend.domain.entity.WorkspaceType;
+import fs19.java.backend.domain.entity.enums.WorkspaceType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -3,6 +3,7 @@ package fs19.java.backend.domain.entity;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.UUID;
  * Responsible to handle permission
  */
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class RolePermission {
@@ -20,10 +22,4 @@ public class RolePermission {
     private Role role;
     @NotNull
     private Permission permission;
-
-    public RolePermission() {
-        this.id = null;
-        this.role = new Role();
-        this.permission = new Permission();
-    }
 }

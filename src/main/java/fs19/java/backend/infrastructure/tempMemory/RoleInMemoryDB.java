@@ -1,10 +1,10 @@
 package fs19.java.backend.infrastructure.tempMemory;
 
 import fs19.java.backend.application.dto.permission.PermissionRequestDTO;
+import fs19.java.backend.application.dto.role.RolePermissionRequestDTO;
 import fs19.java.backend.application.dto.role.RoleRequestDTO;
-import fs19.java.backend.domain.entity.Permission;
-import fs19.java.backend.domain.entity.Role;
-import fs19.java.backend.domain.entity.RolePermission;
+import fs19.java.backend.application.dto.task.TaskRequestDTO;
+import fs19.java.backend.domain.entity.*;
 import fs19.java.backend.presentation.shared.Utilities.DateAndTime;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
@@ -21,11 +21,13 @@ public class RoleInMemoryDB {
     private final List<Role> existing_roles;
     private final List<Permission> existing_permission;
     private final List<RolePermission> existing_role_permission;
+    private final List<Task> existing_task;
 
     public RoleInMemoryDB(List<Permission> existingPermission) {
         existing_permission = existingPermission;
         existing_role_permission = new ArrayList<>();
         existing_roles = new ArrayList<>();
+        existing_task = new ArrayList<>();
         existing_roles.add(new Role(UUID.randomUUID(), "DEV", new Date().toInstant().atZone(ZoneId.systemDefault())));
         existing_roles.add(new Role(UUID.randomUUID(), "QA", new Date().toInstant().atZone(ZoneId.systemDefault())));
         existing_roles.add(new Role(UUID.randomUUID(), "PM", new Date().toInstant().atZone(ZoneId.systemDefault())));
@@ -35,6 +37,7 @@ public class RoleInMemoryDB {
         existing_permission.add(new Permission(UUID.randomUUID(), "ADMIN_ACCESS"));
         existing_permission.add(new Permission(UUID.randomUUID(), "VIEW_ACCESS"));
 
+        existing_role_permission.add(new RolePermission(UUID.randomUUID(), existing_roles.get(0), existingPermission.get(0)));
     }
 
     public Role createRole(RoleRequestDTO roleRequestDTO) {
@@ -49,6 +52,12 @@ public class RoleInMemoryDB {
         return myPermission;
     }
 
+    public Task createTask(TaskRequestDTO taskRequestDTO, User createduser, User asssignedUser) {
+        Task task = new Task(UUID.randomUUID(), taskRequestDTO.getName(), taskRequestDTO.getDescription(), DateAndTime.getDateAndTime(), taskRequestDTO.getResolvedDate(), taskRequestDTO.getDueDate(), taskRequestDTO.getAttachments(), taskRequestDTO.getTaskStatus(), taskRequestDTO.getProjectId(), createduser, asssignedUser, taskRequestDTO.getPriority());
+        existing_task.add(task);
+        return task;
+    }
+
     public Role updateRole(UUID roleId, RoleRequestDTO role) {
         Role myRole = null;
         // Find the role based on ID
@@ -61,7 +70,7 @@ public class RoleInMemoryDB {
             // Update the role properties
             existing_roles.remove(myRole);
             myRole.setName(role.getName());
-            myRole.setCreated_date(DateAndTime.getDateAndTime());
+            myRole.setCreatedDate(DateAndTime.getDateAndTime());
             existing_roles.add(myRole);
         } else {
             System.out.println("Role with ID " + roleId + " not found in existing_roles.");
@@ -84,6 +93,25 @@ public class RoleInMemoryDB {
             System.out.println("Permission with ID " + permissionId + " not found in existing_roles.");
         }
         return myPermission;
+    }
+
+
+    public RolePermission updateRolePermission(UUID rolePermissionId, RolePermissionRequestDTO rolePermissionRequestDTO) {
+        RolePermission myRolePermission = null;
+        Optional<RolePermission> permissionOptional = existing_role_permission.stream()
+                .filter(p -> p.getId().toString().equalsIgnoreCase(rolePermissionId.toString()))
+                .findFirst();
+
+        if (permissionOptional.isPresent()) {
+            myRolePermission = permissionOptional.get();
+            existing_role_permission.remove(myRolePermission);
+            myRolePermission.setPermission(findPermissionById(rolePermissionRequestDTO.getPermissionId()));
+            myRolePermission.setRole(findRoleById(rolePermissionRequestDTO.getId()));
+            existing_role_permission.add(myRolePermission);
+        } else {
+            System.out.println("Role-Permission with ID " + rolePermissionId + " not found in existing_roles.");
+        }
+        return myRolePermission;
     }
 
 
@@ -120,8 +148,16 @@ public class RoleInMemoryDB {
         return existing_roles;
     }
 
-    public List<Permission> finaAllPermissions() {
+    public List<Permission> findAllPermissions() {
         return existing_permission;
+    }
+
+    public List<RolePermission> findAllRolePermissions() {
+        return existing_role_permission;
+    }
+
+    public List<Task> findAllTasks() {
+        return existing_task;
     }
 
 
@@ -152,6 +188,23 @@ public class RoleInMemoryDB {
         return permission;
     }
 
+    public RolePermission findRolePermissionById(UUID id) {
+        RolePermission myRolePermission = null;
+        Optional<RolePermission> roleOptional = existing_role_permission.stream().filter(rolePermission -> rolePermission.getId().toString().equalsIgnoreCase(id.toString())).findFirst();
+        if (roleOptional.isPresent()) {
+            myRolePermission = roleOptional.get();
+        }
+        return myRolePermission;
+    }
+
+    public Task findTaskById(UUID id) {
+        Task myTask = null;
+        Optional<Task> taskOptional = existing_task.stream().filter(t -> t.getId().toString().equalsIgnoreCase(id.toString())).findFirst();
+        if (taskOptional.isPresent()) {
+            myTask = taskOptional.get();
+        }
+        return myTask;
+    }
 
     public Permission findPermissionByName(@NotNull String name) {
         Permission permission = null;
@@ -164,8 +217,90 @@ public class RoleInMemoryDB {
 
 
     public RolePermission assignPermission(Role roleById, Permission permissionById) {
-        RolePermission myRolePermission = new RolePermission(UUID.randomUUID(),roleById,permissionById);
+        RolePermission myRolePermission = new RolePermission(UUID.randomUUID(), roleById, permissionById);
         existing_role_permission.add(myRolePermission);
         return myRolePermission;
+    }
+
+    public RolePermission isAlreadyAssignedPermission(@NotNull UUID roleId, @NotNull UUID permissionId) {
+        RolePermission myRolePermission = null;
+        Optional<RolePermission> roleOptional = existing_role_permission.stream().filter(rolePermission -> (rolePermission.getRole().getId().toString().equalsIgnoreCase(roleId.toString()) && rolePermission.getPermission().getId().toString().equalsIgnoreCase(permissionId.toString()))).findFirst();
+        if (roleOptional.isPresent()) {
+            myRolePermission = roleOptional.get();
+        }
+        return myRolePermission;
+    }
+
+    public RolePermission deleteRolePermission(UUID rolePermissionId) {
+        RolePermission myRolePermission = null;
+        Optional<RolePermission> rolePermission = existing_role_permission.stream()
+                .filter(p -> p.getId().toString().equalsIgnoreCase(rolePermissionId.toString()))
+                .findFirst();
+        if (rolePermission.isPresent()) {
+            myRolePermission = rolePermission.get();
+            existing_role_permission.remove(myRolePermission);
+        } else {
+            System.out.println("Role-Permission with ID " + rolePermissionId + " not found in existing Permission.");
+        }
+        return myRolePermission;
+    }
+
+    public List<RolePermission> finaAllRolesByPermissionId(UUID permissionId) {
+        return existing_role_permission.stream()
+                .filter(p -> p.getPermission().getId().toString().equalsIgnoreCase(permissionId.toString())).toList();
+    }
+
+    public List<RolePermission> findAllPermissionByRoleId(UUID roleId) {
+        return existing_role_permission.stream()
+                .filter(p -> p.getRole().getId().toString().equalsIgnoreCase(roleId.toString())).toList();
+    }
+
+    public Task updateTask(UUID taskId, TaskRequestDTO taskRequestDTO, User assignedUser) {
+        Task task = null;
+        Optional<Task> taskResult = existing_task.stream()
+                .filter(p -> p.getId().toString().equalsIgnoreCase(taskId.toString()))
+                .findFirst();
+
+        if (taskResult.isPresent()) {
+            task = taskResult.get();
+            existing_task.remove(task);
+            task.setName(taskRequestDTO.getName());
+            task.setDescription(taskRequestDTO.getDescription());
+            task.setResolvedDate(taskRequestDTO.getResolvedDate());
+            task.setDueDate(taskRequestDTO.getDueDate());
+            task.setAttachments(taskRequestDTO.getAttachments());
+            task.setPriority(taskRequestDTO.getPriority());
+            task.setProjectId(taskRequestDTO.getProjectId());
+            task.setAssignedUser(assignedUser);
+            existing_task.add(task);
+        } else {
+            System.out.println("Task with ID " + taskId + " not found in existing tasks.");
+        }
+        return task;
+    }
+
+
+    public Task deleteTask(UUID taskId) {
+        Task myTask = null;
+        Optional<Task> taskOptional = existing_task.stream()
+                .filter(t -> t.getId().toString().equalsIgnoreCase(taskId.toString()))
+                .findFirst();
+        if (taskOptional.isPresent()) {
+            myTask = taskOptional.get();
+            existing_task.remove(myTask);
+        } else {
+            System.out.println("Task with ID " + taskId.toString() + " not found in existing tasks.");
+        }
+        return myTask;
+    }
+
+    public List<Task> getTasksByAssignedUserId(UUID userId) {
+        return existing_task.stream()
+                .filter(p -> p.getAssignedUser().getId().toString().equalsIgnoreCase(userId.toString())).toList();
+    }
+
+    public List<Task> getTasksByCreatedUserId(UUID createdUserId) {
+        return existing_task.stream()
+                .filter(p -> p.getAssignedUser().getId().toString().equalsIgnoreCase(createdUserId.toString())).toList();
     }
 }
