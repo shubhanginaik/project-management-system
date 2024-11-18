@@ -8,7 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import fs19.java.backend.application.dto.UserDTO;
+import fs19.java.backend.application.dto.user.UserCreateDTO;
+import fs19.java.backend.application.dto.user.UserReadDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,24 +30,33 @@ class UserControllerTest {
   @Autowired
   private ObjectMapper objectMapper;
 
-  private UserDTO userDTO;
+  private UserCreateDTO userCreateDto;
+  private UserReadDTO userReadDto;
 
   @BeforeEach
   void setUp() {
-    userDTO = UserDTO.builder()
+    userCreateDto = UserCreateDTO.builder()
         .firstName("John")
         .lastName("Doe")
         .email("john.doe@example.com")
         .password("password123")
+        .phone("1234566574")
         .profileImage("profile.jpg")
-        .phone("123456")
+        .build();
+
+    userReadDto = UserReadDTO.builder()
+        .firstName("John")
+        .lastName("Doe")
+        .email("john.doe@example.com")
+        .phone("1234566566")
+        .profileImage("profile.jpg")
         .build();
   }
 
   @Test
   void shouldCreateUserOnPost() throws Exception {
     // Act and Assert
-    performPostUser(userDTO)
+    performPostUser(userCreateDto)
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.code", is(201)))
         .andExpect(jsonPath("$.data.firstName", is("John")));
@@ -62,8 +72,8 @@ class UserControllerTest {
 
   @Test
   void shouldGetAllUsersOnGet() throws Exception {
-    performPostUser(userDTO).andExpect(status().isCreated());
-    performPostUser(userDTO).andExpect(status().isCreated());
+    performPostUser(userCreateDto).andExpect(status().isCreated());
+    performPostUser(userCreateDto).andExpect(status().isCreated());
 
     mockMvc.perform(MockMvcRequestBuilders.get("/v1/api/users"))
         .andExpect(status().isOk())
@@ -73,7 +83,7 @@ class UserControllerTest {
 
   @Test
   void shouldGetUserByIdOnGet() throws Exception {
-    String response = performPostUser(userDTO)
+    String response = performPostUser(userCreateDto)
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.firstName", is("John")))
         .andDo(print())
@@ -91,7 +101,7 @@ class UserControllerTest {
 
   @Test
   void shouldDeleteUserOnDelete() throws Exception {
-    String response = performPostUser(userDTO)
+    String response = performPostUser(userCreateDto)
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.firstName", is("John")))
         .andDo(print())
@@ -107,7 +117,10 @@ class UserControllerTest {
 
   @Test
   void shouldUpdateUserOnPut() throws Exception {
-    String response = performPostUser(userDTO)
+    // Create a user
+    String response = mockMvc.perform(post("/v1/api/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(userCreateDto)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.firstName", is("John")))
         .andDo(print())
@@ -118,17 +131,16 @@ class UserControllerTest {
     // Extract the ID from the response
     String userId = JsonPath.parse(response).read("$.data.id");
 
-    userDTO.setPhone("98765432");
     mockMvc.perform(MockMvcRequestBuilders.put("/v1/api/users/{id}", userId)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(userDTO)))
+            .content(objectMapper.writeValueAsString(userReadDto)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.data.phone", is("98765432")));
+        .andExpect(jsonPath("$.data.phone", is(userReadDto.getPhone())));
   }
 
-  private ResultActions performPostUser(UserDTO userDTO) throws Exception {
+  private ResultActions performPostUser(UserCreateDTO userCreateDTO) throws Exception {
     return mockMvc.perform(post("/v1/api/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(userDTO)));
+        .content(objectMapper.writeValueAsString(userCreateDTO)));
   }
 }

@@ -1,7 +1,8 @@
 package fs19.java.backend.presentation.controller;
 
-import fs19.java.backend.application.dto.UserDTO;
+import fs19.java.backend.application.dto.user.UserCreateDTO;
 import fs19.java.backend.application.UserServiceImpl;
+import fs19.java.backend.application.dto.user.UserReadDTO;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -29,32 +30,32 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<GlobalResponse<UserDTO>> createUser(@Valid @RequestBody UserDTO userDTO) {
-    UserDTO createdUser = userService.createUser(userDTO);
+  public ResponseEntity<GlobalResponse<UserReadDTO>> createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
+    UserReadDTO createdUser = userService.createUser(userCreateDTO);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdUser), HttpStatus.CREATED);
   }
 
   @GetMapping
-  public ResponseEntity<GlobalResponse<List<UserDTO>>> getAllUsers() {
-    List<UserDTO> users = userService.findAllUsers();
+  public ResponseEntity<GlobalResponse<List<UserReadDTO>>> getAllUsers() {
+    List<UserReadDTO> users = userService.findAllUsers();
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), users), HttpStatus.OK);
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<GlobalResponse<UserDTO>> getUserById(@PathVariable UUID id) {
-    UserDTO user = userService.findUserById(id);
+  @GetMapping("/{userId}")
+  public ResponseEntity<GlobalResponse<UserReadDTO>> getUserById(@PathVariable UUID userId) {
+    UserReadDTO user = userService.findUserById(userId);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), user), HttpStatus.OK);
   }
 
-  @PutMapping("/{id}")
-  public ResponseEntity<GlobalResponse<UserDTO>> updateUser(@PathVariable UUID id, @Valid @RequestBody UserDTO userDTO) {
-    UserDTO updatedUser = userService.updateUser(id, userDTO);
+  @PutMapping("/{userId}")
+  public ResponseEntity<GlobalResponse<UserReadDTO>> updateUser(@PathVariable UUID userId, @Valid @RequestBody UserReadDTO userToUpdateDTO) {
+    UserReadDTO updatedUser = userService.updateUser(userId, userToUpdateDTO);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedUser), HttpStatus.OK);
   }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<GlobalResponse<Void>> deleteUser(@PathVariable  UUID id) {
-    userService.deleteUser(id);
+  @DeleteMapping("/{userId}")
+  public ResponseEntity<GlobalResponse<Void>> deleteUser(@PathVariable  UUID userId) {
+    userService.deleteUser(userId);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null), HttpStatus.NO_CONTENT);
   }
 }
