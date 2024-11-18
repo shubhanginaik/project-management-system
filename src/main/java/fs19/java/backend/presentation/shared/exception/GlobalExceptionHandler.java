@@ -57,4 +57,11 @@ public class GlobalExceptionHandler {
             List.of(error));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(WorkspaceNotFoundException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleWorkspaceNotFoundException(WorkspaceNotFoundException ex) {
+        ErrorItem error = new ErrorItem(ex.getMessage());
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }

@@ -20,7 +20,7 @@ import java.util.UUID;
  * This class will work as the main role entity controller and each method will work as endpoints
  */
 @RestController
-@RequestMapping("v1/app/roles")
+@RequestMapping("app/v1/roles")
 @OpenAPIDefinition(info = @Info(title = "Role API", version = "v1"))
 public class RoleController {
 
@@ -46,9 +46,9 @@ public class RoleController {
      * @param roleUpdateDTO
      * @return
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<GlobalResponse<RoleResponseDTO>> updateRole(@PathVariable UUID id, @RequestBody @Valid RoleRequestDTO roleUpdateDTO) {
-        RoleResponseDTO theRoleResponseDTO = roleService.updateRole(id, roleUpdateDTO);
+    @PutMapping("/{roleId}")
+    public ResponseEntity<GlobalResponse<RoleResponseDTO>> updateRole(@PathVariable UUID roleId, @RequestBody @Valid RoleRequestDTO roleUpdateDTO) {
+        RoleResponseDTO theRoleResponseDTO = roleService.updateRole(roleId, roleUpdateDTO);
         HttpStatus responseCode = ResponseHandler.getResponseCode(HttpStatus.OK, theRoleResponseDTO.getStatus());
         return new ResponseEntity<>(new GlobalResponse<>(responseCode.value(), theRoleResponseDTO, ResponseHandler.convertResponseStatusToError(theRoleResponseDTO.getStatus())), responseCode);
     }
@@ -56,12 +56,12 @@ public class RoleController {
     /**
      * Delete Role By Id
      *
-     * @param id
+     * @param roleId
      * @return
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<GlobalResponse<RoleResponseDTO>> deleteRoleById(@PathVariable UUID id) {
-        RoleResponseDTO roleResponseDTO = roleService.deleteRole(id);
+    @DeleteMapping("/{roleId}")
+    public ResponseEntity<GlobalResponse<RoleResponseDTO>> deleteRoleById(@PathVariable UUID roleId) {
+        RoleResponseDTO roleResponseDTO = roleService.deleteRole(roleId);
         HttpStatus responseCode = ResponseHandler.getResponseCode(HttpStatus.OK, roleResponseDTO.getStatus());
         return new ResponseEntity<>(new GlobalResponse<>(responseCode.value(), roleResponseDTO, ResponseHandler.convertResponseStatusToError(roleResponseDTO.getStatus())), responseCode);
     }
@@ -81,9 +81,9 @@ public class RoleController {
      *
      * @return
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<GlobalResponse<RoleResponseDTO>> getRoleById(@PathVariable UUID id) {
-        RoleResponseDTO roleResponseDTO = roleService.getRoleById(id);
+    @GetMapping("/{roleId}")
+    public ResponseEntity<GlobalResponse<RoleResponseDTO>> getRoleById(@PathVariable UUID roleId) {
+        RoleResponseDTO roleResponseDTO = roleService.getRoleById(roleId);
         HttpStatus responseCode = ResponseHandler.getResponseCode(HttpStatus.OK, roleResponseDTO.getStatus());
         return new ResponseEntity<>(new GlobalResponse<>(responseCode.value(), roleResponseDTO, ResponseHandler.convertResponseStatusToError(roleResponseDTO.getStatus())), responseCode);
     }
@@ -93,9 +93,9 @@ public class RoleController {
      *
      * @return
      */
-    @GetMapping("search/{name}")
-    public ResponseEntity<GlobalResponse<RoleResponseDTO>> getRoleByName(@PathVariable String name) {
-        RoleResponseDTO roleResponseDTO = roleService.getRoleByName(name);
+    @GetMapping("search/{roleName}")
+    public ResponseEntity<GlobalResponse<RoleResponseDTO>> getRoleByName(@PathVariable String roleName) {
+        RoleResponseDTO roleResponseDTO = roleService.getRoleByName(roleName);
         HttpStatus responseCode = ResponseHandler.getResponseCode(HttpStatus.OK, roleResponseDTO.getStatus());
         return new ResponseEntity<>(new GlobalResponse<>(responseCode.value(), roleResponseDTO, ResponseHandler.convertResponseStatusToError(roleResponseDTO.getStatus())), responseCode);
     }

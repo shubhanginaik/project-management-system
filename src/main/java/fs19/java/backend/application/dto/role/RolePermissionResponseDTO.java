@@ -1,7 +1,6 @@
 package fs19.java.backend.application.dto.role;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fs19.java.backend.application.dto.permission.PermissionResponseDTO;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -22,12 +21,12 @@ public class RolePermissionResponseDTO {
     @Schema(type = "uuid", format = "uuid", description = "Unique identifier")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
-    @Schema(type = "RoleResponseDTO", format = "object", description = "Role Object ")
+    @Schema(type = "uuid", format = "uuid", description = "Role Unique identifier ")
     @NotNull
-    private RoleResponseDTO roleResponseDTO;
-    @Schema(type = "permissionResponseDTO", format = "object", description = "Permission Object")
+    private UUID roleId;
+    @Schema(type = "uuid", format = "uuid", description = "Permission Unique identifier")
     @NotNull
-    private PermissionResponseDTO permissionResponseDTO;
+    private UUID permissionId;
     @Schema(type = "String", format = "ResponseStatus", description = "Unique system status")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private ResponseStatus status;
