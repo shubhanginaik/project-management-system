@@ -1,6 +1,6 @@
 package fs19.java.backend.presentation.controller;
 
-import fs19.java.backend.application.dto.CompanyDTO;
+import fs19.java.backend.application.dto.company.CompanyDTO;
 import fs19.java.backend.application.service.CompanyService;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Tag(name = "Companies", description = "Manage companies")
 @RestController
-@RequestMapping("/v1/api/companies")
+@RequestMapping("/api/v1/companies")
 public class CompanyController {
 
     private final CompanyService companyService;
