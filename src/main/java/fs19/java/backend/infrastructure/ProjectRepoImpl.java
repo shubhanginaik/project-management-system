@@ -11,26 +11,26 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class ProjectRepositoryImpl implements ProjectRepository {
-  private final Map<UUID, Project> inMemoryUserDatabase = new ConcurrentHashMap<>();
+public class ProjectRepoImpl implements ProjectRepository {
+  private final Map<UUID, Project> inMemoryProjectDatabase = new ConcurrentHashMap<>();
 
   @Override
   public void saveProject(Project project) {
-    inMemoryUserDatabase.put(project.getId(), project);
+    inMemoryProjectDatabase.put(project.getId(), project);
   }
 
   @Override
   public List<Project> findAllProjects() {
-    return new ArrayList<>(inMemoryUserDatabase.values());
+    return new ArrayList<>(inMemoryProjectDatabase.values());
   }
 
   @Override
   public void deleteProject(Project project) {
-    inMemoryUserDatabase.remove(project.getId());
+    inMemoryProjectDatabase.remove(project.getId());
   }
 
   @Override
   public Optional<Project> findById(UUID id) {
-    return Optional.ofNullable(inMemoryUserDatabase.get(id));
+    return Optional.ofNullable(inMemoryProjectDatabase.get(id));
   }
 }

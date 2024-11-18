@@ -17,22 +17,10 @@ public class ProjectMapper {
     dto.setCreatedDate(project.getCreatedDate());
     dto.setStartDate(project.getStartDate());
     dto.setEndDate(project.getEndDate());
-    dto.setStatus(project.getStatus());
     dto.setWorkspaceId(project.getWorkspaceId());
-    dto.setWorkspaceId(project.getWorkspaceId());
-    return dto;
-  }
-
-  //add toUpdateDTO
-  public static ProjectUpdateDTO toUpdateDTO(Project project) {
-    ProjectUpdateDTO dto = new ProjectUpdateDTO();
-    dto.setDescription(project.getDescription());
-    dto.setStartDate(project.getStartDate());
-    dto.setEndDate(project.getEndDate());
     dto.setStatus(project.getStatus());
     return dto;
   }
-
 
   public static Project toEntity(ProjectCreateDTO dto) {
     Project project = new Project();

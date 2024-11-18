@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/api/projects")
+@RequestMapping("/api/v1/projects")
 public class ProjectController {
 
   private final ProjectServiceImpl projectService;
@@ -51,8 +51,8 @@ public class ProjectController {
   }
 
   @PutMapping("/{projectId}")
-  public ResponseEntity<GlobalResponse<ProjectReadDTO>> updateProject(@PathVariable UUID projectId, @Valid @RequestBody ProjectUpdateDTO ProjectDTO) {
-    ProjectReadDTO updatedProject = projectService.updateProject(projectId, ProjectDTO);
+  public ResponseEntity<GlobalResponse<ProjectReadDTO>> updateProject(@PathVariable UUID projectId, @Valid @RequestBody ProjectUpdateDTO projectDTO) {
+    ProjectReadDTO updatedProject = projectService.updateProject(projectId, projectDTO);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProject),
         HttpStatus.OK);
   }

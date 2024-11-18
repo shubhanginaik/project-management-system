@@ -6,8 +6,7 @@ import fs19.java.backend.application.dto.project.ProjectUpdateDTO;
 import fs19.java.backend.application.mapper.ProjectMapper;
 import fs19.java.backend.application.service.ProjectService;
 import fs19.java.backend.domain.entity.Project;
-import fs19.java.backend.domain.entity.User;
-import fs19.java.backend.infrastructure.ProjectRepositoryImpl;
+import fs19.java.backend.infrastructure.ProjectRepoImpl;
 import fs19.java.backend.presentation.shared.exception.ProjectValidationException;
 import fs19.java.backend.presentation.shared.exception.ProjectNotFoundException;
 import java.time.ZonedDateTime;
@@ -18,10 +17,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
-    private final ProjectRepositoryImpl projectRepository;
-    private final static String ERROR_MESSAGE = "Project not found with ID ";
+    private final ProjectRepoImpl projectRepository;
+    private static final String ERROR_MESSAGE = "Project not found with Id ";
 
-    public ProjectServiceImpl(ProjectRepositoryImpl projectRepository) {
+    public ProjectServiceImpl(ProjectRepoImpl projectRepository) {
         this.projectRepository = projectRepository;
     }
     @Override
@@ -39,6 +38,9 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = ProjectMapper.toEntity(projectDTO);
         project.setId(UUID.randomUUID());
         project.setCreatedDate(ZonedDateTime.now());
+        project.setCreatedByUserId(UUID.randomUUID());
+        project.setWorkspaceId(UUID.randomUUID());
+
         projectRepository.saveProject(project);
         return ProjectMapper.toReadDTO(project);
     }
@@ -75,7 +77,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectReadDTO findProjectById(UUID projectId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException(ERROR_MESSAGE + projectId));
+                .orElseThrow(() -> new ProjectNotFoundException(ERROR_MESSAGE + projectId));
         return ProjectMapper.toReadDTO(project);
     }
 

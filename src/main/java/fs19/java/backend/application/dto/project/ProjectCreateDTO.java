@@ -23,7 +23,6 @@ public class ProjectCreateDTO {
   @Schema(type = "string", format = "string", description = "Name of the project", example = "Test Project")
   @Size(min = 3, max = 45, message = "Project name must be between 3 and 50 characters")
   @NotNull(message = "Project name is required")
-
   private String name;
 
   @Schema(type = "string", format = "string", description = "Description of the project", example = "Test Description")
@@ -40,6 +39,4 @@ public class ProjectCreateDTO {
   private ZonedDateTime endDate;
 
   private Boolean status = true;
-
-
 }
