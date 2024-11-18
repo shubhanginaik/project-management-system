@@ -2,7 +2,7 @@ package fs19.java.backend.presentation.controller;
 
 import fs19.java.backend.application.dto.permission.PermissionRequestDTO;
 import fs19.java.backend.application.dto.permission.PermissionResponseDTO;
-import fs19.java.backend.application.service.PermissionServiceImpl;
+import fs19.java.backend.application.PermissionServiceImpl;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import fs19.java.backend.presentation.shared.response.ResponseHandler;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 
 @RestController
-@RequestMapping("v1/app/permissions")
+@RequestMapping("app/v1/permissions")
 @OpenAPIDefinition(info = @Info(title = "Permission API", version = "v1"))
 public class PermissionController {
 
@@ -47,9 +47,9 @@ public class PermissionController {
      * @param permissionRequestDTO PermissionRequestDTO
      * @return
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<GlobalResponse<PermissionResponseDTO>> updatePermission(@PathVariable UUID id, @RequestBody @Valid PermissionRequestDTO permissionRequestDTO) {
-        PermissionResponseDTO thePermissionDTo = permissionService.updatePermission(id, permissionRequestDTO);
+    @PutMapping("/{permissionId}")
+    public ResponseEntity<GlobalResponse<PermissionResponseDTO>> updatePermission(@PathVariable UUID permissionId, @RequestBody @Valid PermissionRequestDTO permissionRequestDTO) {
+        PermissionResponseDTO thePermissionDTo = permissionService.updatePermission(permissionId, permissionRequestDTO);
         HttpStatus responseCode = ResponseHandler.getResponseCode(HttpStatus.OK, thePermissionDTo.getStatus());
         return new ResponseEntity<>(new GlobalResponse<>(responseCode.value(), thePermissionDTo, ResponseHandler.convertResponseStatusToError(thePermissionDTo.getStatus())), responseCode);
     }
@@ -57,12 +57,12 @@ public class PermissionController {
     /**
      * Delete Permission By Id
      *
-     * @param id
+     * @param permissionId
      * @return
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<GlobalResponse<PermissionResponseDTO>> deletePermissionById(@PathVariable UUID id) {
-        PermissionResponseDTO permissionResponseDTO = permissionService.deletePermission(id);
+    @DeleteMapping("/{permissionId}")
+    public ResponseEntity<GlobalResponse<PermissionResponseDTO>> deletePermissionById(@PathVariable UUID permissionId) {
+        PermissionResponseDTO permissionResponseDTO = permissionService.deletePermission(permissionId);
         HttpStatus responseCode = ResponseHandler.getResponseCode(HttpStatus.OK, permissionResponseDTO.getStatus());
         return new ResponseEntity<>(new GlobalResponse<>(responseCode.value(), permissionResponseDTO, ResponseHandler.convertResponseStatusToError(permissionResponseDTO.getStatus())), responseCode);
     }
@@ -80,9 +80,9 @@ public class PermissionController {
      * Return the permission according to given Id
      * @return
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<GlobalResponse<PermissionResponseDTO>> getPermissionById(@PathVariable UUID id) {
-        PermissionResponseDTO permissionResponseDTO = permissionService.getPermissionById(id);
+    @GetMapping("/{permissionId}")
+    public ResponseEntity<GlobalResponse<PermissionResponseDTO>> getPermissionById(@PathVariable UUID permissionId) {
+        PermissionResponseDTO permissionResponseDTO = permissionService.getPermissionById(permissionId);
         HttpStatus responseCode = ResponseHandler.getResponseCode(HttpStatus.OK, permissionResponseDTO.getStatus());
         return new ResponseEntity<>(new GlobalResponse<>(responseCode.value(), permissionResponseDTO, ResponseHandler.convertResponseStatusToError(permissionResponseDTO.getStatus())), responseCode);
     }
@@ -91,9 +91,9 @@ public class PermissionController {
      * Return the permission according to given name
      * @return
      */
-    @GetMapping("search/{name}")
-    public ResponseEntity<GlobalResponse<PermissionResponseDTO>> getPermissionByName(@PathVariable String name) {
-        PermissionResponseDTO permissionResponseDTO = permissionService.getPermissionByName(name);
+    @GetMapping("search/{permissionName}")
+    public ResponseEntity<GlobalResponse<PermissionResponseDTO>> getPermissionByName(@PathVariable String permissionName) {
+        PermissionResponseDTO permissionResponseDTO = permissionService.getPermissionByName(permissionName);
         HttpStatus responseCode = ResponseHandler.getResponseCode(HttpStatus.OK, permissionResponseDTO.getStatus());
         return new ResponseEntity<>(new GlobalResponse<>(responseCode.value(), permissionResponseDTO, ResponseHandler.convertResponseStatusToError(permissionResponseDTO.getStatus())), responseCode);
     }

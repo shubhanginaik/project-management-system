@@ -1,4 +1,4 @@
-package fs19.java.backend;
+package fs19.java.backend.workspaces;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fs19.java.backend.domain.abstraction.WorkspaceRepository;
 import fs19.java.backend.domain.entity.Workspace;
-import fs19.java.backend.domain.entity.WorkspaceType;
+import fs19.java.backend.domain.entity.enums.WorkspaceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

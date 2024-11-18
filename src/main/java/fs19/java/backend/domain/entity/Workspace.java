@@ -1,5 +1,6 @@
 package fs19.java.backend.domain.entity;
 
+import fs19.java.backend.domain.entity.enums.WorkspaceType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -21,6 +21,6 @@ public class Role {
     private UUID id;
     @NotNull
     private String name;
-    private ZonedDateTime created_date;
+    private ZonedDateTime createdDate;
 
 }

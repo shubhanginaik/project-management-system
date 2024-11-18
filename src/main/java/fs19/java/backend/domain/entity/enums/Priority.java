@@ -1,4 +1,4 @@
-package fs19.java.backend.presentation.shared.status;
+package fs19.java.backend.domain.entity.enums;
 
 import java.awt.Color;
 import lombok.Getter;

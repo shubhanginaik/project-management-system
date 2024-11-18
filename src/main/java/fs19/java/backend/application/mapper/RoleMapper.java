@@ -1,11 +1,7 @@
 package fs19.java.backend.application.mapper;
 
-import fs19.java.backend.application.dto.permission.PermissionResponseDTO;
-import fs19.java.backend.application.dto.role.RolePermissionResponseDTO;
 import fs19.java.backend.application.dto.role.RoleResponseDTO;
-import fs19.java.backend.domain.entity.Permission;
 import fs19.java.backend.domain.entity.Role;
-import fs19.java.backend.domain.entity.RolePermission;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 
 import java.util.ArrayList;
@@ -23,7 +19,7 @@ public class RoleMapper {
      * @return
      */
     public static RoleResponseDTO toRoleResponseDTO(Role role, ResponseStatus status) {
-        return new RoleResponseDTO(role.getId(), role.getName(), role.getCreated_date(), status);
+        return new RoleResponseDTO(role.getId(), role.getName(), role.getCreatedDate(), status);
     }
 
     /**
