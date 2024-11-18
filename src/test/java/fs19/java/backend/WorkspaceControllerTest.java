@@ -1,5 +1,12 @@
 package fs19.java.backend;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fs19.java.backend.domain.abstraction.WorkspaceRepository;
 import fs19.java.backend.domain.entity.Workspace;
 import fs19.java.backend.domain.entity.WorkspaceType;
@@ -10,13 +17,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+
 
 import java.util.UUID;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -24,6 +28,9 @@ public class WorkspaceControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private WorkspaceRepository workspaceRepository;
@@ -88,5 +95,11 @@ public class WorkspaceControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code", is(404)))
                 .andExpect(jsonPath("$.errors[0].message", containsString("Workspace with ID " + nonExistentId + " not found")));
+    }
+
+    private ResultActions performPostWorkspace(Workspace workspace) throws Exception {
+        return mockMvc.perform(post("/v1/api/workspaces")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(workspace)));
     }
 }

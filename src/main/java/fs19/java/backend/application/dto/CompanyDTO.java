@@ -19,5 +19,7 @@ public class CompanyDTO {
     private String name;
 
     private ZonedDateTime createdDate;
+
+    @NotNull(message = "Created by User ID is required")
     private UUID createdBy;
 }
