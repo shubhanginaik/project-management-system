@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Data
@@ -18,7 +17,7 @@ import java.util.UUID;
 public class CommentRequestDTO {
 
     @Schema(type = "uuid", format = "uuid", description = "The task id", example = "123e4567-e89b-12d3-a456-426614174000")
-    @NotBlank(message = "Task id cannot be null")
+    @NotNull(message = "Task id cannot be null")
     private UUID taskId;
 
     @Schema(type = "string", description = "The content of the comment", example = "This is a comment")
@@ -28,5 +27,4 @@ public class CommentRequestDTO {
     @Schema(type = "uuid", format = "uuid", description = "Unique identifier of the user who created the comment")
     @NotNull(message = "Created by user ID is required")
     private UUID createdBy;
-
 }

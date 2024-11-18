@@ -2,7 +2,7 @@ package fs19.java.backend.presentation.controller;
 
 import fs19.java.backend.application.dto.comment.CommentRequestDTO;
 import fs19.java.backend.application.dto.comment.CommentResponseDTO;
-import fs19.java.backend.application.dto.comment.CommentUpdateDTO;
+import fs19.java.backend.application.dto.comment.CommentUpdateDTO; // Import CommentUpdateDTO
 import fs19.java.backend.application.service.CommentService;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,14 +28,25 @@ public class CommentController {
     @Operation(summary = "Create a new comment", description = "Creates a new comment with the provided details")
     @PostMapping
     public ResponseEntity<GlobalResponse<CommentResponseDTO>> createComment(@Valid @RequestBody CommentRequestDTO commentRequestDTO) {
+        System.out.println("Received create comment request: " + commentRequestDTO);
+
         CommentResponseDTO createdComment = commentService.createComment(commentRequestDTO);
+
+        System.out.println("Returning created comment with ID: " + createdComment.getId());
+
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdComment), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update a comment", description = "Updates the details of an existing comment")
     @PutMapping("/{commentId}")
     public ResponseEntity<GlobalResponse<CommentResponseDTO>> updateComment(@PathVariable UUID commentId, @Valid @RequestBody CommentUpdateDTO commentUpdateDTO) {
+        System.out.println("Received update comment request for ID: " + commentId);
+        System.out.println("Update content: " + commentUpdateDTO.getContent());
+
         CommentResponseDTO updatedComment = commentService.updateComment(commentId, commentUpdateDTO);
+
+        System.out.println("Returning updated comment with ID: " + updatedComment.getId());
+
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedComment), HttpStatus.OK);
     }
 
@@ -46,7 +57,7 @@ public class CommentController {
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), comment), HttpStatus.OK);
     }
 
-    @Operation(summary = "Get all comments", description = "Retrieves the details of all comments")
+    @Operation(summary = "Get all comments", description = "Fetches all comments")
     @GetMapping
     public ResponseEntity<GlobalResponse<List<CommentResponseDTO>>> getAllComments() {
         List<CommentResponseDTO> comments = commentService.getAllComments();

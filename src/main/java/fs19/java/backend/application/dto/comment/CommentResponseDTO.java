@@ -12,6 +12,8 @@ import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class CommentResponseDTO {
 
     @Schema(type = "uuid", format = "uuid", description = "Unique identifier of the comment")
