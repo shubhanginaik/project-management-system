@@ -104,6 +104,7 @@ public class RoleServiceImpl implements RoleService {
 
     /**
      * Return all roles
+     *
      * @return
      */
     @Override

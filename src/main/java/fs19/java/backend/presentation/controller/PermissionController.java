@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 
 @RestController
-@RequestMapping("v1/app/permissions")
+@RequestMapping("app/v1/permissions")
 @OpenAPIDefinition(info = @Info(title = "Permission API", version = "v1"))
 public class PermissionController {
 

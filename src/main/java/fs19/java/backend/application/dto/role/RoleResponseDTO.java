@@ -22,7 +22,7 @@ public class RoleResponseDTO {
     @Size(min = 1, max = 45, message = "Role name must be between 1 and 45 characters")
     private String name;
     @NotNull
-    private ZonedDateTime created_date;  // This date always should fill
+    private ZonedDateTime createdDate;  // This date always fills
     @Schema(type = "String", format = "ResponseStatus", description = "Unique system status")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private ResponseStatus status;
