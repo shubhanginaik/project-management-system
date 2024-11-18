@@ -1,4 +1,4 @@
-package fs19.java.backend;
+package fs19.java.backend.comment;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -53,7 +53,7 @@ public class CommentControllerTest {
         UUID newUserId = UUID.randomUUID();
         CommentRequestDTO request = new CommentRequestDTO(taskId, "This is a new comment", newUserId);
 
-        mockMvc.perform(post("/v1/api/comments")
+        mockMvc.perform(post("/api/v1/comments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -66,7 +66,7 @@ public class CommentControllerTest {
         CommentUpdateDTO request = new CommentUpdateDTO();
         request.setContent("Updated comment content");
 
-        mockMvc.perform(put("/v1/api/comments/" + existingComment.getId())
+        mockMvc.perform(put("/api/v1/comments/" + existingComment.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -76,7 +76,7 @@ public class CommentControllerTest {
 
     @Test
     public void testGetCommentById() throws Exception {
-        mockMvc.perform(get("/v1/api/comments/" + existingComment.getId()))
+        mockMvc.perform(get("/api/v1/comments/" + existingComment.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code", is(200)))
                 .andExpect(jsonPath("$.data.content", is(existingComment.getContent())));
@@ -84,7 +84,7 @@ public class CommentControllerTest {
 
     @Test
     public void testGetAllComments() throws Exception {
-        mockMvc.perform(get("/v1/api/comments"))
+        mockMvc.perform(get("/api/v1/comments"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code", is(200)))
                 .andExpect(jsonPath("$.data").isArray());
@@ -92,21 +92,21 @@ public class CommentControllerTest {
 
     @Test
     public void testDeleteComment() throws Exception {
-        mockMvc.perform(delete("/v1/api/comments/" + existingComment.getId()))
+        mockMvc.perform(delete("/api/v1/comments/" + existingComment.getId()))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     public void testGetNonExistentComment() throws Exception {
         UUID nonExistentId = UUID.randomUUID();
-        mockMvc.perform(get("/v1/api/comments/" + nonExistentId))
+        mockMvc.perform(get("/api/v1/comments/" + nonExistentId))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code", is(404)))
                 .andExpect(jsonPath("$.errors[0].message", is("Comment with ID " + nonExistentId + " not found")));
     }
 
     private ResultActions performPostComment(CommentRequestDTO request) throws Exception {
-        return mockMvc.perform(post("/v1/api/comments")
+        return mockMvc.perform(post("/api/v1/comments")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)));
     }

@@ -2,7 +2,7 @@ package fs19.java.backend.presentation.controller;
 
 import fs19.java.backend.application.dto.comment.CommentRequestDTO;
 import fs19.java.backend.application.dto.comment.CommentResponseDTO;
-import fs19.java.backend.application.dto.comment.CommentUpdateDTO; // Import CommentUpdateDTO
+import fs19.java.backend.application.dto.comment.CommentUpdateDTO;
 import fs19.java.backend.application.service.CommentService;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Tag(name = "Comment", description = "Manage comments")
 @RestController
-@RequestMapping("/v1/api/comments")
+@RequestMapping("/api/v1/comments")
 public class CommentController {
     private final CommentService commentService;
 

@@ -1,4 +1,4 @@
-package fs19.java.backend.application.dto;
+package fs19.java.backend.application.dto.company;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
