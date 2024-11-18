@@ -19,7 +19,7 @@ public class RolePermission {
 
     private UUID id;
     @NotNull
-    private UUID roleId;
+    private Role role;
     @NotNull
-    private UUID permissionId;
+    private Permission permission;
 }

@@ -1,6 +1,6 @@
 package fs19.java.backend.application.dto.workspace;
 
-import fs19.java.backend.domain.entity.WorkspaceType;
+import fs19.java.backend.domain.entity.enums.WorkspaceType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

@@ -1,6 +1,5 @@
-package fs19.java.backend;
+package fs19.java.backend.company;
 
-import fs19.java.backend.application.dto.CompanyDTO;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.abstraction.CompanyRepository;
 import org.junit.jupiter.api.BeforeEach;

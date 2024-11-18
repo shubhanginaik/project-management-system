@@ -20,7 +20,7 @@ import java.util.UUID;
  * This class will work as the main role entity controller and each method will work as endpoints
  */
 @RestController
-@RequestMapping("v1/app/roles")
+@RequestMapping("app/v1/roles")
 @OpenAPIDefinition(info = @Info(title = "Role API", version = "v1"))
 public class RoleController {
 

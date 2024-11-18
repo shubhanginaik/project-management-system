@@ -55,7 +55,7 @@ public class RolePermissionRepoImpl implements RolePermissionRepository {
      */
     @Override
     public List<RolePermissionResponseDTO> getRolePermissions() {
-        return RolePermissionMapper.toPermissionResponseDTOs(tempRoleDB.finaAllRolePermissions(), ResponseStatus.SUCCESSFULLY_FOUND);
+        return RolePermissionMapper.toPermissionResponseDTOs(tempRoleDB.findAllRolePermissions(), ResponseStatus.SUCCESSFULLY_FOUND);
     }
 
     /**
