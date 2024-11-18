@@ -1,13 +1,15 @@
 package fs19.java.backend.application.service;
 
-import fs19.java.backend.application.dto.project.ProjectDTO;
+import fs19.java.backend.application.dto.project.ProjectCreateDTO;
+import fs19.java.backend.application.dto.project.ProjectReadDTO;
+import fs19.java.backend.application.dto.project.ProjectUpdateDTO;
 import java.util.List;
 import java.util.UUID;
 
 public interface ProjectService {
-    ProjectDTO createProject(ProjectDTO projectDTO);
-    ProjectDTO updateProject(UUID projectId, ProjectDTO projectDTO);
+    ProjectReadDTO createProject(ProjectCreateDTO projectDTO);
+    ProjectReadDTO updateProject(UUID projectId, ProjectUpdateDTO projectDTO);
     Boolean deleteProject(UUID projectId);
-    ProjectDTO findProjectById(UUID projectId);
-    List<ProjectDTO> findAllProjects();
+    ProjectReadDTO findProjectById(UUID projectId);
+    List<ProjectReadDTO> findAllProjects();
 }

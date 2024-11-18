@@ -1,10 +1,15 @@
 package fs19.java.backend.application;
 
-import fs19.java.backend.application.dto.project.ProjectDTO;
+import fs19.java.backend.application.dto.project.ProjectCreateDTO;
+import fs19.java.backend.application.dto.project.ProjectReadDTO;
+import fs19.java.backend.application.dto.project.ProjectUpdateDTO;
 import fs19.java.backend.application.mapper.ProjectMapper;
 import fs19.java.backend.application.service.ProjectService;
 import fs19.java.backend.domain.entity.Project;
+import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.infrastructure.ProjectRepositoryImpl;
+import fs19.java.backend.presentation.shared.exception.ProjectValidationException;
+import fs19.java.backend.presentation.shared.exception.ProjectNotFoundException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -14,37 +19,46 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepositoryImpl projectRepository;
+    private final static String ERROR_MESSAGE = "Project not found with ID ";
 
     public ProjectServiceImpl(ProjectRepositoryImpl projectRepository) {
         this.projectRepository = projectRepository;
     }
     @Override
-    public ProjectDTO createProject(ProjectDTO projectDTO) {
-        //TODO: Implement validation
+    public ProjectReadDTO createProject(ProjectCreateDTO projectDTO) {
+        if (projectDTO.getName() == null || projectDTO.getName().isEmpty()) {
+            throw new ProjectValidationException("Project name is required");
+        }
+        if (projectDTO.getStartDate() == null || projectDTO.getStartDate().isAfter(projectDTO.getEndDate())) {
+            throw new ProjectValidationException("Start date is required and must be before end date");
+        }
+        if (projectDTO.getEndDate() == null || projectDTO.getEndDate().isBefore(projectDTO.getStartDate())) {
+            throw new ProjectValidationException("End date is required and must be after start date");
+        }
+
         Project project = ProjectMapper.toEntity(projectDTO);
         project.setId(UUID.randomUUID());
         project.setCreatedDate(ZonedDateTime.now());
         projectRepository.saveProject(project);
-        return ProjectMapper.toDTO(project);
+        return ProjectMapper.toReadDTO(project);
     }
 
     @Override
-    public ProjectDTO updateProject(UUID projectId, ProjectDTO projectDTO) {
-        Optional<Project> project = projectRepository.findById(projectId);
-        if (project.isPresent()) {
-            Project updatedProject = project.get();
-            updatedProject.setName(projectDTO.getName());
+    public ProjectReadDTO updateProject(UUID projectId, ProjectUpdateDTO projectDTO) {
+        Optional<Project> existingProject = projectRepository.findById(projectId);
+
+        if (existingProject.isPresent()) {
+            Project updatedProject = existingProject.get();
             updatedProject.setDescription(projectDTO.getDescription());
             updatedProject.setStartDate(projectDTO.getStartDate());
             updatedProject.setEndDate(projectDTO.getEndDate());
-            updatedProject.setCreatedByUserId(projectDTO.getCreatedByUserId());
-            updatedProject.setWorkspaceId(projectDTO.getWorkspaceId());
             updatedProject.setStatus(projectDTO.getStatus());
-            projectRepository.saveProject(updatedProject);
-            return ProjectMapper.toDTO(updatedProject);
+
+             projectRepository.saveProject(updatedProject);
+            return ProjectMapper.toReadDTO(updatedProject);
         }
         else {
-            return null;
+            throw new ProjectValidationException(ERROR_MESSAGE + projectId);
         }
     }
 
@@ -59,17 +73,17 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDTO findProjectById(UUID projectId) {
+    public ProjectReadDTO findProjectById(UUID projectId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found with ID " + projectId));
-        return ProjectMapper.toDTO(project);
+                .orElseThrow(() -> new RuntimeException(ERROR_MESSAGE + projectId));
+        return ProjectMapper.toReadDTO(project);
     }
 
     @Override
-    public List<ProjectDTO> findAllProjects() {
+    public List<ProjectReadDTO> findAllProjects() {
         List<Project> projects = projectRepository.findAllProjects();
         return projects.stream()
-                .map(ProjectMapper::toDTO)
+                .map(ProjectMapper::toReadDTO)
                 .toList();
     }
 }

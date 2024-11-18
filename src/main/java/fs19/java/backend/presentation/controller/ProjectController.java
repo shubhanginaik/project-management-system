@@ -1,11 +1,12 @@
 package fs19.java.backend.presentation.controller;
 
 import fs19.java.backend.application.ProjectServiceImpl;
-import fs19.java.backend.application.dto.project.ProjectDTO;
+import fs19.java.backend.application.dto.project.ProjectCreateDTO;
+import fs19.java.backend.application.dto.project.ProjectReadDTO;
+import fs19.java.backend.application.dto.project.ProjectUpdateDTO;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,41 +30,35 @@ public class ProjectController {
   }
 
   @PostMapping
-  public ResponseEntity<GlobalResponse<ProjectDTO>> createProject(@Valid @RequestBody ProjectDTO projectDTO) {
-    ProjectDTO createdProject = projectService.createProject(projectDTO);
+  public ResponseEntity<GlobalResponse<ProjectReadDTO>> createProject(@Valid @RequestBody ProjectCreateDTO projectDTO) {
+    ProjectReadDTO createdProject = projectService.createProject(projectDTO);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdProject),
         HttpStatus.CREATED);
   }
 
   @GetMapping
-  public ResponseEntity<GlobalResponse<List<ProjectDTO>>> getAllProjects() {
-    List<ProjectDTO> projects = projectService.findAllProjects();
+  public ResponseEntity<GlobalResponse<List<ProjectReadDTO>>> getAllProjects() {
+    List<ProjectReadDTO> projects = projectService.findAllProjects();
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), projects),
         HttpStatus.OK);
   }
 
   @GetMapping("/{projectId}")
-  public ResponseEntity<GlobalResponse<ProjectDTO>> getProjectById(@PathVariable UUID projectId) {
-    ProjectDTO project = projectService.findProjectById(projectId);
+  public ResponseEntity<GlobalResponse<ProjectReadDTO>> getProjectById(@PathVariable UUID projectId) {
+    ProjectReadDTO project = projectService.findProjectById(projectId);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), project),
         HttpStatus.OK);
   }
 
   @PutMapping("/{projectId}")
-  public ResponseEntity<GlobalResponse<ProjectDTO>> updateProject(@PathVariable UUID projectId, @Valid @RequestBody ProjectDTO projectToUpdateDTO) {
-    ProjectDTO updatedProject = projectService.updateProject(projectId, projectToUpdateDTO);
+  public ResponseEntity<GlobalResponse<ProjectReadDTO>> updateProject(@PathVariable UUID projectId, @Valid @RequestBody ProjectUpdateDTO ProjectDTO) {
+    ProjectReadDTO updatedProject = projectService.updateProject(projectId, ProjectDTO);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedProject),
         HttpStatus.OK);
   }
 
   @DeleteMapping("/{projectId}")
   public ResponseEntity<GlobalResponse<Void>> deleteProject(@PathVariable UUID projectId) {
-    //find project by id and delete it
-    Optional<ProjectDTO> project = Optional.ofNullable(projectService.findProjectById(projectId));
-    if (project.isEmpty()) {
-      return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), null),
-          HttpStatus.NOT_FOUND);
-    }
     projectService.deleteProject(projectId);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null),
         HttpStatus.NO_CONTENT);
