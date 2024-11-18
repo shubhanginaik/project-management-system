@@ -96,7 +96,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
      */
     @Override
     public RolePermissionResponseDTO getRolePermissionById(UUID rolePermissionId) {
-        if (rolePermissionId.toString() == null) {
+        if (rolePermissionId == null) {
             System.out.println("Role-Permission ID is null, cannot proceed with search.");
             return RolePermissionMapper.toPermissionResponseDTO(new RolePermission(), ResponseStatus.ROLE_PERMISSION_ID_NOT_FOUND);
         }
@@ -111,7 +111,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
      */
     @Override
     public List<RolePermissionResponseDTO> getPermissionByRoleId(UUID roleId) {
-        if (roleId.toString() == null) {
+        if (roleId == null) {
             System.out.println(" Role ID is null, cannot proceed with search.");
             return RolePermissionMapper.toPermissionResponseDTOs(new ArrayList<>(), ResponseStatus.ROLE_ID_NOT_FOUND);
         }
@@ -141,7 +141,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
      */
     @Override
     public List<RolePermissionResponseDTO> getRolesByPermissionByPermissionId(UUID permissionId) {
-        if (permissionId.toString() == null) {
+        if (permissionId == null) {
             System.out.println(" Permission ID is null, cannot proceed with search.");
             return RolePermissionMapper.toPermissionResponseDTOs(new ArrayList<>(), ResponseStatus.PERMISSION_ID_NOT_FOUND);
         }

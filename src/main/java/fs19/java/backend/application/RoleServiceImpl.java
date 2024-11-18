@@ -90,7 +90,7 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public RoleResponseDTO deleteRole(UUID roleId) {
-        if (roleId.toString() == null) {
+        if (roleId == null) {
             System.out.println("Role ID is null, cannot proceed with delete.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.ROLE_ID_NOT_FOUND);
         }
@@ -120,7 +120,7 @@ public class RoleServiceImpl implements RoleService {
      */
     @Override
     public RoleResponseDTO getRoleById(UUID roleId) {
-        if (roleId.toString() == null) {
+        if (roleId == null) {
             System.out.println("Role ID is null, cannot proceed with search.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.ROLE_ID_NOT_FOUND);
         }

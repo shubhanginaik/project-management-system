@@ -86,7 +86,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponseDTO deleteTask(UUID taskId) {
-        if (taskId.toString() == null) {
+        if (taskId == null) {
             System.out.println("Task ID is null, cannot proceed with delete.");
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_ID_NOT_FOUND);
         }
@@ -105,7 +105,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponseDTO getTaskById(UUID taskId) {
-        if (taskId.toString() == null) {
+        if (taskId == null) {
             System.out.println("Task ID is null, cannot proceed with search.");
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_ID_NOT_FOUND);
         }
