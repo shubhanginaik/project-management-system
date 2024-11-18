@@ -20,7 +20,7 @@ public class GlobalResponse<T> {
         this.data = data;
         this.errors = null;
     }
-
+  
     public GlobalResponse(int code, List<ErrorItem> errors) {
         this.status = ERROR;
         this.code = code;
@@ -34,4 +34,6 @@ public class GlobalResponse<T> {
         this.data = data;
         this.errors = errors;
     }
+
+
 }
