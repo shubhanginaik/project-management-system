@@ -1,4 +1,4 @@
-package fs19.java.backend;
+package fs19.java.backend.project;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
