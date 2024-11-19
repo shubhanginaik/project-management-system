@@ -1,6 +1,6 @@
 package fs19.java.backend.application.service;
 
-import fs19.java.backend.application.dto.CompanyDTO;
+import fs19.java.backend.application.dto.company.CompanyDTO;
 import java.util.List;
 import java.util.UUID;
 

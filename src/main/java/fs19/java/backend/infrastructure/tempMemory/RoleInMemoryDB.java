@@ -30,6 +30,9 @@ public class RoleInMemoryDB {
         existing_role_permission = new ArrayList<>();
         existing_roles = new ArrayList<>();
         existing_task = new ArrayList<>();
+        existing_roles.add(new Role(UUID.randomUUID(), "DEV", new Date().toInstant().atZone(ZoneId.systemDefault())));
+        existing_roles.add(new Role(UUID.randomUUID(), "QA", new Date().toInstant().atZone(ZoneId.systemDefault())));
+        existing_roles.add(new Role(UUID.randomUUID(), "PM", new Date().toInstant().atZone(ZoneId.systemDefault())));
         existing_roles.add(new Role(UUID.randomUUID(), "DEV", DateAndTime.getDateAndTime(), new Company()));
         existing_roles.add(new Role(UUID.randomUUID(), "QA", DateAndTime.getDateAndTime(), new Company()));
         existing_roles.add(new Role(UUID.randomUUID(), "PM", DateAndTime.getDateAndTime(), new Company()));
@@ -39,8 +42,10 @@ public class RoleInMemoryDB {
         existing_permission.add(new Permission(UUID.randomUUID(), "ADMIN_ACCESS"));
         existing_permission.add(new Permission(UUID.randomUUID(), "VIEW_ACCESS"));
 
+
         existing_role_permission.add(new RolePermission(UUID.randomUUID(), existing_roles.getFirst(), existing_permission.getFirst()));
         existing_invitation.add(new Invitation(UUID.randomUUID(), false, DateAndTime.getDateAndTime(), "abc@gmail.com", existing_roles.getFirst(), new Company()));
+
     }
 
     public Role createRole(RoleRequestDTO roleRequestDTO, Company company) {
@@ -60,6 +65,7 @@ public class RoleInMemoryDB {
         existing_task.add(task);
         return task;
     }
+
 
     public Role updateRole(UUID roleId, RoleRequestDTO role, Company company) {
         Role myRole = null;
@@ -181,7 +187,6 @@ public class RoleInMemoryDB {
     public List<Invitation> findAllInvitations() {
         return existing_invitation;
     }
-
 
     public Role findRoleByName(@NotNull String name) {
         Role myRole = null;

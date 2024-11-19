@@ -1,31 +1,31 @@
 package fs19.java.backend.infrastructure;
 
-import fs19.java.backend.domain.abstraction.CompanyRepository;
+import fs19.java.backend.domain.abstraction.CommentRepository;
 import fs19.java.backend.domain.entity.Comment;
-import fs19.java.backend.domain.entity.Company;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-public class CompanyRepoImpl implements CompanyRepository {
+public class CommentRepoImpl implements CommentRepository {
 
-    private final Map<UUID, Company> inMemoryDatabase = new ConcurrentHashMap<>();
+    private final Map<UUID, Comment> inMemoryDatabase = new ConcurrentHashMap<>();
 
     @Override
-    public void save(Company company) {
-        inMemoryDatabase.put(company.getId(), company);
+    public void save(Comment comment) {
+        inMemoryDatabase.put(comment.getId(), comment);
+
     }
 
     @Override
-    public Optional<Company> findById(UUID id) {
+    public Optional<Comment> findById(UUID id) {
         return Optional.ofNullable(inMemoryDatabase.get(id));
     }
 
     @Override
-    public List<Company> findAll() {
-        return new ArrayList<>(inMemoryDatabase.values());
+    public List<Comment> findAll() {
+       return new ArrayList<>(inMemoryDatabase.values());
     }
 
     @Override

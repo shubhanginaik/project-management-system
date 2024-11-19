@@ -1,25 +1,22 @@
 package fs19.java.backend.domain.entity;
 
-import jakarta.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.*;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
-/**
- * Responsible to handle permission
- */
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class RolePermission {
-
+public class Comment {
     private UUID id;
-    @NotNull
-    private Role role;
-    @NotNull
-    private Permission permission;
+    private UUID taskId;
+    private String content;
+    private ZonedDateTime createdDate;
+    private UUID createdBy;
 }
