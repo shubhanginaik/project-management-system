@@ -3,7 +3,6 @@ package fs19.java.backend.presentation.controller;
 import fs19.java.backend.application.dto.role.RoleRequestDTO;
 import fs19.java.backend.application.dto.role.RoleResponseDTO;
 import fs19.java.backend.presentation.shared.response.ResponseHandler;
-import fs19.java.backend.application.RoleServiceImpl;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -20,7 +19,6 @@ import java.util.UUID;
  * This class will work as the main role entity controller and each method will work as endpoints
  */
 @RestController
-@RequestMapping("app/v1/roles")
 @OpenAPIDefinition(info = @Info(title = "Role API", version = "v1"))
 public class RoleController {
 
@@ -46,9 +44,6 @@ public class RoleController {
      * @param roleUpdateDTO
      * @return
      */
-    @PutMapping("/{roleId}")
-    public ResponseEntity<GlobalResponse<RoleResponseDTO>> updateRole(@PathVariable UUID roleId, @RequestBody @Valid RoleRequestDTO roleUpdateDTO) {
-        RoleResponseDTO theRoleResponseDTO = roleService.updateRole(roleId, roleUpdateDTO);
         HttpStatus responseCode = ResponseHandler.getResponseCode(HttpStatus.OK, theRoleResponseDTO.getStatus());
         return new ResponseEntity<>(new GlobalResponse<>(responseCode.value(), theRoleResponseDTO, ResponseHandler.convertResponseStatusToError(theRoleResponseDTO.getStatus())), responseCode);
     }
@@ -56,12 +51,8 @@ public class RoleController {
     /**
      * Delete Role By Id
      *
-     * @param roleId
      * @return
      */
-    @DeleteMapping("/{roleId}")
-    public ResponseEntity<GlobalResponse<RoleResponseDTO>> deleteRoleById(@PathVariable UUID roleId) {
-        RoleResponseDTO roleResponseDTO = roleService.deleteRole(roleId);
         HttpStatus responseCode = ResponseHandler.getResponseCode(HttpStatus.OK, roleResponseDTO.getStatus());
         return new ResponseEntity<>(new GlobalResponse<>(responseCode.value(), roleResponseDTO, ResponseHandler.convertResponseStatusToError(roleResponseDTO.getStatus())), responseCode);
     }
@@ -81,9 +72,6 @@ public class RoleController {
      *
      * @return
      */
-    @GetMapping("/{roleId}")
-    public ResponseEntity<GlobalResponse<RoleResponseDTO>> getRoleById(@PathVariable UUID roleId) {
-        RoleResponseDTO roleResponseDTO = roleService.getRoleById(roleId);
         HttpStatus responseCode = ResponseHandler.getResponseCode(HttpStatus.OK, roleResponseDTO.getStatus());
         return new ResponseEntity<>(new GlobalResponse<>(responseCode.value(), roleResponseDTO, ResponseHandler.convertResponseStatusToError(roleResponseDTO.getStatus())), responseCode);
     }
@@ -93,9 +81,6 @@ public class RoleController {
      *
      * @return
      */
-    @GetMapping("search/{roleName}")
-    public ResponseEntity<GlobalResponse<RoleResponseDTO>> getRoleByName(@PathVariable String roleName) {
-        RoleResponseDTO roleResponseDTO = roleService.getRoleByName(roleName);
         HttpStatus responseCode = ResponseHandler.getResponseCode(HttpStatus.OK, roleResponseDTO.getStatus());
         return new ResponseEntity<>(new GlobalResponse<>(responseCode.value(), roleResponseDTO, ResponseHandler.convertResponseStatusToError(roleResponseDTO.getStatus())), responseCode);
     }

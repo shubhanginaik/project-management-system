@@ -58,7 +58,7 @@ public class PermissionRepoImpl implements PermissionRepository {
      */
     @Override
     public List<Permission> getPermissions() {
-        return tempRoleDB.findAllPermissions();
+        return tempRoleDB.finaAllPermissions();
     }
 
     /**

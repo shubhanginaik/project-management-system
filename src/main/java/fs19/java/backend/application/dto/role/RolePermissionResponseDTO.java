@@ -21,12 +21,8 @@ public class RolePermissionResponseDTO {
     @Schema(type = "uuid", format = "uuid", description = "Unique identifier")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
-    @Schema(type = "uuid", format = "uuid", description = "Role Unique identifier ")
     @NotNull
-    private UUID roleId;
-    @Schema(type = "uuid", format = "uuid", description = "Permission Unique identifier")
     @NotNull
-    private UUID permissionId;
     @Schema(type = "String", format = "ResponseStatus", description = "Unique system status")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private ResponseStatus status;
