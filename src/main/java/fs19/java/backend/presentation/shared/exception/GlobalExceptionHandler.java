@@ -4,6 +4,7 @@ import fs19.java.backend.presentation.shared.response.ErrorItem;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
