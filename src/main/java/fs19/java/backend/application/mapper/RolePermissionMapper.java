@@ -13,7 +13,6 @@ public class RolePermissionMapper {
      * @return
      */
     public static RolePermissionResponseDTO toPermissionResponseDTO(RolePermission rolePermission, ResponseStatus status) {
-        return new RolePermissionResponseDTO(rolePermission.getId(), RoleMapper.toRoleResponseDTO(rolePermission.getRole(), status), PermissionMapper.toPermissionResponseDTO(rolePermission.getPermission(), status), status);
     }
 
 }

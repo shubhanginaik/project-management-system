@@ -1,7 +1,5 @@
 package fs19.java.backend.presentation.controller;
 
-import fs19.java.backend.application.dto.UserDTO;
-import fs19.java.backend.application.service.UserServiceImpl;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -29,32 +27,19 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<GlobalResponse<UserDTO>> createUser(@Valid @RequestBody UserDTO userDTO) {
-    UserDTO createdUser = userService.createUser(userDTO);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdUser), HttpStatus.CREATED);
   }
 
   @GetMapping
-  public ResponseEntity<GlobalResponse<List<UserDTO>>> getAllUsers() {
-    List<UserDTO> users = userService.findAllUsers();
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), users), HttpStatus.OK);
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<GlobalResponse<UserDTO>> getUserById(@PathVariable UUID id) {
-    UserDTO user = userService.findUserById(id);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), user), HttpStatus.OK);
   }
 
-  @PutMapping("/{id}")
-  public ResponseEntity<GlobalResponse<UserDTO>> updateUser(@PathVariable UUID id, @Valid @RequestBody UserDTO userDTO) {
-    UserDTO updatedUser = userService.updateUser(id, userDTO);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedUser), HttpStatus.OK);
   }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<GlobalResponse<Void>> deleteUser(@PathVariable  UUID id) {
-    userService.deleteUser(id);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null), HttpStatus.NO_CONTENT);
   }
 }

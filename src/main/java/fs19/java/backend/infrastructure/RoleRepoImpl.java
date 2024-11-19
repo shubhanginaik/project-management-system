@@ -22,12 +22,10 @@ public class RoleRepoImpl implements RoleRepository {
     /**
      * Create a new role according to user specified details
      *
-     * @param role RoleRequestDTO
+     * @param role    RoleRequestDTO
      * @return Role
      */
     @Override
-    public Role createRole(RoleRequestDTO role) {
-        return tempRoleDB.createRole(role);
     }
 
     /**
@@ -38,8 +36,6 @@ public class RoleRepoImpl implements RoleRepository {
      * @return
      */
     @Override
-    public Role updateRole(UUID roleId, RoleRequestDTO role) {
-        return tempRoleDB.updateRole(roleId, role);
     }
 
     @Override

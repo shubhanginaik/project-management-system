@@ -9,8 +9,14 @@ import java.time.ZonedDateTime;
  */
 public class DateAndTime {
 
-    public static ZonedDateTime getDateAndTime(){
+    public static int EXPIRED_DATE = 7;
+
+    public static ZonedDateTime getDateAndTime() {
         Instant instant = Instant.now();
         return instant.atZone(ZoneId.systemDefault());
+    }
+
+    public static ZonedDateTime getExpiredDateAndTime() {
+        return getDateAndTime().plusDays(EXPIRED_DATE);
     }
 }

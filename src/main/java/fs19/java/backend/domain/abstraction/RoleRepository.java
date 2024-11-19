@@ -11,9 +11,7 @@ import java.util.UUID;
  */
 public interface RoleRepository {
 
-    Role createRole(RoleRequestDTO role);
 
-    Role updateRole(UUID roleId, RoleRequestDTO role);
 
     Role deleteRole(UUID roleId);
 

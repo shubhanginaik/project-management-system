@@ -2,14 +2,10 @@ package fs19.java.backend.infrastructure.tempMemory;
 
 import fs19.java.backend.application.dto.permission.PermissionRequestDTO;
 import fs19.java.backend.application.dto.role.RoleRequestDTO;
-import fs19.java.backend.domain.entity.Permission;
-import fs19.java.backend.domain.entity.Role;
-import fs19.java.backend.domain.entity.RolePermission;
 import fs19.java.backend.presentation.shared.Utilities.DateAndTime;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.time.ZoneId;
 import java.util.*;
 
 /**
@@ -22,8 +18,6 @@ public class RoleInMemoryDB {
     private final List<Permission> existing_permission;
     private final List<RolePermission> existing_role_permission;
 
-    public RoleInMemoryDB(List<Permission> existingPermission) {
-        existing_permission = existingPermission;
         existing_role_permission = new ArrayList<>();
         existing_roles = new ArrayList<>();
         existing_roles.add(new Role(UUID.randomUUID(), "DEV", new Date().toInstant().atZone(ZoneId.systemDefault())));
@@ -37,8 +31,6 @@ public class RoleInMemoryDB {
 
     }
 
-    public Role createRole(RoleRequestDTO roleRequestDTO) {
-        Role myRole = new Role(UUID.randomUUID(), roleRequestDTO.getName(), DateAndTime.getDateAndTime());
         existing_roles.add(myRole);
         return myRole;
     }
@@ -49,7 +41,6 @@ public class RoleInMemoryDB {
         return myPermission;
     }
 
-    public Role updateRole(UUID roleId, RoleRequestDTO role) {
         Role myRole = null;
         // Find the role based on ID
         Optional<Role> roleOptional = existing_roles.stream()
@@ -61,7 +52,6 @@ public class RoleInMemoryDB {
             // Update the role properties
             existing_roles.remove(myRole);
             myRole.setName(role.getName());
-            myRole.setCreated_date(DateAndTime.getDateAndTime());
             existing_roles.add(myRole);
         } else {
             System.out.println("Role with ID " + roleId + " not found in existing_roles.");
@@ -81,7 +71,6 @@ public class RoleInMemoryDB {
             myPermission.setName(permissionRequestDTO.getName());
             existing_permission.add(myPermission);
         } else {
-            System.out.println("Permission with ID " + permissionId + " not found in existing_roles.");
         }
         return myPermission;
     }
@@ -120,7 +109,6 @@ public class RoleInMemoryDB {
         return existing_roles;
     }
 
-    public List<Permission> finaAllPermissions() {
         return existing_permission;
     }
 
@@ -164,7 +152,7 @@ public class RoleInMemoryDB {
 
 
     public RolePermission assignPermission(Role roleById, Permission permissionById) {
-        RolePermission myRolePermission = new RolePermission(UUID.randomUUID(),roleById,permissionById);
+        RolePermission myRolePermission = new RolePermission(UUID.randomUUID(), roleById, permissionById);
         existing_role_permission.add(myRolePermission);
         return myRolePermission;
     }
