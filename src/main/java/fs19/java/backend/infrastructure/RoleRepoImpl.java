@@ -2,6 +2,7 @@ package fs19.java.backend.infrastructure;
 
 import fs19.java.backend.application.dto.role.RoleRequestDTO;
 import fs19.java.backend.domain.abstraction.RoleRepository;
+import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.Role;
 import fs19.java.backend.infrastructure.tempMemory.RoleInMemoryDB;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +23,13 @@ public class RoleRepoImpl implements RoleRepository {
     /**
      * Create a new role according to user specified details
      *
-     * @param role RoleRequestDTO
+     * @param role    RoleRequestDTO
+     * @param company
      * @return Role
      */
     @Override
-    public Role createRole(RoleRequestDTO role) {
-        return tempRoleDB.createRole(role);
+    public Role createRole(RoleRequestDTO role, Company company) {
+        return tempRoleDB.createRole(role, company);
     }
 
     /**
@@ -35,11 +37,12 @@ public class RoleRepoImpl implements RoleRepository {
      *
      * @param roleId
      * @param role
+     * @param company
      * @return
      */
     @Override
-    public Role updateRole(UUID roleId, RoleRequestDTO role) {
-        return tempRoleDB.updateRole(roleId, role);
+    public Role updateRole(UUID roleId, RoleRequestDTO role, Company company) {
+        return tempRoleDB.updateRole(roleId, role,company);
     }
 
     @Override
@@ -64,6 +67,7 @@ public class RoleRepoImpl implements RoleRepository {
 
     /**
      * Get role By Id
+     *
      * @param roleId
      * @return
      */
