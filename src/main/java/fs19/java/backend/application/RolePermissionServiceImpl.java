@@ -89,7 +89,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     }
 
     /**
-     * Get role permission by record Id
+     * Get role permission by record id
      *
      * @param rolePermissionId
      * @return
@@ -104,7 +104,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     }
 
     /**
-     * load permission by record Id
+     * load permission by record id
      *
      * @param roleId
      * @return
@@ -119,7 +119,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     }
 
     /**
-     * load role-permission by Id
+     * load role-permission by id
      *
      * @param rolePermissionId
      * @return
@@ -134,7 +134,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     }
 
     /**
-     * Load role-permission by permission Id
+     * Load role-permission by permission id
      *
      * @param permissionId
      * @return
@@ -149,7 +149,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     }
 
     /**
-     * Check already record is exist in given system
+     * Check already record is exist in a given system
      *
      * @param roleId
      * @param permissionId
