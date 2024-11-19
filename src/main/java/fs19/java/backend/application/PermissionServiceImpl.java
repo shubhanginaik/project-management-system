@@ -113,7 +113,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     /**
-     * Search Permission by Id
+     * Search Permission by id
      *
      * @param permissionId
      * @return

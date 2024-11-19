@@ -1,24 +1,25 @@
 package fs19.java.backend.domain.entity;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-/**
- * Responsible to work as a base model for a role object
- */
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Role {
-
+public class Invitation {
     private UUID id;
+    private boolean isAccepted;
     @NotNull
-    private String name;
-    private ZonedDateTime createdDate;
+    private ZonedDateTime expiredAt;
+    @NotNull
+    private String email;
+    @NotNull
+    private Role role;
     @NotNull
     private Company company;
-
 }

@@ -1,5 +1,6 @@
 package fs19.java.backend.infrastructure.tempMemory;
 
+import fs19.java.backend.application.dto.invitation.InvitationRequestDTO;
 import fs19.java.backend.application.dto.permission.PermissionRequestDTO;
 import fs19.java.backend.application.dto.role.RolePermissionRequestDTO;
 import fs19.java.backend.application.dto.role.RoleRequestDTO;
@@ -9,7 +10,6 @@ import fs19.java.backend.presentation.shared.Utilities.DateAndTime;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.time.ZoneId;
 import java.util.*;
 
 /**
@@ -22,26 +22,29 @@ public class RoleInMemoryDB {
     private final List<Permission> existing_permission;
     private final List<RolePermission> existing_role_permission;
     private final List<Task> existing_task;
+    private final List<Invitation> existing_invitation;
 
-    public RoleInMemoryDB(List<Permission> existingPermission) {
-        existing_permission = existingPermission;
+    public RoleInMemoryDB() {
+        existing_permission = new ArrayList<>();
+        existing_invitation = new ArrayList<>();
         existing_role_permission = new ArrayList<>();
         existing_roles = new ArrayList<>();
         existing_task = new ArrayList<>();
-        existing_roles.add(new Role(UUID.randomUUID(), "DEV", new Date().toInstant().atZone(ZoneId.systemDefault())));
-        existing_roles.add(new Role(UUID.randomUUID(), "QA", new Date().toInstant().atZone(ZoneId.systemDefault())));
-        existing_roles.add(new Role(UUID.randomUUID(), "PM", new Date().toInstant().atZone(ZoneId.systemDefault())));
+        existing_roles.add(new Role(UUID.randomUUID(), "DEV", DateAndTime.getDateAndTime(), new Company()));
+        existing_roles.add(new Role(UUID.randomUUID(), "QA", DateAndTime.getDateAndTime(), new Company()));
+        existing_roles.add(new Role(UUID.randomUUID(), "PM", DateAndTime.getDateAndTime(), new Company()));
 
         existing_permission.add(new Permission(UUID.randomUUID(), "READ_ACCESS"));
         existing_permission.add(new Permission(UUID.randomUUID(), "WRITE_ACCESS"));
         existing_permission.add(new Permission(UUID.randomUUID(), "ADMIN_ACCESS"));
         existing_permission.add(new Permission(UUID.randomUUID(), "VIEW_ACCESS"));
 
-        existing_role_permission.add(new RolePermission(UUID.randomUUID(), existing_roles.get(0), existingPermission.get(0)));
+        existing_role_permission.add(new RolePermission(UUID.randomUUID(), existing_roles.getFirst(), existing_permission.getFirst()));
+        existing_invitation.add(new Invitation(UUID.randomUUID(), false, DateAndTime.getDateAndTime(), "abc@gmail.com", existing_roles.getFirst(), new Company()));
     }
 
-    public Role createRole(RoleRequestDTO roleRequestDTO) {
-        Role myRole = new Role(UUID.randomUUID(), roleRequestDTO.getName(), DateAndTime.getDateAndTime());
+    public Role createRole(RoleRequestDTO roleRequestDTO, Company company) {
+        Role myRole = new Role(UUID.randomUUID(), roleRequestDTO.getName(), DateAndTime.getDateAndTime(), company);
         existing_roles.add(myRole);
         return myRole;
     }
@@ -58,7 +61,7 @@ public class RoleInMemoryDB {
         return task;
     }
 
-    public Role updateRole(UUID roleId, RoleRequestDTO role) {
+    public Role updateRole(UUID roleId, RoleRequestDTO role, Company company) {
         Role myRole = null;
         // Find the role based on ID
         Optional<Role> roleOptional = existing_roles.stream()
@@ -70,6 +73,7 @@ public class RoleInMemoryDB {
             // Update the role properties
             existing_roles.remove(myRole);
             myRole.setName(role.getName());
+            myRole.setCompany(company);
             myRole.setCreatedDate(DateAndTime.getDateAndTime());
             existing_roles.add(myRole);
         } else {
@@ -90,7 +94,7 @@ public class RoleInMemoryDB {
             myPermission.setName(permissionRequestDTO.getName());
             existing_permission.add(myPermission);
         } else {
-            System.out.println("Permission with ID " + permissionId + " not found in existing_roles.");
+            System.out.println("Permission with ID " + permissionId + " not found in existing_permissions.");
         }
         return myPermission;
     }
@@ -143,6 +147,20 @@ public class RoleInMemoryDB {
         return myPermission;
     }
 
+    public Invitation deleteInvitation(UUID invitationId) {
+        Invitation invitation = null;
+        Optional<Invitation> invitationOptional = existing_invitation.stream()
+                .filter(p -> p.getId().toString().equalsIgnoreCase(invitationId.toString()))
+                .findFirst();
+        if (invitationOptional.isPresent()) {
+            invitation = invitationOptional.get();
+            existing_invitation.remove(invitation);
+        } else {
+            System.out.println("Invitation with ID " + invitationId + " not found in existing Permission.");
+        }
+        return invitation;
+    }
+
 
     public List<Role> findAllRoles() {
         return existing_roles;
@@ -158,6 +176,10 @@ public class RoleInMemoryDB {
 
     public List<Task> findAllTasks() {
         return existing_task;
+    }
+
+    public List<Invitation> findAllInvitations() {
+        return existing_invitation;
     }
 
 
@@ -302,5 +324,41 @@ public class RoleInMemoryDB {
     public List<Task> getTasksByCreatedUserId(UUID createdUserId) {
         return existing_task.stream()
                 .filter(p -> p.getAssignedUser().getId().toString().equalsIgnoreCase(createdUserId.toString())).toList();
+    }
+
+    public Invitation createInvitation(InvitationRequestDTO invitationRequestDTO, Role role, Company company) {
+        Invitation myInvitation = new Invitation(UUID.randomUUID(), invitationRequestDTO.isAccepted(), DateAndTime.getExpiredDateAndTime(), invitationRequestDTO.getEmail(), role, company);
+        existing_invitation.add(myInvitation);
+        return myInvitation;
+    }
+
+    public Invitation updateInvitation(UUID invitationId, InvitationRequestDTO invitationRequestDTO, Role role, Company company) {
+        Invitation myInvitation = null;
+        Optional<Invitation> invitationOptional = existing_invitation.stream()
+                .filter(p -> p.getId().toString().equalsIgnoreCase(invitationId.toString()))
+                .findFirst();
+
+        if (invitationOptional.isPresent()) {
+            myInvitation = invitationOptional.get();
+            existing_invitation.remove(myInvitation);
+            myInvitation.setAccepted(invitationRequestDTO.isAccepted());
+            myInvitation.setEmail(invitationRequestDTO.getEmail());
+            myInvitation.setRole(role);
+            myInvitation.setCompany(company);
+            myInvitation.setExpiredAt(invitationRequestDTO.getExpiredAt());
+            existing_invitation.add(myInvitation);
+        } else {
+            System.out.println("Invitation with ID " + invitationId + " not found in existing Invitation record.");
+        }
+        return myInvitation;
+    }
+
+    public Invitation findInvitationById(UUID id) {
+        Invitation myInvitation = null;
+        Optional<Invitation> invitationOptional = existing_invitation.stream().filter(e -> e.getId().toString().equalsIgnoreCase(id.toString())).findFirst();
+        if (invitationOptional.isPresent()) {
+            myInvitation = invitationOptional.get();
+        }
+        return myInvitation;
     }
 }
