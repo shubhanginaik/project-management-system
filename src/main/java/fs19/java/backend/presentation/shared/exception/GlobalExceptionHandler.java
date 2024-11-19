@@ -80,4 +80,12 @@ public class GlobalExceptionHandler {
         GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), List.of(error));
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(WorkspaceUserNotFoundException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleWorkspaceUserNotFoundException(WorkspaceUserNotFoundException ex) {
+        ErrorItem error = new ErrorItem(ex.getMessage());
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(),
+            List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
 }
