@@ -53,7 +53,27 @@ public class ResponseHandler {
             case TASK_ID_NOT_FOUND -> errors.add(new ErrorItem(" Task Id Not Found", "" + status.getStatus()));
             case INVALID_INFORMATION_TASK_DETAILS_NOT_FOUND ->
                     errors.add(new ErrorItem(" Task Record Not Found", "" + status.getStatus()));
-
+            case INVITATION_EMAIL_NOT_FOUND ->
+                    errors.add(new ErrorItem(" Can't create an Invitation, Email Not Found", "" + status.getStatus()));
+            case INVITATION_ROLE_ID_NOT_FOUND ->
+                    errors.add(new ErrorItem(" Can't create an Invitation, Role Id Not Found", "" + status.getStatus()));
+            case INVITATION_ROLE_NOT_FOUND ->
+                    errors.add(new ErrorItem(" Can't create an Invitation, Role Information Not Found", "" + status.getStatus()));
+            case INVITATION_COMPANY_NOT_FOUND ->
+                    errors.add(new ErrorItem(" Can't create an Invitation, Company Information Not Found", "" + status.getStatus()));
+            case INVALID_INFORMATION_INVITATION_DETAILS_NOT_CREATED ->
+                    errors.add(new ErrorItem(" Can't create an Invitation, Something missing in request", "" + status.getStatus()));
+            case INVITATION_COMPANY_ID_NOT_FOUND ->
+                    errors.add(new ErrorItem(" Can't create an Invitation, Company Id Not Found", "" + status.getStatus()));
+            case INVITATION_ID_NOT_FOUND ->
+                    errors.add(new ErrorItem(" Invitation Id Not Found", "" + status.getStatus()));
+            case INVALID_INFORMATION_INVITATION_DETAILS_NOT_DELETED ->
+                    errors.add(new ErrorItem(" Can't delete an Invitation, Company Information Not Found", "" + status.getStatus()));
+            case INVALID_INFORMATION_INVITATION_DETAILS_NOT_FOUND ->
+                    errors.add(new ErrorItem(" Invitation Information Not Found", "" + status.getStatus()));
+            case COMPANY_ID_NOT_FOUND -> errors.add(new ErrorItem(" Company Id Not Found", "" + status.getStatus()));
+            case COMPANY_NAME_NOT_FOUND ->
+                    errors.add(new ErrorItem(" Company name Not Found", "" + status.getStatus()));
         }
         return errors;
     }
@@ -73,7 +93,12 @@ public class ResponseHandler {
                  ROLE_PERMISSION_RESULT_NOT_FOUND, ROLE_PERMISSION_ID_NOT_FOUND,
                  INVALID_INFORMATION_ROLE_PERMISSION_DETAILS_NOT_FOUND, TASK_NAME_NOT_FOUND,
                  TASK_LEVEL_CREATED_USER_NOT_FOUND, TASK_LEVEL_ASSIGNED_USER_NOT_FOUND, TASK_ID_NOT_FOUND,
-                 INVALID_INFORMATION_TASK_DETAILS_NOT_FOUND -> {
+                 INVALID_INFORMATION_TASK_DETAILS_NOT_FOUND, INVITATION_EMAIL_NOT_FOUND, INVITATION_ROLE_ID_NOT_FOUND,
+                 INVITATION_ROLE_NOT_FOUND, INVITATION_COMPANY_NOT_FOUND,
+                 INVALID_INFORMATION_INVITATION_DETAILS_NOT_CREATED, INVITATION_COMPANY_ID_NOT_FOUND,
+                 INVITATION_ID_NOT_FOUND, INVALID_INFORMATION_INVITATION_DETAILS_NOT_DELETED,
+                 INVALID_INFORMATION_INVITATION_DETAILS_NOT_FOUND, COMPANY_ID_NOT_FOUND,
+                 COMPANY_NAME_NOT_FOUND -> {
 
                 return HttpStatus.NOT_FOUND;
             }

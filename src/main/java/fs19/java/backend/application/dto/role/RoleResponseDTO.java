@@ -1,6 +1,7 @@
 package fs19.java.backend.application.dto.role;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +24,8 @@ public class RoleResponseDTO {
     private String name;
     @NotNull
     private ZonedDateTime createdDate;  // This date always fills
+    @Schema(type = "string", format = "string", description = "Company Id defines here")
+    private UUID companyId;
     @Schema(type = "String", format = "ResponseStatus", description = "Unique system status")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private ResponseStatus status;

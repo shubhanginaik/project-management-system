@@ -149,7 +149,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     }
 
     /**
-     * Check already record is exist in given system
+     * Check already record is exist in a given system
      *
      * @param roleId
      * @param permissionId
