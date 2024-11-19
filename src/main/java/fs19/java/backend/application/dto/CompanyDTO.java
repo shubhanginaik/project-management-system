@@ -1,4 +1,4 @@
-package fs19.java.backend.application.dto.company;
+package fs19.java.backend.application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +19,5 @@ public class CompanyDTO {
     private String name;
 
     private ZonedDateTime createdDate;
-
-    @NotNull(message = "Created by User ID is required")
     private UUID createdBy;
 }
