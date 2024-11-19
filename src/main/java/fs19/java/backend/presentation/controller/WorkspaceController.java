@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Tag(name = "Workspaces", description = "Manage workspaces")
 @RestController
-@RequestMapping("/v1/api/workspaces")
+@RequestMapping("/api/v1/workspaces")
 public class WorkspaceController {
 
     private final WorkspaceService workspaceService;
