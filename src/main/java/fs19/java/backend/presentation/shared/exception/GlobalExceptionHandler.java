@@ -27,6 +27,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<GlobalResponse<Void>> handleGenericException(Exception ex) {
         ErrorItem error = new ErrorItem(ex.getMessage());
@@ -56,4 +57,21 @@ public class GlobalExceptionHandler {
         GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), List.of(error));
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ProjectNotFoundException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleProjectNotFoundException(ProjectNotFoundException ex) {
+        ErrorItem error = new ErrorItem(ex.getMessage());
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(),
+            List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ProjectValidationException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleProjectValidationException(ProjectValidationException ex) {
+        ErrorItem error = new ErrorItem(ex.getMessage());
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.BAD_REQUEST.value(),
+            List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
 }
