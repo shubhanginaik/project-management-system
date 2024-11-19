@@ -61,13 +61,11 @@ class PermissionControllerTest {
 
     @Test
     void testUpdatePermission_Success() throws Exception {
-
         if(request.getId() == null){
             request = new PermissionRequestDTO(UUID.randomUUID(), "READ_PRIVILEGES_4");
             PermissionResponseDTO permission = permissionService.createPermission(request);
             request.setId(permission.getId());
         }
-
         PermissionRequestDTO newRequest = new PermissionRequestDTO(UUID.randomUUID(), "WRITE_PRIVILEGES_2");
         mockMvc.perform(put("/app/v1/permissions/" + request.getId())
                         .contentType(MediaType.APPLICATION_JSON)
