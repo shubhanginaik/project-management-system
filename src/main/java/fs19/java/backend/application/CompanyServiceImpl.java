@@ -1,6 +1,6 @@
 package fs19.java.backend.application;
 
-import fs19.java.backend.application.dto.company.CompanyDTO;
+import fs19.java.backend.application.dto.CompanyDTO;
 import fs19.java.backend.application.mapper.CompanyMapper;
 import fs19.java.backend.application.service.CompanyService;
 import fs19.java.backend.domain.entity.Company;
