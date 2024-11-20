@@ -88,4 +88,11 @@ public class GlobalExceptionHandler {
         GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), List.of(error));
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(NotificationNotFoundException.class)
+    public ResponseEntity<GlobalResponse<Void>> NotificationNotFoundException(NotificationNotFoundException ex) {
+        ErrorItem error = new ErrorItem(ex.getMessage());
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }
