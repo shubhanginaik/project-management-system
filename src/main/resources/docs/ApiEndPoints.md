@@ -1,11 +1,11 @@
-# **Invitation API**
+# **Project Management App API Docs**
 ### **Info**
 - **Version**: v1
 
 ---
 ### **Servers**
 - **Url**: http://localhost:9099
-- **Description**: Generated server url
+- **Description**: Below Docs helps to understand the Project Management App Documentation
 
 ---
 ### **Paths**
