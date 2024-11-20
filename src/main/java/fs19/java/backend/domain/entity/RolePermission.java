@@ -1,6 +1,8 @@
 package fs19.java.backend.domain.entity;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.*;
 
 import java.util.UUID;
