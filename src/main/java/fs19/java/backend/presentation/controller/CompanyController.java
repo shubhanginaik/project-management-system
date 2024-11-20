@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Tag(name = "Companies", description = "Manage companies")
 @RestController
-@RequestMapping("/v1/api/companies")
+@RequestMapping("/api/v1/companies")
 public class CompanyController {
 
     private final CompanyService companyService;
