@@ -23,6 +23,8 @@ public class RoleResponseDTO {
     private String name;
     @NotNull
     private ZonedDateTime createdDate;  // This date always fills
+    @Schema(type = "string", format = "string", description = "Company Id defines here")
+    private UUID companyId;
     @Schema(type = "String", format = "ResponseStatus", description = "Unique system status")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private ResponseStatus status;

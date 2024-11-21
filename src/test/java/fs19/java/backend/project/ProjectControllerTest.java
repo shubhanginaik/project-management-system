@@ -1,7 +1,6 @@
-package fs19.java.backend;
+package fs19.java.backend.project;
 
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -154,3 +153,4 @@ class ProjectControllerTest {
         .content(objectMapper.writeValueAsString(projectCreateDto)));
   }
 }
+

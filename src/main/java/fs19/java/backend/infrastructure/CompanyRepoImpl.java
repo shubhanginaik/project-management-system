@@ -1,7 +1,6 @@
 package fs19.java.backend.infrastructure;
 
 import fs19.java.backend.domain.abstraction.CompanyRepository;
-import fs19.java.backend.domain.entity.Comment;
 import fs19.java.backend.domain.entity.Company;
 import org.springframework.stereotype.Repository;
 

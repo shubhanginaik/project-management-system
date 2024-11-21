@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GlobalResponse<Void>> handleUserNotFoundException(UserNotFoundException ex) {
         ErrorItem error = new ErrorItem(ex.getMessage());
         GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(),
-            List.of(error));
+                List.of(error));
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GlobalResponse<Void>> handleValidationException(Exception ex) {
         ErrorItem error = new ErrorItem(ex.getMessage());
         GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.BAD_REQUEST.value(),
-            List.of(error));
+                List.of(error));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GlobalResponse<Void>> handleProjectNotFoundException(ProjectNotFoundException ex) {
         ErrorItem error = new ErrorItem(ex.getMessage());
         GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(),
-            List.of(error));
+                List.of(error));
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
@@ -69,15 +69,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GlobalResponse<Void>> handleProjectValidationException(ProjectValidationException ex) {
         ErrorItem error = new ErrorItem(ex.getMessage());
         GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.BAD_REQUEST.value(),
-            List.of(error));
+                List.of(error));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-
-    @ExceptionHandler(CommentNotFoundException.class)
-    public ResponseEntity<GlobalResponse<Void>> handleCommentNotFoundException(CommentNotFoundException ex) {
+    @ExceptionHandler(WorkspaceUserNotFoundException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleWorkspaceUserNotFoundException(WorkspaceUserNotFoundException ex) {
         ErrorItem error = new ErrorItem(ex.getMessage());
-        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), List.of(error));
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(),
+                List.of(error));
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
 }
