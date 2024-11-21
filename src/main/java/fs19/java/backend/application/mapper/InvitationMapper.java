@@ -1,7 +1,11 @@
 package fs19.java.backend.application.mapper;
 
+import fs19.java.backend.application.dto.invitation.InvitationRequestDTO;
 import fs19.java.backend.application.dto.invitation.InvitationResponseDTO;
+import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.Invitation;
+import fs19.java.backend.domain.entity.Role;
+import fs19.java.backend.presentation.shared.Utilities.DateAndTime;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 
 import java.util.ArrayList;
@@ -11,6 +15,7 @@ public class InvitationMapper {
 
     /**
      * Convert object to response
+     *
      * @param invitation
      * @param responseStatus
      * @return
@@ -21,6 +26,7 @@ public class InvitationMapper {
 
     /**
      * Convert list object to response list
+     *
      * @param invitations
      * @param status
      * @return
@@ -31,5 +37,14 @@ public class InvitationMapper {
             responseDTOS.add(toInvitationResponseDTO(role, status));
         });
         return responseDTOS;
+    }
+
+    public static Invitation toInvitation(InvitationRequestDTO invitationRequestDTO, Role role) {
+        Invitation invitation = new Invitation();
+        invitation.setExpiredAt(DateAndTime.getExpiredDateAndTime());
+        invitation.setAccepted(false);
+        invitation.setEmail(invitationRequestDTO.getEmail());
+        invitation.setRole(role);
+        return invitation;
     }
 }
