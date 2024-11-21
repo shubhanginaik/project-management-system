@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.UUID;
 
 public interface InvitationRepository {
-    Invitation createInvitation(InvitationRequestDTO invitationRequestDTO, Role roleById, Company company);
+    Invitation save(Invitation invitation);
 
-    Invitation updateInvitation(UUID invitationId, @Valid InvitationRequestDTO invitationRequestDTO, Role role, Company company);
+    Invitation update(UUID invitationId, @Valid InvitationRequestDTO invitationRequestDTO, Role role, Company company);
 
-    Invitation findInvitationById(UUID invitationId);
+    Invitation findById(UUID invitationId);
 
-    List<Invitation> getInvitations();
+    List<Invitation> findAll();
 
-    Invitation deleteInvitation(UUID invitationId);
+    Invitation delete(UUID invitationId);
 }

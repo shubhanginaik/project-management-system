@@ -18,7 +18,6 @@ import java.util.UUID;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-
     private final UserRepositoryImpl userRepository;
     private final TaskRepoImpl taskRepo;
 
@@ -28,7 +27,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponseDTO createTask(TaskRequestDTO taskRequestDTO) {
+    public TaskResponseDTO create(TaskRequestDTO taskRequestDTO) {
         if (taskRequestDTO.getName().isEmpty()) { // expected valid name only and that validation is enough
             System.out.println("Task Name from DTO is null, cannot proceed with Task creation.");
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_NAME_NOT_FOUND);
@@ -44,9 +43,8 @@ public class TaskServiceImpl implements TaskService {
                 }
                 assignedUser = assignedUserById.get();
             }
-
-            Task task = taskRepo.createTask(taskRequestDTO, createdUserById.get(), assignedUser);
-            return TaskMapper.toTaskResponseDTO(task, ResponseStatus.SUCCESSFULLY_CREATED);
+            Task task = TaskMapper.toTask(taskRequestDTO, createdUserById.get(), assignedUser);
+            return TaskMapper.toTaskResponseDTO(taskRepo.save(task), ResponseStatus.SUCCESSFULLY_CREATED);
 
         } else {
             System.out.println("Created User-Not Found");
@@ -55,7 +53,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponseDTO updateTask(UUID taskId, TaskRequestDTO taskRequestDTO) {
+    public TaskResponseDTO update(UUID taskId, TaskRequestDTO taskRequestDTO) {
         if (taskId == null) {
             System.out.println("Task Id is null, cannot proceed with Task update.");
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_ID_NOT_FOUND);
@@ -75,7 +73,7 @@ public class TaskServiceImpl implements TaskService {
                 }
                 assignedUser = assignedUserById.get();
             }
-            Task task = taskRepo.updateTask(taskId, taskRequestDTO, assignedUser);
+            Task task = taskRepo.update(taskId, taskRequestDTO, assignedUser);
             return TaskMapper.toTaskResponseDTO(task, ResponseStatus.SUCCESSFULLY_UPDATED);
 
         } else {
@@ -85,12 +83,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponseDTO deleteTask(UUID taskId) {
+    public TaskResponseDTO delete(UUID taskId) {
         if (taskId == null) {
             System.out.println("Task ID is null, cannot proceed with delete.");
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_ID_NOT_FOUND);
         }
-        Task myTask = this.taskRepo.deleteTask(taskId);
+        Task myTask = this.taskRepo.delete(taskId);
         if (myTask == null) {
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.INVALID_INFORMATION_TASK_DETAILS_NOT_FOUND);
         }
@@ -99,17 +97,17 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponseDTO> getTasks() {
-        return TaskMapper.toTaskResponseDTOs(taskRepo.getTasks(), ResponseStatus.SUCCESSFULLY_FOUND);
+    public List<TaskResponseDTO> findAll() {
+        return TaskMapper.toTaskResponseDTOs(taskRepo.findAll(), ResponseStatus.SUCCESSFULLY_FOUND);
     }
 
     @Override
-    public TaskResponseDTO getTaskById(UUID taskId) {
+    public TaskResponseDTO getById(UUID taskId) {
         if (taskId == null) {
             System.out.println("Task ID is null, cannot proceed with search.");
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_ID_NOT_FOUND);
         }
-        Task myTask = taskRepo.getTaskById(taskId);
+        Task myTask = taskRepo.findById(taskId);
         if (myTask == null) {
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.INVALID_INFORMATION_TASK_DETAILS_NOT_FOUND);
         }
@@ -117,12 +115,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponseDTO> getTasksByAssignedUserId(UUID userId) {
-        return TaskMapper.toTaskResponseDTOs(taskRepo.getTasksByAssignedUserId(userId), ResponseStatus.SUCCESSFULLY_FOUND);
+    public List<TaskResponseDTO> getByAssignedId(UUID userId) {
+        return TaskMapper.toTaskResponseDTOs(taskRepo.findByAssignedUserId(userId), ResponseStatus.SUCCESSFULLY_FOUND);
     }
 
     @Override
-    public List<TaskResponseDTO> getTasksByCreatedUserId(UUID createdUserId) {
-        return TaskMapper.toTaskResponseDTOs(taskRepo.getTasksByCreatedUserId(createdUserId), ResponseStatus.SUCCESSFULLY_FOUND);
+    public List<TaskResponseDTO> getByCreatedUserId(UUID createdUserId) {
+        return TaskMapper.toTaskResponseDTOs(taskRepo.findByCreatedUserId(createdUserId), ResponseStatus.SUCCESSFULLY_FOUND);
     }
 }

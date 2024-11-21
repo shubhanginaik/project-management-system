@@ -37,7 +37,7 @@ public class RoleServiceImpl implements RoleService {
      * @return
      */
     @Override
-    public RoleResponseDTO createRole(@Valid RoleRequestDTO roleRequestDTO) {
+    public RoleResponseDTO save(@Valid RoleRequestDTO roleRequestDTO) {
         Role myRole;
         if (roleRequestDTO.getName().isEmpty()) { // expected valid name only and that validation is enough
             System.out.println("Role Name from DTO is null, cannot proceed with Role creation.");
@@ -49,8 +49,8 @@ public class RoleServiceImpl implements RoleService {
         }
         Optional<Company> companyOptional = companyRepo.findById(roleRequestDTO.getCompanyId());
         if (companyOptional.isPresent()) {
-            if (this.roleRepo.getRoleByName(roleRequestDTO.getName()) == null) {
-                myRole = this.roleRepo.createRole(roleRequestDTO, companyOptional.get());
+            if (this.roleRepo.findByName(roleRequestDTO.getName()) == null) {
+                myRole = this.roleRepo.save(RoleMapper.toRole(roleRequestDTO, companyOptional.get()));
                 if (myRole == null) {
                     return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.INVALID_INFORMATION_ROLE_DETAILS_NOT_FOUND);
                 }
@@ -76,7 +76,7 @@ public class RoleServiceImpl implements RoleService {
      * @return
      */
     @Override
-    public RoleResponseDTO updateRole(UUID roleId, @Valid RoleRequestDTO roleRequestDTO) {
+    public RoleResponseDTO update(UUID roleId, @Valid RoleRequestDTO roleRequestDTO) {
         Role myRole;
         if (roleId == null) {
             System.out.println("Role ID is null, cannot proceed with update.");
@@ -91,8 +91,8 @@ public class RoleServiceImpl implements RoleService {
 
         Optional<Company> companyOptional = companyRepo.findById(roleRequestDTO.getCompanyId());
         if (companyOptional.isPresent()) {
-            if (this.roleRepo.getRoleByName(roleRequestDTO.getName()) == null) {
-                myRole = this.roleRepo.updateRole(roleId, roleRequestDTO,companyOptional.get());
+            if (this.roleRepo.findByName(roleRequestDTO.getName()) == null) {
+                myRole = this.roleRepo.update(roleId, roleRequestDTO, companyOptional.get());
                 if (myRole == null) {
                     return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.INVALID_INFORMATION_ROLE_DETAILS_NOT_FOUND);
                 }
@@ -103,7 +103,7 @@ public class RoleServiceImpl implements RoleService {
                 return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.RECORD_ALREADY_CREATED);
             }
         } else {
-            System.out.println("Company-Name, cannot proceed with Role creation.");
+            System.out.println("Company-Not Found, cannot proceed with Role creation.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.COMPANY_NAME_NOT_FOUND);
         }
     }
@@ -115,12 +115,12 @@ public class RoleServiceImpl implements RoleService {
      * @return RoleResponseDTO
      */
     @Override
-    public RoleResponseDTO deleteRole(UUID roleId) {
+    public RoleResponseDTO delete(UUID roleId) {
         if (roleId == null) {
             System.out.println("Role ID is null, cannot proceed with delete.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.ROLE_ID_NOT_FOUND);
         }
-        Role myRole = this.roleRepo.deleteRole(roleId);
+        Role myRole = this.roleRepo.delete(roleId);
         if (myRole == null) {
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.INVALID_INFORMATION_ROLE_DETAILS_NOT_FOUND);
         }
@@ -134,8 +134,8 @@ public class RoleServiceImpl implements RoleService {
      * @return
      */
     @Override
-    public List<RoleResponseDTO> getRoles() {
-        return RoleMapper.toRoleResponseDTOs(this.roleRepo.getRoles(), ResponseStatus.SUCCESSFULLY_FOUND);
+    public List<RoleResponseDTO> findAll() {
+        return RoleMapper.toRoleResponseDTOs(this.roleRepo.findAll(), ResponseStatus.SUCCESSFULLY_FOUND);
     }
 
     /**
@@ -145,12 +145,12 @@ public class RoleServiceImpl implements RoleService {
      * @return
      */
     @Override
-    public RoleResponseDTO getRoleById(UUID roleId) {
+    public RoleResponseDTO findById(UUID roleId) {
         if (roleId == null) {
             System.out.println("Role ID is null, cannot proceed with search.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.ROLE_ID_NOT_FOUND);
         }
-        Role myRole = this.roleRepo.getRoleById(roleId);
+        Role myRole = this.roleRepo.findById(roleId);
         if (myRole == null) {
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.INVALID_INFORMATION_ROLE_DETAILS_NOT_FOUND);
         }
@@ -164,12 +164,12 @@ public class RoleServiceImpl implements RoleService {
      * @return
      */
     @Override
-    public RoleResponseDTO getRoleByName(String name) {
+    public RoleResponseDTO findByName(String name) {
         if (name.isEmpty()) {
             System.out.println("Role Name is null, cannot proceed with search.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.ROLE_NAME_NOT_FOUND);
         }
-        Role myRole = this.roleRepo.getRoleByName(name);
+        Role myRole = this.roleRepo.findByName(name);
         if (myRole == null) {
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.INVALID_INFORMATION_ROLE_DETAILS_NOT_FOUND);
         }

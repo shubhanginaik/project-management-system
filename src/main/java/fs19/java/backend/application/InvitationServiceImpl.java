@@ -22,9 +22,7 @@ import java.util.UUID;
 public class InvitationServiceImpl implements InvitationService {
 
     private final InvitationRepoImpl invitationRepo;
-
     private final RoleRepoImpl roleRepo;
-
     private final CompanyRepoImpl companyRepo;
 
     public InvitationServiceImpl(InvitationRepoImpl invitationRepo, RoleRepoImpl roleRepo, CompanyRepoImpl companyRepo) {
@@ -34,23 +32,23 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
     @Override
-    public InvitationResponseDTO createAnInvitation(InvitationRequestDTO invitationRequestDTO) {
+    public InvitationResponseDTO save(InvitationRequestDTO invitationRequestDTO) {
         Invitation myInvitation;
         if (invitationRequestDTO.getEmail().isEmpty()) {
             System.out.println("Invitation Email from DTO is null, cannot proceed with Invitation creation.");
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_EMAIL_NOT_FOUND);
         }
         if (invitationRequestDTO.getRoleId() != null) {
-            Role roleById = roleRepo.getRoleById(invitationRequestDTO.getRoleId());
+            Role roleById = roleRepo.findById(invitationRequestDTO.getRoleId());
             if (roleById == null) {
                 System.out.println("No Valid Role Result Found");
                 return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ROLE_NOT_FOUND);
             } else {
                 if (invitationRequestDTO.getCompanyId() != null) {
-                    Optional<Company> companyResult = companyRepo.findById(invitationRequestDTO.getId());
+                    Optional<Company> companyResult = companyRepo.findById(invitationRequestDTO.getCompanyId());
                     if (companyResult.isPresent()) {
                         Company company = companyResult.get();
-                        myInvitation = invitationRepo.createInvitation(invitationRequestDTO, roleById, company);
+                        myInvitation = invitationRepo.save(InvitationMapper.toInvitation(invitationRequestDTO, roleById, company));
                         if (myInvitation == null) {
                             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVALID_INFORMATION_INVITATION_DETAILS_NOT_CREATED);
                         }
@@ -77,7 +75,7 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
     @Override
-    public InvitationResponseDTO updateInvitation(UUID invitationId, @Valid InvitationRequestDTO invitationRequestDTO) {
+    public InvitationResponseDTO update(UUID invitationId, @Valid InvitationRequestDTO invitationRequestDTO) {
         Invitation myInvitation;
         if (invitationId == null) {
             System.out.println("Invitation Id is null, cannot proceed with Invitation update.");
@@ -87,16 +85,16 @@ public class InvitationServiceImpl implements InvitationService {
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_EMAIL_NOT_FOUND);
         }
         if (invitationRequestDTO.getRoleId() != null) {
-            Role roleById = roleRepo.getRoleById(invitationRequestDTO.getRoleId());
+            Role roleById = roleRepo.findById(invitationRequestDTO.getRoleId());
             if (roleById == null) {
                 System.out.println("No Valid Role Result Found");
                 return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ROLE_NOT_FOUND);
             } else {
                 if (invitationRequestDTO.getCompanyId() != null) {
-                    Optional<Company> companyResult = companyRepo.findById(invitationRequestDTO.getId());
+                    Optional<Company> companyResult = companyRepo.findById(invitationRequestDTO.getCompanyId());
                     if (companyResult.isPresent()) {
                         Company company = companyResult.get();
-                        myInvitation = invitationRepo.updateInvitation(invitationId, invitationRequestDTO, roleById, company);
+                        myInvitation = invitationRepo.update(invitationId, invitationRequestDTO, roleById, company);
                         if (myInvitation == null) {
                             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVALID_INFORMATION_INVITATION_DETAILS_NOT_CREATED);
                         }
@@ -123,33 +121,33 @@ public class InvitationServiceImpl implements InvitationService {
     }
 
     @Override
-    public InvitationResponseDTO deleteInvitation(UUID invitationId) {
+    public InvitationResponseDTO delete(UUID invitationId) {
         Invitation myInvitation;
         if (invitationId == null) {
             System.out.println("Invitation Id is null, cannot proceed with Invitation delete.");
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ID_NOT_FOUND);
         }
-        myInvitation = invitationRepo.findInvitationById(invitationId);
+        myInvitation = invitationRepo.findById(invitationId);
         if (myInvitation == null) {
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVALID_INFORMATION_INVITATION_DETAILS_NOT_DELETED);
         }
         System.out.println("Invitation-Deleted successfully");
-        return InvitationMapper.toInvitationResponseDTO(invitationRepo.deleteInvitation(invitationId), ResponseStatus.SUCCESSFULLY_DELETED);
+        return InvitationMapper.toInvitationResponseDTO(invitationRepo.delete(invitationId), ResponseStatus.SUCCESSFULLY_DELETED);
     }
 
     @Override
-    public List<InvitationResponseDTO> getInvitations() {
-        return InvitationMapper.toInvitationResponseDTOs(this.invitationRepo.getInvitations(), ResponseStatus.SUCCESSFULLY_FOUND);
+    public List<InvitationResponseDTO> findAll() {
+        return InvitationMapper.toInvitationResponseDTOs(this.invitationRepo.findAll(), ResponseStatus.SUCCESSFULLY_FOUND);
     }
 
     @Override
-    public InvitationResponseDTO getInvitationById(UUID invitationId) {
+    public InvitationResponseDTO findById(UUID invitationId) {
         Invitation myInvitation;
         if (invitationId == null) {
             System.out.println("Invitation Id is null, cannot proceed with Invitation search.");
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ID_NOT_FOUND);
         }
-        myInvitation = invitationRepo.findInvitationById(invitationId);
+        myInvitation = invitationRepo.findById(invitationId);
         if (myInvitation == null) {
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVALID_INFORMATION_INVITATION_DETAILS_NOT_FOUND);
         }

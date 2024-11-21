@@ -12,16 +12,18 @@ import java.util.UUID;
  */
 public interface RoleRepository {
 
-    Role createRole(RoleRequestDTO role, Company company);
+    Role save(Role role);
 
-    Role updateRole(UUID roleId, RoleRequestDTO role, Company company);
+    Role update(UUID roleId, RoleRequestDTO role, Company company);
 
-    Role deleteRole(UUID roleId);
+    Role delete(UUID roleId);
 
-    List<Role> getRoles();
+    List<Role> findAll();
 
-    Role getRoleByName(String roleName);
+    Role findByName(String roleName);
 
-    Role getRoleById(UUID roleId);
+    Role findById(UUID roleId);
+
+    boolean existsById(UUID roleId);
 
 }
