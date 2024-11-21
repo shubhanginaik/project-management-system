@@ -4,10 +4,8 @@ import fs19.java.backend.application.dto.invitation.InvitationRequestDTO;
 import fs19.java.backend.application.dto.invitation.InvitationResponseDTO;
 import fs19.java.backend.application.mapper.InvitationMapper;
 import fs19.java.backend.application.service.InvitationService;
-import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.Invitation;
 import fs19.java.backend.domain.entity.Role;
-import fs19.java.backend.infrastructure.CompanyRepoImpl;
 import fs19.java.backend.infrastructure.InvitationRepoImpl;
 import fs19.java.backend.infrastructure.RoleRepoImpl;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
@@ -15,7 +13,6 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,12 +20,10 @@ public class InvitationServiceImpl implements InvitationService {
 
     private final InvitationRepoImpl invitationRepo;
     private final RoleRepoImpl roleRepo;
-    private final CompanyRepoImpl companyRepo;
 
-    public InvitationServiceImpl(InvitationRepoImpl invitationRepo, RoleRepoImpl roleRepo, CompanyRepoImpl companyRepo) {
+    public InvitationServiceImpl(InvitationRepoImpl invitationRepo, RoleRepoImpl roleRepo) {
         this.invitationRepo = invitationRepo;
         this.roleRepo = roleRepo;
-        this.companyRepo = companyRepo;
     }
 
     @Override
@@ -45,20 +40,13 @@ public class InvitationServiceImpl implements InvitationService {
                 return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ROLE_NOT_FOUND);
             } else {
                 if (invitationRequestDTO.getCompanyId() != null) {
-                    Optional<Company> companyResult = companyRepo.findById(invitationRequestDTO.getCompanyId());
-                    if (companyResult.isPresent()) {
-                        Company company = companyResult.get();
-                        myInvitation = invitationRepo.save(InvitationMapper.toInvitation(invitationRequestDTO, roleById, company));
-                        if (myInvitation == null) {
-                            return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVALID_INFORMATION_INVITATION_DETAILS_NOT_CREATED);
-                        }
-                        System.out.println("Invitation-Created successfully");
-                        return InvitationMapper.toInvitationResponseDTO(myInvitation, ResponseStatus.SUCCESSFULLY_CREATED);
-
-                    } else {
-                        System.out.println("No Valid Company Result Found");
-                        return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_COMPANY_NOT_FOUND);
+                    myInvitation = invitationRepo.save(InvitationMapper.toInvitation(invitationRequestDTO, roleById), invitationRequestDTO.getCompanyId());
+                    if (myInvitation == null) {
+                        return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVALID_INFORMATION_INVITATION_DETAILS_NOT_CREATED);
                     }
+                    System.out.println("Invitation-Created successfully");
+                    return InvitationMapper.toInvitationResponseDTO(myInvitation, ResponseStatus.SUCCESSFULLY_CREATED);
+
 
                 } else {
                     System.out.println("No Valid Company ID Found");
@@ -91,20 +79,14 @@ public class InvitationServiceImpl implements InvitationService {
                 return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ROLE_NOT_FOUND);
             } else {
                 if (invitationRequestDTO.getCompanyId() != null) {
-                    Optional<Company> companyResult = companyRepo.findById(invitationRequestDTO.getCompanyId());
-                    if (companyResult.isPresent()) {
-                        Company company = companyResult.get();
-                        myInvitation = invitationRepo.update(invitationId, invitationRequestDTO, roleById, company);
-                        if (myInvitation == null) {
-                            return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVALID_INFORMATION_INVITATION_DETAILS_NOT_CREATED);
-                        }
-                        System.out.println("Invitation-Updated successfully");
-                        return InvitationMapper.toInvitationResponseDTO(myInvitation, ResponseStatus.SUCCESSFULLY_CREATED);
 
-                    } else {
-                        System.out.println("No Valid Company Result Found");
-                        return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_COMPANY_NOT_FOUND);
+                    myInvitation = invitationRepo.update(invitationId, invitationRequestDTO, roleById);
+                    if (myInvitation == null) {
+                        return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVALID_INFORMATION_INVITATION_DETAILS_NOT_CREATED);
                     }
+                    System.out.println("Invitation-Updated successfully");
+                    return InvitationMapper.toInvitationResponseDTO(myInvitation, ResponseStatus.SUCCESSFULLY_CREATED);
+
 
                 } else {
                     System.out.println("No Valid Company ID Found");

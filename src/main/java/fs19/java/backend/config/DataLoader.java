@@ -27,8 +27,17 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Adding sample permissions
-        companyJpaRepo.save(new Company());
+        User user = new User();
+        user.setEmail("aaaa@gmail.com");
+        user.setCreatedDate(DateAndTime.getDateAndTime());
+        userJpaRepo.save(user);
+
+        Company company = new Company();
+        company.setName("ABC");
+        company.setCreatedBy(user);
+        company.setCreatedDate(DateAndTime.getDateAndTime());
+        companyJpaRepo.save(company);
+
         Permission permission = new Permission();
         permission.setName("ACCESS");
         permissionJpaRepo.save(permission);
@@ -38,22 +47,17 @@ public class DataLoader implements CommandLineRunner {
         role.setCompany(companyJpaRepo.findAll().getFirst());
         roleJpaRepo.save(role);
 
-
         Role role2 = new Role();
         role2.setName("ROLE-NAME2");
         role2.setCreatedDate(DateAndTime.getDateAndTime());
         role2.setCompany(companyJpaRepo.findAll().getFirst());
         roleJpaRepo.save(role2);
 
-        User user = new User();
-        user.setEmail("aaaa@gmail.com");
-        user.setCreatedDate(DateAndTime.getDateAndTime());
-        userJpaRepo.save(user);
-
-
         Project project = new Project();
         projectJpaRepo.save(project);
         Workspace workspace = new Workspace();
+        workspace.setCompanyId(companyJpaRepo.findAll().getFirst());
+        workspace.setCreatedBy(userJpaRepo.findAll().getFirst());
         workspaceJpaRepo.save(workspace);
 
     }

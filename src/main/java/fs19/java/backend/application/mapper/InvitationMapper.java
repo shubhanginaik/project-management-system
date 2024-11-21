@@ -39,13 +39,12 @@ public class InvitationMapper {
         return responseDTOS;
     }
 
-    public static Invitation toInvitation(InvitationRequestDTO invitationRequestDTO, Role role, Company company) {
+    public static Invitation toInvitation(InvitationRequestDTO invitationRequestDTO, Role role) {
         Invitation invitation = new Invitation();
         invitation.setExpiredAt(DateAndTime.getExpiredDateAndTime());
         invitation.setAccepted(false);
         invitation.setEmail(invitationRequestDTO.getEmail());
         invitation.setRole(role);
-        invitation.setCompany(company);
         return invitation;
     }
 }

@@ -4,12 +4,14 @@ import fs19.java.backend.application.dto.role.RoleRequestDTO;
 import fs19.java.backend.domain.abstraction.RoleRepository;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.Role;
+import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.RoleJpaRepo;
 import fs19.java.backend.presentation.shared.exception.RoleLevelException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -20,9 +22,11 @@ public class RoleRepoImpl implements RoleRepository {
 
 
     private final RoleJpaRepo roleJpaRepo;
+    private final CompanyJpaRepo companyJpaRepo;
 
-    public RoleRepoImpl(RoleJpaRepo roleJpaRepo) {
+    public RoleRepoImpl(RoleJpaRepo roleJpaRepo, CompanyJpaRepo companyJpaRepo) {
         this.roleJpaRepo = roleJpaRepo;
+        this.companyJpaRepo = companyJpaRepo;
     }
 
     /**
@@ -100,5 +104,10 @@ public class RoleRepoImpl implements RoleRepository {
     @Override
     public boolean existsById(UUID roleId) {
         return roleJpaRepo.existsById(roleId);
+    }
+
+    @Override
+    public Optional<Company> getCompanyByCompanyId(UUID companyId) {
+        return companyJpaRepo.findById(companyId);
     }
 }

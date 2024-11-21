@@ -6,7 +6,6 @@ import fs19.java.backend.application.mapper.RoleMapper;
 import fs19.java.backend.application.service.RoleService;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.Role;
-import fs19.java.backend.infrastructure.CompanyRepoImpl;
 import fs19.java.backend.infrastructure.RoleRepoImpl;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import jakarta.validation.Valid;
@@ -23,11 +22,9 @@ import java.util.UUID;
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepoImpl roleRepo;
-    private final CompanyRepoImpl companyRepo;
 
-    public RoleServiceImpl(RoleRepoImpl roleRepo, CompanyRepoImpl companyRepo) {
+    public RoleServiceImpl(RoleRepoImpl roleRepo) {
         this.roleRepo = roleRepo;
-        this.companyRepo = companyRepo;
     }
 
     /**
@@ -47,7 +44,7 @@ public class RoleServiceImpl implements RoleService {
             System.out.println("Role Name from DTO is null, cannot proceed with Role creation.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.COMPANY_ID_NOT_FOUND);
         }
-        Optional<Company> companyOptional = companyRepo.findById(roleRequestDTO.getCompanyId());
+        Optional<Company> companyOptional = roleRepo.getCompanyByCompanyId(roleRequestDTO.getCompanyId());
         if (companyOptional.isPresent()) {
             if (this.roleRepo.findByName(roleRequestDTO.getName()) == null) {
                 myRole = this.roleRepo.save(RoleMapper.toRole(roleRequestDTO, companyOptional.get()));
@@ -89,7 +86,7 @@ public class RoleServiceImpl implements RoleService {
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.COMPANY_ID_NOT_FOUND);
         }
 
-        Optional<Company> companyOptional = companyRepo.findById(roleRequestDTO.getCompanyId());
+        Optional<Company> companyOptional = roleRepo.getCompanyByCompanyId(roleRequestDTO.getCompanyId());
         if (companyOptional.isPresent()) {
             if (this.roleRepo.findByName(roleRequestDTO.getName()) == null) {
                 myRole = this.roleRepo.update(roleId, roleRequestDTO, companyOptional.get());
