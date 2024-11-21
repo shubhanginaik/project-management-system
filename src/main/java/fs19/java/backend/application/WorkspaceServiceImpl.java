@@ -5,8 +5,14 @@ import fs19.java.backend.application.dto.workspace.WorkspaceResponseDTO;
 import fs19.java.backend.application.dto.workspace.WorkspaceUpdateDTO;
 import fs19.java.backend.application.mapper.WorkspaceMapper;
 import fs19.java.backend.application.service.WorkspaceService;
-import fs19.java.backend.domain.abstraction.WorkspaceRepository;
+import fs19.java.backend.domain.entity.Company;
+import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.domain.entity.Workspace;
+import fs19.java.backend.infrastructure.CompanyJpaRepo;
+import fs19.java.backend.infrastructure.UserJpaRepo;
+import fs19.java.backend.infrastructure.WorkspaceJpaRepo;
+import fs19.java.backend.presentation.shared.exception.CompanyNotFoundException;
+import fs19.java.backend.presentation.shared.exception.UserNotFoundException;
 import fs19.java.backend.presentation.shared.exception.WorkspaceNotFoundException;
 import fs19.java.backend.presentation.shared.exception.InvalidWorkspaceException;
 import org.springframework.stereotype.Service;
@@ -20,13 +26,19 @@ import java.util.stream.Collectors;
 public class WorkspaceServiceImpl implements WorkspaceService {
 
     private static final String WORKSPACE_NOT_FOUND_MESSAGE = "Workspace with ID %s not found";
+    private static final String COMPANY_NOT_FOUND_MESSAGE = "Company with ID %s not found";
+    private static final String USER_NOT_FOUND_MESSAGE = "User not found with ID %s";
 
-    private final WorkspaceRepository workspaceRepository;
+    private final WorkspaceJpaRepo workspaceRepository;
     private final WorkspaceMapper workspaceMapper;
+    private final UserJpaRepo userRepository;
+    private final CompanyJpaRepo companyRepository;
 
-    public WorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceMapper workspaceMapper) {
+    public WorkspaceServiceImpl(WorkspaceJpaRepo workspaceRepository, WorkspaceMapper workspaceMapper, UserJpaRepo userRepository, CompanyJpaRepo companyRepository) {
         this.workspaceRepository = workspaceRepository;
         this.workspaceMapper = workspaceMapper;
+        this.userRepository = userRepository;
+        this.companyRepository = companyRepository;
     }
 
     @Override
@@ -34,9 +46,12 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         if (workspaceRequestDTO == null) {
             throw new InvalidWorkspaceException("WorkspaceRequestDTO cannot be null.");
         }
+        User createdBy = userRepository.findById(workspaceRequestDTO.getCreatedBy())
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, workspaceRequestDTO.getCreatedBy())));
+        Company company = companyRepository.findById(workspaceRequestDTO.getCompanyId())
+                .orElseThrow(() -> new CompanyNotFoundException(String.format(COMPANY_NOT_FOUND_MESSAGE, workspaceRequestDTO.getCompanyId())));
 
-        Workspace workspace = workspaceMapper.toEntity(workspaceRequestDTO);
-        workspace.setId(UUID.randomUUID());
+        Workspace workspace = workspaceMapper.toEntity(workspaceRequestDTO, createdBy, company);
         workspace.setCreatedDate(ZonedDateTime.now());
         workspaceRepository.save(workspace);
         return workspaceMapper.toDTO(workspace);
@@ -59,6 +74,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         if (!isUpdateProvided) {
             throw new InvalidWorkspaceException("At least one field must be provided to update the workspace.");
         }
+
         workspaceUpdateDTO.getName().ifPresent(name -> {
             if (name.trim().isEmpty()) {
                 throw new InvalidWorkspaceException("Workspace name cannot be blank.");
@@ -74,7 +90,11 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         });
 
         workspaceUpdateDTO.getType().ifPresent(existingWorkspace::setType);
-        workspaceUpdateDTO.getCompanyId().ifPresent(existingWorkspace::setCompanyId);
+        workspaceUpdateDTO.getCompanyId().ifPresent(companyId -> {
+            Company company = companyRepository.findById(companyId)
+                    .orElseThrow(() -> new CompanyNotFoundException(String.format(COMPANY_NOT_FOUND_MESSAGE, companyId)));
+            existingWorkspace.setCompanyId(company);
+        });
 
         workspaceRepository.save(existingWorkspace);
         return workspaceMapper.toDTO(existingWorkspace);

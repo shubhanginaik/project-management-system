@@ -7,9 +7,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fs19.java.backend.domain.abstraction.WorkspaceRepository;
+import fs19.java.backend.domain.entity.Company;
+import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.domain.entity.Workspace;
 import fs19.java.backend.domain.entity.enums.WorkspaceType;
+import fs19.java.backend.infrastructure.WorkspaceJpaRepo;
+import fs19.java.backend.infrastructure.CompanyJpaRepo;
+import fs19.java.backend.infrastructure.UserJpaRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @SpringBootTest
@@ -33,20 +37,34 @@ public class WorkspaceControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private WorkspaceRepository workspaceRepository;
+    private WorkspaceJpaRepo workspaceRepository;
+
+    @Autowired
+    private UserJpaRepo userRepository;
+
+    @Autowired
+    private CompanyJpaRepo companyRepository;
 
     private Workspace existingWorkspace;
+    private User existingUser;
+    private Company existingCompany;
 
     @BeforeEach
     public void setUp() {
-        existingWorkspace = new Workspace(UUID.randomUUID(), "Test Workspace", "Test Description", WorkspaceType.PUBLIC, null, UUID.randomUUID(), UUID.randomUUID());
+        existingUser = new User(UUID.randomUUID(), "John", "Doe", "john.doe@example.com", "password", "1234566574");
+        existingCompany = new Company(UUID.randomUUID(), "Test Company", ZonedDateTime.now(), existingUser);
+
+        userRepository.save(existingUser);
+        companyRepository.save(existingCompany);
+
+        existingWorkspace = new Workspace(UUID.randomUUID(), "Test Workspace", "Test Description", WorkspaceType.PUBLIC, ZonedDateTime.now(), existingUser, existingCompany);
         workspaceRepository.save(existingWorkspace);
     }
 
     @Test
     public void testCreateWorkspace() throws Exception {
-        UUID companyId = UUID.randomUUID();
-        UUID createdBy = UUID.randomUUID();
+        UUID companyId = existingCompany.getId();
+        UUID createdBy = existingUser.getId();
 
         mockMvc.perform(post("/api/v1/workspaces")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -60,7 +78,7 @@ public class WorkspaceControllerTest {
     public void testUpdateWorkspace() throws Exception {
         mockMvc.perform(put("/api/v1/workspaces/" + existingWorkspace.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"Updated Workspace\",\"description\":\"Updated Description\",\"type\":\"SHARED\",\"companyId\":\"" + existingWorkspace.getCompanyId() + "\"}"))
+                        .content("{\"name\":\"Updated Workspace\",\"description\":\"Updated Description\",\"type\":\"SHARED\",\"companyId\":\"" + existingCompany.getId() + "\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code", is(200)))
                 .andExpect(jsonPath("$.data.name", is("Updated Workspace")));
