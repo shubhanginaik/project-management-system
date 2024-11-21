@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GlobalResponse<Void>> handleUserNotFoundException(UserNotFoundException ex) {
         ErrorItem error = new ErrorItem(ex.getMessage());
         GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(),
-                List.of(error));
+            List.of(error));
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GlobalResponse<Void>> handleValidationException(Exception ex) {
         ErrorItem error = new ErrorItem(ex.getMessage());
         GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.BAD_REQUEST.value(),
-                List.of(error));
+            List.of(error));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -81,4 +81,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleCommentNotFoundException(CommentNotFoundException ex) {
+        ErrorItem error = new ErrorItem(ex.getMessage());
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NotificationNotFoundException.class)
+    public ResponseEntity<GlobalResponse<Void>> NotificationNotFoundException(NotificationNotFoundException ex) {
+        ErrorItem error = new ErrorItem(ex.getMessage());
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_FOUND.value(), List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }
