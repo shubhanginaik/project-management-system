@@ -22,7 +22,7 @@ public class ActivityLog {
     @Column
     private EntityType entityType;
 
-    @GeneratedValue(generator = "UUID")
+    @Column
     private UUID entityId;
 
     @Column

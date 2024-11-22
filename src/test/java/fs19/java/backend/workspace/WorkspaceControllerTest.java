@@ -13,7 +13,7 @@ import fs19.java.backend.domain.entity.Workspace;
 import fs19.java.backend.domain.entity.enums.WorkspaceType;
 import fs19.java.backend.infrastructure.JpaRepositories.WorkspaceJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
-import fs19.java.backend.infrastructure.UserJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
