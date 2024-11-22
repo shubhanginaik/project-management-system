@@ -12,4 +12,5 @@ public interface WorkspaceUserService {
   WorkspaceUserResponseDTO getWorkspaceUserById(UUID id);
   List<WorkspaceUserResponseDTO> getAllWorkspacesUsers();
   void deleteWorkspace(UUID id);
+  boolean existsById(UUID id);
 }
