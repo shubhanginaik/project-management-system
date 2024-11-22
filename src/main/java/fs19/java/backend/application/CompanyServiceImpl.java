@@ -7,7 +7,7 @@ import fs19.java.backend.application.mapper.CompanyMapper;
 import fs19.java.backend.application.service.CompanyService;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.User;
-import fs19.java.backend.infrastructure.CompanyJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
 import fs19.java.backend.infrastructure.UserJpaRepo;
 import fs19.java.backend.presentation.shared.exception.CompanyNotFoundException;
 import fs19.java.backend.presentation.shared.exception.UserNotFoundException;

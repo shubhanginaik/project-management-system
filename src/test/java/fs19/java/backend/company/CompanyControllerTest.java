@@ -11,7 +11,7 @@ import fs19.java.backend.application.dto.company.CompanyRequestDTO;
 import fs19.java.backend.application.dto.company.CompanyUpdateDTO;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.User;
-import fs19.java.backend.infrastructure.CompanyJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
 import fs19.java.backend.infrastructure.UserJpaRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
