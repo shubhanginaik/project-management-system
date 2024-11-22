@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fs19.java.backend.application.dto.activitylog.ActivityLogDTO;
-import fs19.java.backend.domain.abstraction.ActivityLogRepository;
 import fs19.java.backend.domain.abstraction.UserRepository;
 import fs19.java.backend.domain.entity.ActivityLog;
 import fs19.java.backend.domain.entity.User;
