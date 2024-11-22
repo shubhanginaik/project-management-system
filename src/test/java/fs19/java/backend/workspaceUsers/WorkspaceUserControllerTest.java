@@ -2,7 +2,7 @@ package fs19.java.backend.workspaceUsers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import fs19.java.backend.application.dto.workspace_users.WorkspaceUsersRequestDTO;
+import fs19.java.backend.application.dto.workspace_user.WorkspaceUserRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class WorkspaceUsersControllerTest {
+class WorkspaceUserControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -29,11 +29,11 @@ class WorkspaceUsersControllerTest {
   @Autowired
   private ObjectMapper objectMapper;
 
-  private WorkspaceUsersRequestDTO workspaceUsersRequestDTO;
+  private WorkspaceUserRequestDTO workspaceUserRequestDTO;
 
   @BeforeEach
   void setUp() {
-    workspaceUsersRequestDTO = WorkspaceUsersRequestDTO.builder()
+    workspaceUserRequestDTO = WorkspaceUserRequestDTO.builder()
         .roleId(UUID.randomUUID())
         .userId(UUID.randomUUID())
         .workspaceId(UUID.randomUUID())
@@ -44,7 +44,7 @@ class WorkspaceUsersControllerTest {
   void shouldCreateWorkspaceUser() throws Exception {
     mockMvc.perform(post("/api/v1/workspace-users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(workspaceUsersRequestDTO)))
+            .content(objectMapper.writeValueAsString(workspaceUserRequestDTO)))
         .andDo(print())
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.code", is(201)));
@@ -63,7 +63,7 @@ class WorkspaceUsersControllerTest {
     // Create a workspace user first
     String response = mockMvc.perform(post("/api/v1/workspace-users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(workspaceUsersRequestDTO)))
+            .content(objectMapper.writeValueAsString(workspaceUserRequestDTO)))
         .andExpect(status().isCreated())
         .andReturn()
         .getResponse()
@@ -82,7 +82,7 @@ class WorkspaceUsersControllerTest {
     // Create a workspace user first
     String response = mockMvc.perform(post("/api/v1/workspace-users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(workspaceUsersRequestDTO)))
+            .content(objectMapper.writeValueAsString(workspaceUserRequestDTO)))
         .andExpect(status().isCreated())
         .andReturn()
         .getResponse()
@@ -90,7 +90,7 @@ class WorkspaceUsersControllerTest {
 
     UUID workspaceUserId = UUID.fromString(JsonPath.parse(response).read("$.data.id"));
 
-    WorkspaceUsersRequestDTO updatedWorkspaceUsersRequestDTO = WorkspaceUsersRequestDTO.builder()
+    WorkspaceUserRequestDTO updatedWorkspaceUserRequestDTO = WorkspaceUserRequestDTO.builder()
         .roleId(UUID.randomUUID())
         .userId(UUID.randomUUID())
         .workspaceId(UUID.randomUUID())
@@ -98,7 +98,7 @@ class WorkspaceUsersControllerTest {
 
     mockMvc.perform(put("/api/v1/workspace-users/{id}", workspaceUserId)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(updatedWorkspaceUsersRequestDTO)))
+            .content(objectMapper.writeValueAsString(updatedWorkspaceUserRequestDTO)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.code", is(200)));
@@ -109,7 +109,7 @@ class WorkspaceUsersControllerTest {
     // Create a workspace user first
     String response = mockMvc.perform(post("/api/v1/workspace-users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(workspaceUsersRequestDTO)))
+            .content(objectMapper.writeValueAsString(workspaceUserRequestDTO)))
         .andExpect(status().isCreated())
         .andReturn()
         .getResponse()

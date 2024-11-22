@@ -1,4 +1,4 @@
-package fs19.java.backend.application.dto.workspace_users;
+package fs19.java.backend.application.dto.workspace_user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class WorkspaceUsersRequestDTO {
+public class WorkspaceUserRequestDTO {
 
   @Schema(type = "uuid", format = "uuid", description = "Unique identifier")
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)

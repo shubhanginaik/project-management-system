@@ -11,7 +11,7 @@ import fs19.java.backend.domain.entity.Workspace;
 
 import fs19.java.backend.infrastructure.JpaRepositories.ProjectJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
-import fs19.java.backend.infrastructure.WorkspaceJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.WorkspaceJpaRepo;
 import fs19.java.backend.presentation.shared.exception.ProjectNotFoundException;
 import fs19.java.backend.presentation.shared.exception.ProjectValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
