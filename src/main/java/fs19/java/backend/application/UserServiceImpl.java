@@ -3,25 +3,26 @@ package fs19.java.backend.application;
 import fs19.java.backend.application.dto.user.UserCreateDTO;
 import fs19.java.backend.application.dto.user.UserReadDTO;
 import fs19.java.backend.application.mapper.UserMapper;
-
 import fs19.java.backend.application.service.UserService;
 import fs19.java.backend.domain.entity.User;
-import fs19.java.backend.infrastructure.UserRepositoryImpl;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.presentation.shared.exception.UserNotFoundException;
 import fs19.java.backend.presentation.shared.exception.UserValidationException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
-  private final UserRepositoryImpl userRepository;
+  private final UserJpaRepo userRepository;
   private static final String ERROR_MESSAGE = "User not found with ID ";
 
-  public UserServiceImpl(UserRepositoryImpl userRepository) {
+  public UserServiceImpl(UserJpaRepo userRepository) {
     this.userRepository = userRepository;
   }
 
@@ -41,18 +42,18 @@ public class UserServiceImpl implements UserService {
     }
     if (createUserDTO.getPhone().length() > 15 || createUserDTO.getPhone().length() < 10) {
       throw new UserValidationException("Phone number must be between 10 and 15 characters long");
-      }
+    }
 
     User user = UserMapper.toEntity(createUserDTO);
     user.setId(UUID.randomUUID());
     user.setCreatedDate(ZonedDateTime.now());
-    userRepository.saveUser(user);
+    userRepository.save(user);
     return UserMapper.toReadDTO(user);
   }
 
   @Override
   public List<UserReadDTO> findAllUsers() {
-    List<User> users = userRepository.findAllUsers();
+    List<User> users = userRepository.findAll();
     return users.stream()
         .map(UserMapper::toReadDTO)
         .toList();
@@ -76,7 +77,7 @@ public class UserServiceImpl implements UserService {
       updatedUser.setEmail(userDTO.getEmail());
       updatedUser.setPhone(userDTO.getPhone());
       updatedUser.setProfileImage(userDTO.getProfileImage());
-      userRepository.saveUser(updatedUser);
+      userRepository.save(updatedUser);
       return UserMapper.toReadDTO(updatedUser);
     } else {
       throw new UserNotFoundException(ERROR_MESSAGE + id);
@@ -87,7 +88,7 @@ public class UserServiceImpl implements UserService {
   public boolean deleteUser(UUID id) {
     Optional<User> user = userRepository.findById(id);
     if (user.isPresent()) {
-      userRepository.deleteUser(user.get());
+      userRepository.delete(user.get());
       return true;
     } else {
       throw new UserNotFoundException(ERROR_MESSAGE + id);
