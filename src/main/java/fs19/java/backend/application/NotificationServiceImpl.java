@@ -3,11 +3,14 @@ package fs19.java.backend.application;
 import fs19.java.backend.application.dto.notification.NotificationDTO;
 import fs19.java.backend.application.mapper.NotificationMapper;
 import fs19.java.backend.application.service.NotificationService;
-import fs19.java.backend.domain.abstraction.NotificationRepository;
-import fs19.java.backend.domain.abstraction.UserRepository;
 import fs19.java.backend.domain.entity.Notification;
+import fs19.java.backend.domain.entity.Project;
 import fs19.java.backend.domain.entity.User;
+import fs19.java.backend.infrastructure.JpaRepositories.NotificationJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.ProjectJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.presentation.shared.exception.NotificationNotFoundException;
+import fs19.java.backend.presentation.shared.exception.ProjectNotFoundException;
 import fs19.java.backend.presentation.shared.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -20,26 +23,35 @@ import java.util.stream.Collectors;
 public class NotificationServiceImpl implements NotificationService {
 
     private static final String NOTIFICATION_NOT_FOUND_MESSAGE = "Notification with ID %s not found";
+    private static final String USER_NOT_FOUND_MESSAGE = "User with ID %s not found";
+    private static final String PROJECT_NOT_FOUND_MESSAGE = "Project with ID %s not found";
 
-    private final NotificationRepository notificationRepository;
-    private final UserRepository userRepository;
+    private final NotificationJpaRepo notificationRepository;
+    private final UserJpaRepo userRepository;
+    private final ProjectJpaRepo projectRepository;
 
-    public NotificationServiceImpl(NotificationRepository notificationRepository, UserRepository userRepository) {
+    public NotificationServiceImpl(NotificationJpaRepo notificationRepository, UserJpaRepo userRepository, ProjectJpaRepo projectRepository) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
+        this.projectRepository = projectRepository;
     }
 
     @Override
     public NotificationDTO createNotification(NotificationDTO notificationDTO) {
+        if (notificationDTO == null) {
+            throw new IllegalArgumentException("NotificationDTO cannot be null.");
+        }
+
         User mentionedBy = userRepository.findById(notificationDTO.getMentionedBy())
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with ID %s not found", notificationDTO.getMentionedBy())));
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, notificationDTO.getMentionedBy())));
         User mentionedTo = userRepository.findById(notificationDTO.getMentionedTo())
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with ID %s not found", notificationDTO.getMentionedTo())));
-        Notification notification = NotificationMapper.toEntity(notificationDTO);
-        notification.setId(UUID.randomUUID());
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, notificationDTO.getMentionedTo())));
+        Project project = projectRepository.findById(notificationDTO.getProjectId())
+                .orElseThrow(() -> new ProjectNotFoundException(String.format(PROJECT_NOT_FOUND_MESSAGE, notificationDTO.getProjectId())));
+
+        Notification notification = NotificationMapper.toEntity(notificationDTO, project, mentionedBy, mentionedTo);
         notification.setCreatedDate(ZonedDateTime.now());
-        notification.setMentionedBy(mentionedBy.getId());
-        notification.setMentionedTo(mentionedTo.getId());
+
         notificationRepository.save(notification);
         return NotificationMapper.toDTO(notification);
     }
@@ -48,12 +60,22 @@ public class NotificationServiceImpl implements NotificationService {
     public NotificationDTO updateNotification(UUID id, NotificationDTO notificationDTO) {
         Notification existingNotification = notificationRepository.findById(id)
                 .orElseThrow(() -> new NotificationNotFoundException(String.format(NOTIFICATION_NOT_FOUND_MESSAGE, id)));
+
         existingNotification.setContent(notificationDTO.getContent());
         existingNotification.setNotifyType(notificationDTO.getNotifyType());
         existingNotification.setRead(notificationDTO.isRead());
-        existingNotification.setProjectId(notificationDTO.getProjectId());
-        existingNotification.setMentionedBy(notificationDTO.getMentionedBy());
-        existingNotification.setMentionedTo(notificationDTO.getMentionedTo());
+
+        Project project = projectRepository.findById(notificationDTO.getProjectId())
+                .orElseThrow(() -> new ProjectNotFoundException(String.format(PROJECT_NOT_FOUND_MESSAGE, notificationDTO.getProjectId())));
+        User mentionedBy = userRepository.findById(notificationDTO.getMentionedBy())
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, notificationDTO.getMentionedBy())));
+        User mentionedTo = userRepository.findById(notificationDTO.getMentionedTo())
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, notificationDTO.getMentionedTo())));
+
+        existingNotification.setProjectId(project);
+        existingNotification.setMentionedBy(mentionedBy);
+        existingNotification.setMentionedTo(mentionedTo);
+
         notificationRepository.save(existingNotification);
         return NotificationMapper.toDTO(existingNotification);
     }
