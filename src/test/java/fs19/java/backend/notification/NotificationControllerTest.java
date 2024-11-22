@@ -11,6 +11,7 @@ import fs19.java.backend.domain.abstraction.UserRepository;
 import fs19.java.backend.domain.entity.Notification;
 import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.domain.entity.enums.NotificationType;
+import fs19.java.backend.infrastructure.JpaRepositories.NotificationJpaRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class NotificationControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private NotificationRepository notificationRepository;
+    private NotificationJpaRepo notificationRepository;
 
     @Autowired
     private UserRepository userRepository;

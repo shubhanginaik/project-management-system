@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fs19.java.backend.application.dto.comment.CommentRequestDTO;
 import fs19.java.backend.application.dto.comment.CommentUpdateDTO;
 import fs19.java.backend.domain.entity.Comment;
+import fs19.java.backend.infrastructure.JpaRepositories.CommentJpaRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class CommentControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CommentRepository commentRepository;
+    private CommentJpaRepo commentRepository;
 
     private Comment existingComment;
     private UUID taskId;

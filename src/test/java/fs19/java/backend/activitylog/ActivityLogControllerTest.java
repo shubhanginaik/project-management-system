@@ -12,6 +12,7 @@ import fs19.java.backend.domain.entity.ActivityLog;
 import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.domain.entity.enums.ActionType;
 import fs19.java.backend.domain.entity.enums.EntityType;
+import fs19.java.backend.infrastructure.JpaRepositories.ActivityLogJpaRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class ActivityLogControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private ActivityLogRepository activityLogRepository;
+    private ActivityLogJpaRepo activityLogRepository;
 
     @Autowired
     private UserRepository userRepository;
