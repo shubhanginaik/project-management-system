@@ -1,6 +1,7 @@
 package fs19.java.backend.config;
 
 import fs19.java.backend.domain.entity.*;
+import fs19.java.backend.domain.entity.enums.WorkspaceType;
 import fs19.java.backend.infrastructure.JpaRepositories.*;
 import fs19.java.backend.presentation.shared.Utilities.DateAndTime;
 import org.springframework.boot.CommandLineRunner;
@@ -28,7 +29,10 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         User user = new User();
+        user.setFirstName("John");
+        user.setLastName("Doe");
         user.setEmail("aaaa@gmail.com");
+        user.setPassword("123456789");
         user.setCreatedDate(DateAndTime.getDateAndTime());
         userJpaRepo.save(user);
 
@@ -53,12 +57,23 @@ public class DataLoader implements CommandLineRunner {
         role2.setCompany(companyJpaRepo.findAll().getFirst());
         roleJpaRepo.save(role2);
 
-        Project project = new Project();
-        projectJpaRepo.save(project);
         Workspace workspace = new Workspace();
+        workspace.setName("Workspace1");
+        workspace.setDescription("Workspace1");
+        workspace.setType(WorkspaceType.PUBLIC);
         workspace.setCompanyId(companyJpaRepo.findAll().getFirst());
         workspace.setCreatedBy(userJpaRepo.findAll().getFirst());
         workspaceJpaRepo.save(workspace);
+
+        Project project = new Project();
+        project.setName("Project1");
+        project.setStatus(true);
+        project.setStartDate(DateAndTime.getDateAndTime());
+        project.setCreatedByUser(userJpaRepo.findAll().getFirst());
+        project.setCreatedDate(DateAndTime.getDateAndTime());
+        project.setWorkspace(workspaceJpaRepo.findAll().getFirst());
+        projectJpaRepo.save(project);
+
 
     }
 }

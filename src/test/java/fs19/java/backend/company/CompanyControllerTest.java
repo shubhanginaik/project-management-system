@@ -12,7 +12,7 @@ import fs19.java.backend.application.dto.company.CompanyUpdateDTO;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
-import fs19.java.backend.infrastructure.UserJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
