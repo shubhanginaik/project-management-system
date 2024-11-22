@@ -2,15 +2,20 @@ package fs19.java.backend.application;
 
 import fs19.java.backend.application.dto.comment.CommentRequestDTO;
 import fs19.java.backend.application.dto.comment.CommentResponseDTO;
-import fs19.java.backend.application.dto.comment.CommentUpdateDTO; // Import CommentUpdateDTO
+import fs19.java.backend.application.dto.comment.CommentUpdateDTO;
 import fs19.java.backend.application.mapper.CommentMapper;
 import fs19.java.backend.application.service.CommentService;
-import fs19.java.backend.domain.abstraction.CommentRepository;
 import fs19.java.backend.domain.entity.Comment;
+import fs19.java.backend.domain.entity.Task;
+import fs19.java.backend.domain.entity.User;
+import fs19.java.backend.infrastructure.JpaRepositories.CommentJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.TaskJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.presentation.shared.exception.CommentNotFoundException;
+import fs19.java.backend.presentation.shared.exception.TaskLevelException;
+import fs19.java.backend.presentation.shared.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -19,12 +24,18 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl implements CommentService {
 
     private static final String COMMENT_NOT_FOUND_MESSAGE = "Comment with ID %s not found";
+    private static final String TASK_NOT_FOUND_MESSAGE = "Task with ID %s not found";
+    private static final String USER_NOT_FOUND_MESSAGE = "User with ID %s not found";
 
-    private final CommentRepository commentRepository;
+    private final CommentJpaRepo commentRepository;
+    private final TaskJpaRepo taskRepository;
+    private final UserJpaRepo userRepository;
     private final CommentMapper commentMapper;
 
-    public CommentServiceImpl(CommentRepository commentRepository, CommentMapper commentMapper) {
+    public CommentServiceImpl(CommentJpaRepo commentRepository, TaskJpaRepo taskRepository, UserJpaRepo userRepository, CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
+        this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
         this.commentMapper = commentMapper;
     }
 
@@ -34,48 +45,34 @@ public class CommentServiceImpl implements CommentService {
             throw new IllegalArgumentException("CommentRequestDTO must not be null");
         }
 
-        System.out.println("Creating comment with content: " + commentRequestDTO.getContent());
+        User createdBy = userRepository.findById(commentRequestDTO.getCreatedBy())
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, commentRequestDTO.getCreatedBy())));
+        Task task = taskRepository.findById(commentRequestDTO.getTaskId())
+                .orElseThrow(() -> new TaskLevelException(String.format(TASK_NOT_FOUND_MESSAGE, commentRequestDTO.getTaskId())));
 
-        Comment comment = commentMapper.toEntity(commentRequestDTO);
-        comment.setId(UUID.randomUUID());
-        comment.setCreatedDate(ZonedDateTime.now());
+        Comment comment = commentMapper.toEntity(commentRequestDTO, task, createdBy);
         commentRepository.save(comment);
 
-        CommentResponseDTO responseDTO = commentMapper.toDTO(comment);
-        System.out.println("Created comment ID: " + responseDTO.getId());
-        System.out.println("Created comment content: " + responseDTO.getContent());
-
-        return responseDTO;
+        return commentMapper.toDTO(comment);
     }
 
     @Override
     public CommentResponseDTO updateComment(UUID id, CommentUpdateDTO commentUpdateDTO) {
-        System.out.println("Updating comment ID: " + id);
-        System.out.println("New content: " + commentUpdateDTO.getContent());
-
         Comment existingComment = commentRepository.findById(id)
                 .orElseThrow(() -> new CommentNotFoundException(String.format(COMMENT_NOT_FOUND_MESSAGE, id)));
 
         existingComment.setContent(commentUpdateDTO.getContent());
         commentRepository.save(existingComment);
 
-        CommentResponseDTO responseDTO = commentMapper.toDTO(existingComment);
-        System.out.println("Updated comment content: " + responseDTO.getContent());
-
-        return responseDTO;
+        return commentMapper.toDTO(existingComment);
     }
 
     @Override
     public CommentResponseDTO getCommentById(UUID id) {
-        System.out.println("Fetching comment ID: " + id);
-
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new CommentNotFoundException(String.format(COMMENT_NOT_FOUND_MESSAGE, id)));
 
-        CommentResponseDTO responseDTO = commentMapper.toDTO(comment);
-        System.out.println("Fetched comment content: " + responseDTO.getContent());
-
-        return responseDTO;
+        return commentMapper.toDTO(comment);
     }
 
     @Override
