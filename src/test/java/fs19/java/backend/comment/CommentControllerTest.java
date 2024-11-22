@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fs19.java.backend.application.dto.comment.CommentRequestDTO;
 import fs19.java.backend.application.dto.comment.CommentUpdateDTO;
-import fs19.java.backend.domain.abstraction.CommentRepository;
 import fs19.java.backend.domain.entity.Comment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
