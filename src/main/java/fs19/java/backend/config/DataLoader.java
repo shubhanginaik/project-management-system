@@ -16,14 +16,24 @@ public class DataLoader implements CommandLineRunner {
     private final UserJpaRepo userJpaRepo;
     private final ProjectJpaRepo projectJpaRepo;
     private final WorkspaceJpaRepo workspaceJpaRepo;
+    private final WorkspaceUserJpaRepo workspaceUserJpaRepo;
 
-    public DataLoader(CompanyJpaRepo companyJpaRepo, RoleJpaRepo roleJpaRepo, PermissionJpaRepo permissionJpaRepo, UserJpaRepo userJpaRepo, ProjectJpaRepo projectJpaRepo, WorkspaceJpaRepo workspaceJpaRepo) {
+    public DataLoader(
+        CompanyJpaRepo companyJpaRepo,
+        RoleJpaRepo roleJpaRepo,
+        PermissionJpaRepo permissionJpaRepo,
+        UserJpaRepo userJpaRepo,
+        ProjectJpaRepo projectJpaRepo,
+        WorkspaceJpaRepo workspaceJpaRepo,
+        WorkspaceUserJpaRepo workspaceUserJpaRepo) {
+
         this.companyJpaRepo = companyJpaRepo;
         this.roleJpaRepo = roleJpaRepo;
         this.permissionJpaRepo = permissionJpaRepo;
         this.userJpaRepo = userJpaRepo;
         this.projectJpaRepo = projectJpaRepo;
         this.workspaceJpaRepo = workspaceJpaRepo;
+        this.workspaceUserJpaRepo = workspaceUserJpaRepo;
     }
 
     @Override
@@ -74,6 +84,10 @@ public class DataLoader implements CommandLineRunner {
         project.setWorkspace(workspaceJpaRepo.findAll().getFirst());
         projectJpaRepo.save(project);
 
-
+        WorkspaceUser workspaceUser = new WorkspaceUser();
+        workspaceUser.setRole(roleJpaRepo.findAll().getFirst());
+        workspaceUser.setUser(userJpaRepo.findAll().getFirst());
+        workspaceUser.setWorkspace(workspaceJpaRepo.findAll().getFirst());
+        workspaceUserJpaRepo.save(workspaceUser);
     }
 }

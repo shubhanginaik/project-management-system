@@ -8,7 +8,6 @@ import fs19.java.backend.application.service.ProjectService;
 import fs19.java.backend.domain.entity.Project;
 import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.domain.entity.Workspace;
-
 import fs19.java.backend.infrastructure.JpaRepositories.ProjectJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.WorkspaceJpaRepo;
