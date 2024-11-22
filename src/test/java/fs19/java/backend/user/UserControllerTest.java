@@ -61,7 +61,7 @@ class UserControllerTest {
         .andExpect(jsonPath("$.code", is(201)))
         .andExpect(jsonPath("$.data.firstName", is("John")));
 
-    mockMvc.perform(MockMvcRequestBuilders.get("/v1/api/users"))
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.code", is(200)))
         .andExpect(jsonPath("$.data").isArray())
@@ -75,7 +75,7 @@ class UserControllerTest {
     performPostUser(userCreateDto).andExpect(status().isCreated());
     performPostUser(userCreateDto).andExpect(status().isCreated());
 
-    mockMvc.perform(MockMvcRequestBuilders.get("/v1/api/users"))
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.code", is(200)))
         .andExpect(jsonPath("$.data").isArray());
@@ -94,7 +94,7 @@ class UserControllerTest {
     // Extract the ID from the response
     String userId = JsonPath.parse(response).read("$.data.id");
 
-    mockMvc.perform(MockMvcRequestBuilders.get("/v1/api/users/{id}", userId))
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/{id}", userId))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.firstName", is("John")));
   }
@@ -111,14 +111,14 @@ class UserControllerTest {
 
     // Extract the ID from the response
     String userId = JsonPath.parse(response).read("$.data.id");
-    mockMvc.perform(MockMvcRequestBuilders.delete("/v1/api/users/{id}", userId))
+    mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/users/{id}", userId))
         .andExpect(status().isNoContent());
   }
 
   @Test
   void shouldUpdateUserOnPut() throws Exception {
     // Create a user
-    String response = mockMvc.perform(post("/v1/api/users")
+    String response = mockMvc.perform(post("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(userCreateDto)))
         .andExpect(status().isCreated())
@@ -131,7 +131,7 @@ class UserControllerTest {
     // Extract the ID from the response
     String userId = JsonPath.parse(response).read("$.data.id");
 
-    mockMvc.perform(MockMvcRequestBuilders.put("/v1/api/users/{id}", userId)
+    mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/users/{id}", userId)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(userReadDto)))
         .andExpect(status().isOk())
@@ -139,7 +139,7 @@ class UserControllerTest {
   }
 
   private ResultActions performPostUser(UserCreateDTO userCreateDTO) throws Exception {
-    return mockMvc.perform(post("/v1/api/users")
+    return mockMvc.perform(post("/api/v1/users")
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(userCreateDTO)));
   }

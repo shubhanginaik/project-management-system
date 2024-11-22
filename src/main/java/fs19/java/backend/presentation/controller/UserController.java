@@ -4,6 +4,7 @@ import fs19.java.backend.application.dto.user.UserCreateDTO;
 import fs19.java.backend.application.UserServiceImpl;
 import fs19.java.backend.application.dto.user.UserReadDTO;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/api/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
   private final UserServiceImpl userService;
@@ -27,31 +28,35 @@ public class UserController {
   public UserController(UserServiceImpl userService) {
     this.userService = userService;
   }
-
+  @Operation(summary = "Create a new user")
   @PostMapping
   public ResponseEntity<GlobalResponse<UserReadDTO>> createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
     UserReadDTO createdUser = userService.createUser(userCreateDTO);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdUser), HttpStatus.CREATED);
   }
 
+  @Operation(summary = "Get all users")
   @GetMapping
   public ResponseEntity<GlobalResponse<List<UserReadDTO>>> getAllUsers() {
     List<UserReadDTO> users = userService.findAllUsers();
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), users), HttpStatus.OK);
   }
 
+  @Operation(summary = "Get user by ID")
   @GetMapping("/{userId}")
   public ResponseEntity<GlobalResponse<UserReadDTO>> getUserById(@PathVariable UUID userId) {
     UserReadDTO user = userService.findUserById(userId);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), user), HttpStatus.OK);
   }
 
+  @Operation
   @PutMapping("/{userId}")
   public ResponseEntity<GlobalResponse<UserReadDTO>> updateUser(@PathVariable UUID userId, @Valid @RequestBody UserReadDTO userToUpdateDTO) {
     UserReadDTO updatedUser = userService.updateUser(userId, userToUpdateDTO);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), updatedUser), HttpStatus.OK);
   }
 
+  @Operation(summary = "Delete user by ID")
   @DeleteMapping("/{userId}")
   public ResponseEntity<GlobalResponse<Void>> deleteUser(@PathVariable  UUID userId) {
     userService.deleteUser(userId);
