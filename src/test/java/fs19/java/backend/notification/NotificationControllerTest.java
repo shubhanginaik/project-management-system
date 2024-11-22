@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fs19.java.backend.application.dto.notification.NotificationDTO;
-import fs19.java.backend.domain.abstraction.NotificationRepository;
 import fs19.java.backend.domain.abstraction.UserRepository;
 import fs19.java.backend.domain.entity.Notification;
 import fs19.java.backend.domain.entity.User;

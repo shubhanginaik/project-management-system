@@ -1,4 +1,4 @@
-package fs19.java.backend.infrastructure;
+package fs19.java.backend.infrastructure.JpaRepositories;
 
 import fs19.java.backend.domain.entity.Company;
 import org.springframework.data.jpa.repository.JpaRepository;
