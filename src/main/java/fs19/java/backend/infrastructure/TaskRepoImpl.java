@@ -109,4 +109,13 @@ public class TaskRepoImpl implements TaskRepository {
 
         return taskJpaRepo.findAll(example);
     }
+
+    /**
+     * Responsible to return user according to user Id
+     * @param userId
+     * @return
+     */
+    public Optional<User> findTaskUserByUserId(UUID userId) {
+        return userJpaRepo.findById(userId);
+    }
 }

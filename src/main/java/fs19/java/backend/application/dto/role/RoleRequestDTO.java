@@ -1,9 +1,9 @@
 package fs19.java.backend.application.dto.role;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fs19.java.backend.domain.entity.Company;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.UUID;
@@ -20,8 +20,10 @@ public class RoleRequestDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
     @Schema(type = "string", format = "string", description = "System roles name defines here")
+    @NotNull(message = "Role-Name cannot be null")
+    @Size(max = 45, message = "Field must be at most 45 characters")
     private String name;
-    @NotNull
+    @NotNull(message = "Company-Id cannot be null")
     @Schema(type = "string", format = "string", description = "Company Id defines here")
     private UUID companyId;
 }

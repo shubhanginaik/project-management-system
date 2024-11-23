@@ -7,7 +7,6 @@ import fs19.java.backend.application.service.TaskService;
 import fs19.java.backend.domain.entity.Task;
 import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.infrastructure.TaskRepoImpl;
-import fs19.java.backend.infrastructure.UserRepositoryImpl;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +17,9 @@ import java.util.UUID;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    private final UserRepositoryImpl userRepository;
     private final TaskRepoImpl taskRepo;
 
-    public TaskServiceImpl(UserRepositoryImpl userRepository, TaskRepoImpl taskRepo) {
-        this.userRepository = userRepository;
+    public TaskServiceImpl(TaskRepoImpl taskRepo) {
         this.taskRepo = taskRepo;
     }
 
@@ -32,11 +29,11 @@ public class TaskServiceImpl implements TaskService {
             System.out.println("Task Name from DTO is null, cannot proceed with Task creation.");
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_NAME_NOT_FOUND);
         }
-        Optional<User> createdUserById = userRepository.findById(taskRequestDTO.getCreatedUserId());
+        Optional<User> createdUserById = taskRepo.findTaskUserByUserId(taskRequestDTO.getCreatedUserId());
         if (createdUserById.isPresent()) {
             User assignedUser = null;
             if (taskRequestDTO.getAssignedUserId() != null) {
-                Optional<User> assignedUserById = userRepository.findById(taskRequestDTO.getCreatedUserId());
+                Optional<User> assignedUserById = taskRepo.findTaskUserByUserId(taskRequestDTO.getCreatedUserId());
                 if (assignedUserById.isEmpty()) {
                     System.out.println("Assigned User-Not Found");
                     return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_LEVEL_ASSIGNED_USER_NOT_FOUND);
@@ -62,11 +59,11 @@ public class TaskServiceImpl implements TaskService {
             System.out.println("Task Name from DTO is null, cannot proceed with Task creation.");
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_NAME_NOT_FOUND);
         }
-        Optional<User> createdUserById = userRepository.findById(taskRequestDTO.getCreatedUserId());
+        Optional<User> createdUserById = taskRepo.findTaskUserByUserId(taskRequestDTO.getCreatedUserId());
         if (createdUserById.isPresent()) {
             User assignedUser = null;
             if (taskRequestDTO.getAssignedUserId() != null) {
-                Optional<User> assignedUserById = userRepository.findById(taskRequestDTO.getCreatedUserId());
+                Optional<User> assignedUserById = taskRepo.findTaskUserByUserId(taskRequestDTO.getCreatedUserId());
                 if (assignedUserById.isEmpty()) {
                     System.out.println("Assigned User-Not Found");
                     return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_LEVEL_ASSIGNED_USER_NOT_FOUND);

@@ -22,12 +22,12 @@ public class InvitationRequestDTO {
     @Schema(type = "date", format = "date", description = "invitation expired date define here")
     private ZonedDateTime expiredAt;
     @Schema(type = "String", format = "String", description = "invitation sending email")
-    @NotNull
+    @NotNull(message = "Email cannot be null")
     private String email;
     @Schema(type = "uuid", format = "uuid", description = "invitation sending role Id")
-    @NotNull
+    @NotNull(message = "Role id cannot be null")
     private UUID roleId;
     @Schema(type = "uuid", format = "uuid", description = "invitation sending company Id")
-    @NotNull
+    @NotNull(message = "Company id cannot be null")
     private UUID companyId;
 }
