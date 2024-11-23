@@ -1,11 +1,16 @@
 package fs19.java.backend.config;
 
 import fs19.java.backend.domain.entity.*;
+import fs19.java.backend.domain.entity.enums.ActionType;
+import fs19.java.backend.domain.entity.enums.EntityType;
+import fs19.java.backend.domain.entity.enums.NotificationType;
 import fs19.java.backend.domain.entity.enums.WorkspaceType;
 import fs19.java.backend.infrastructure.JpaRepositories.*;
 import fs19.java.backend.presentation.shared.Utilities.DateAndTime;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -17,15 +22,21 @@ public class DataLoader implements CommandLineRunner {
     private final ProjectJpaRepo projectJpaRepo;
     private final WorkspaceJpaRepo workspaceJpaRepo;
     private final WorkspaceUserJpaRepo workspaceUserJpaRepo;
+    private final TaskJpaRepo taskJpaRepo;
+    private final CommentJpaRepo commentJpaRepo;
+    private final InvitationJpaRepo invitationJpaRepo;
+    private final NotificationJpaRepo notificationJpaRepo;
+    private final ActivityLogJpaRepo activityLogJpaRepo;
+    private final RolePermissionJpaRepo rolePermissionJpaRepo;
 
     public DataLoader(
-        CompanyJpaRepo companyJpaRepo,
-        RoleJpaRepo roleJpaRepo,
-        PermissionJpaRepo permissionJpaRepo,
-        UserJpaRepo userJpaRepo,
-        ProjectJpaRepo projectJpaRepo,
-        WorkspaceJpaRepo workspaceJpaRepo,
-        WorkspaceUserJpaRepo workspaceUserJpaRepo) {
+            CompanyJpaRepo companyJpaRepo,
+            RoleJpaRepo roleJpaRepo,
+            PermissionJpaRepo permissionJpaRepo,
+            UserJpaRepo userJpaRepo,
+            ProjectJpaRepo projectJpaRepo,
+            WorkspaceJpaRepo workspaceJpaRepo,
+            WorkspaceUserJpaRepo workspaceUserJpaRepo, TaskJpaRepo taskJpaRepo, CommentJpaRepo commentJpaRepo, InvitationJpaRepo invitationJpaRepo, NotificationJpaRepo notificationJpaRepo, ActivityLogJpaRepo activityLogJpaRepo, RolePermissionJpaRepo rolePermissionJpaRepo) {
 
         this.companyJpaRepo = companyJpaRepo;
         this.roleJpaRepo = roleJpaRepo;
@@ -34,6 +45,12 @@ public class DataLoader implements CommandLineRunner {
         this.projectJpaRepo = projectJpaRepo;
         this.workspaceJpaRepo = workspaceJpaRepo;
         this.workspaceUserJpaRepo = workspaceUserJpaRepo;
+        this.taskJpaRepo = taskJpaRepo;
+        this.commentJpaRepo = commentJpaRepo;
+        this.invitationJpaRepo = invitationJpaRepo;
+        this.notificationJpaRepo = notificationJpaRepo;
+        this.activityLogJpaRepo = activityLogJpaRepo;
+        this.rolePermissionJpaRepo = rolePermissionJpaRepo;
     }
 
     @Override
@@ -56,13 +73,13 @@ public class DataLoader implements CommandLineRunner {
         permission.setName("ACCESS");
         permissionJpaRepo.save(permission);
         Role role = new Role();
-        role.setName("ROLE-NAME");
+        role.setName("ADMIN");
         role.setCreatedDate(DateAndTime.getDateAndTime());
         role.setCompany(companyJpaRepo.findAll().getFirst());
         roleJpaRepo.save(role);
 
         Role role2 = new Role();
-        role2.setName("ROLE-NAME2");
+        role2.setName("ROLE-NAME");
         role2.setCreatedDate(DateAndTime.getDateAndTime());
         role2.setCompany(companyJpaRepo.findAll().getFirst());
         roleJpaRepo.save(role2);
@@ -89,5 +106,63 @@ public class DataLoader implements CommandLineRunner {
         workspaceUser.setUser(userJpaRepo.findAll().getFirst());
         workspaceUser.setWorkspace(workspaceJpaRepo.findAll().getFirst());
         workspaceUserJpaRepo.save(workspaceUser);
+
+        Permission permission1 = new Permission();
+        permission1.setName("VIEW_PROJECT");
+        permissionJpaRepo.save(permission1);
+
+        Permission permission2 = new Permission();
+        permission2.setName("EDIT_TASK");
+        permissionJpaRepo.save(permission2);
+
+        RolePermission rolePermission = new RolePermission();
+        rolePermission.setRole(role);
+        rolePermission.setPermission(permission1);
+        rolePermissionJpaRepo.save(rolePermission);
+
+        Task task = new Task();
+        task.setName("Task 1");
+        task.setDescription("Initial setup task");
+        task.setCreatedDate(DateAndTime.getDateAndTime());
+        task.setTaskStatus("TODO");
+        task.setAttachments(Arrays.asList("doc1.pdf", "image1.png"));
+        task.setProjectId(project.getId());
+        task.setCreatedUser(user);
+        task.setAssignedUser(user);
+        task.setPriority("LOW_PRIORITY");
+        taskJpaRepo.save(task);
+
+        Comment comment = new Comment();
+        comment.setTaskId(task);
+        comment.setContent("This is a comment on the task.");
+        comment.setCreatedDate(DateAndTime.getDateAndTime());
+        comment.setCreatedBy(user);
+        commentJpaRepo.save(comment);
+
+        Invitation invitation = new Invitation();
+        invitation.setAccepted(false);
+        invitation.setExpiredAt(DateAndTime.getDateAndTime().plusDays(7));
+        invitation.setEmail("invitee@example.com");
+        invitation.setRole(role);
+        invitation.setCompany(company);
+        invitationJpaRepo.save(invitation);
+
+        Notification notification = new Notification();
+        notification.setContent("You have a new task assigned.");
+        notification.setNotifyType(NotificationType.PROJECT_UPDATED);
+        notification.setCreatedDate(DateAndTime.getDateAndTime());
+        notification.setRead(false);
+        notification.setProjectId(project);
+        notification.setMentionedBy(user);
+        notification.setMentionedTo(user);
+        notificationJpaRepo.save(notification);
+
+        ActivityLog activityLog = new ActivityLog();
+        activityLog.setEntityType(EntityType.TASK);
+        activityLog.setEntityId(task.getId());
+        activityLog.setAction(ActionType.CREATED);
+        activityLog.setCreatedDate(DateAndTime.getDateAndTime());
+        activityLog.setUserId(user);
+        activityLogJpaRepo.save(activityLog);
     }
 }

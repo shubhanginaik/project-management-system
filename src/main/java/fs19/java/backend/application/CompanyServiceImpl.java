@@ -7,6 +7,8 @@ import fs19.java.backend.application.mapper.CompanyMapper;
 import fs19.java.backend.application.service.CompanyService;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.User;
+import fs19.java.backend.domain.entity.enums.ActionType;
+import fs19.java.backend.domain.entity.enums.EntityType;
 import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.presentation.shared.exception.CompanyNotFoundException;
@@ -26,26 +28,23 @@ public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyJpaRepo companyRepository;
     private final UserJpaRepo userRepository;
+    private final ActivityLoggerService activityLoggerService;
 
-    public CompanyServiceImpl(CompanyJpaRepo companyRepository, UserJpaRepo userRepository) {
+    public CompanyServiceImpl(CompanyJpaRepo companyRepository, UserJpaRepo userRepository, ActivityLoggerService activityLoggerService) {
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;
+        this.activityLoggerService = activityLoggerService;
     }
 
     @Override
     public CompanyResponseDTO createCompany(CompanyRequestDTO companyDTO) {
         User createdBy = userRepository.findById(companyDTO.getCreatedBy())
                 .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, companyDTO.getCreatedBy())));
-
-        // Use CompanyMapper to map the DTO to entity
         Company company = CompanyMapper.toEntity(companyDTO, createdBy);
         company.setCreatedDate(ZonedDateTime.now());
-
-        // Save the company entity, UUID and createdDate will be automatically generated
-        companyRepository.save(company);
-
-        // Return the DTO with the correct ID and createdDate
-        return CompanyMapper.toResponseDTO(company);
+        Company savedCompany = companyRepository.save(company);
+        activityLoggerService.logActivity(EntityType.COMPANY, savedCompany.getId(), ActionType.CREATED, createdBy.getId());
+        return CompanyMapper.toResponseDTO(savedCompany);
     }
 
     @Override
@@ -55,12 +54,10 @@ public class CompanyServiceImpl implements CompanyService {
 
         User createdBy = userRepository.findById(companyDTO.getCreatedBy())
                 .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, companyDTO.getCreatedBy())));
-
-        // Use CompanyMapper to update the existing entity
         CompanyMapper.updateEntity(existingCompany, companyDTO, createdBy);
-        companyRepository.save(existingCompany);
-
-        return CompanyMapper.toResponseDTO(existingCompany);
+        Company savedCompany = companyRepository.save(existingCompany);
+        activityLoggerService.logActivity(EntityType.COMPANY, savedCompany.getId(), ActionType.UPDATED, createdBy.getId());
+        return CompanyMapper.toResponseDTO(savedCompany);
     }
 
     @Override
