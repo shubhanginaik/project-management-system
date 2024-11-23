@@ -35,10 +35,9 @@ public class ActivityLogServiceImpl implements ActivityLogService {
         User user = userRepository.findById(activityLogDTO.getUserId())
                 .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, activityLogDTO.getUserId())));
         ActivityLog activityLog = ActivityLogMapper.toEntity(activityLogDTO, user);
-        activityLog.setId(UUID.randomUUID());
         activityLog.setCreatedDate(ZonedDateTime.now());
-        activityLogRepository.save(activityLog);
-        return ActivityLogMapper.toDTO(activityLog);
+        ActivityLog savedActivityLog = activityLogRepository.save(activityLog);
+        return ActivityLogMapper.toDTO(savedActivityLog);
     }
 
     @Override
@@ -46,15 +45,35 @@ public class ActivityLogServiceImpl implements ActivityLogService {
         ActivityLog existingActivityLog = activityLogRepository.findById(id)
                 .orElseThrow(() -> new ActivityLogNotFoundException(String.format(ACTIVITY_LOG_NOT_FOUND_MESSAGE, id)));
 
-        User user = userRepository.findById(activityLogDTO.getUserId())
-                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, activityLogDTO.getUserId())));
+        boolean isUpdateProvided = activityLogDTO.getEntityType() != null ||
+                activityLogDTO.getEntityId() != null ||
+                activityLogDTO.getAction() != null ||
+                activityLogDTO.getUserId() != null;
 
-        existingActivityLog.setEntityType(activityLogDTO.getEntityType());
-        existingActivityLog.setEntityId(activityLogDTO.getEntityId());
-        existingActivityLog.setAction(activityLogDTO.getAction());
-        existingActivityLog.setUserId(user);
-        activityLogRepository.save(existingActivityLog);
-        return ActivityLogMapper.toDTO(existingActivityLog);
+        if (!isUpdateProvided) {
+            throw new IllegalArgumentException("At least one field must be provided to update the activity log.");
+        }
+
+        if (activityLogDTO.getEntityType() != null) {
+            existingActivityLog.setEntityType(activityLogDTO.getEntityType());
+        }
+
+        if (activityLogDTO.getEntityId() != null) {
+            existingActivityLog.setEntityId(activityLogDTO.getEntityId());
+        }
+
+        if (activityLogDTO.getAction() != null) {
+            existingActivityLog.setAction(activityLogDTO.getAction());
+        }
+
+        if (activityLogDTO.getUserId() != null) {
+            User user = userRepository.findById(activityLogDTO.getUserId())
+                    .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, activityLogDTO.getUserId())));
+            existingActivityLog.setUserId(user);
+        }
+
+        ActivityLog savedActivityLog = activityLogRepository.save(existingActivityLog);
+        return ActivityLogMapper.toDTO(savedActivityLog);
     }
 
     @Override

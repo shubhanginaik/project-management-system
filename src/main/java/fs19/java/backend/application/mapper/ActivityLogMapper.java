@@ -13,7 +13,7 @@ public class ActivityLogMapper {
                 activityLogDTO.getEntityId(),
                 activityLogDTO.getAction(),
                 activityLogDTO.getCreatedDate(),
-                user // Set the User entity
+                user
         );
     }
 
