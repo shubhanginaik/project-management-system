@@ -52,32 +52,62 @@ public class NotificationServiceImpl implements NotificationService {
         Notification notification = NotificationMapper.toEntity(notificationDTO, project, mentionedBy, mentionedTo);
         notification.setCreatedDate(ZonedDateTime.now());
 
-        notificationRepository.save(notification);
-        return NotificationMapper.toDTO(notification);
+        Notification savedNotification = notificationRepository.save(notification);
+        return NotificationMapper.toDTO(savedNotification);
     }
 
     @Override
     public NotificationDTO updateNotification(UUID id, NotificationDTO notificationDTO) {
+        if (notificationDTO == null) {
+            throw new IllegalArgumentException("NotificationDTO cannot be null.");
+        }
+
         Notification existingNotification = notificationRepository.findById(id)
                 .orElseThrow(() -> new NotificationNotFoundException(String.format(NOTIFICATION_NOT_FOUND_MESSAGE, id)));
 
-        existingNotification.setContent(notificationDTO.getContent());
-        existingNotification.setNotifyType(notificationDTO.getNotifyType());
+        boolean isUpdateProvided = notificationDTO.getContent() != null ||
+                notificationDTO.getNotifyType() != null ||
+                notificationDTO.getProjectId() != null ||
+                notificationDTO.getMentionedBy() != null ||
+                notificationDTO.getMentionedTo() != null ||
+                notificationDTO.isRead();
+
+        if (!isUpdateProvided) {
+            throw new IllegalArgumentException("At least one field must be provided to update the notification.");
+        }
+
+        if (notificationDTO.getContent() != null && !notificationDTO.getContent().trim().isEmpty()) {
+            existingNotification.setContent(notificationDTO.getContent());
+        } else if (notificationDTO.getContent() != null && notificationDTO.getContent().trim().isEmpty()) {
+            throw new IllegalArgumentException("Notification content cannot be blank.");
+        }
+
+        if (notificationDTO.getNotifyType() != null) {
+            existingNotification.setNotifyType(notificationDTO.getNotifyType());
+        }
+
+        if (notificationDTO.getProjectId() != null) {
+            Project project = projectRepository.findById(notificationDTO.getProjectId())
+                    .orElseThrow(() -> new ProjectNotFoundException(String.format(PROJECT_NOT_FOUND_MESSAGE, notificationDTO.getProjectId())));
+            existingNotification.setProjectId(project);
+        }
+
+        if (notificationDTO.getMentionedBy() != null) {
+            User mentionedBy = userRepository.findById(notificationDTO.getMentionedBy())
+                    .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, notificationDTO.getMentionedBy())));
+            existingNotification.setMentionedBy(mentionedBy);
+        }
+
+        if (notificationDTO.getMentionedTo() != null) {
+            User mentionedTo = userRepository.findById(notificationDTO.getMentionedTo())
+                    .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, notificationDTO.getMentionedTo())));
+            existingNotification.setMentionedTo(mentionedTo);
+        }
+
         existingNotification.setRead(notificationDTO.isRead());
 
-        Project project = projectRepository.findById(notificationDTO.getProjectId())
-                .orElseThrow(() -> new ProjectNotFoundException(String.format(PROJECT_NOT_FOUND_MESSAGE, notificationDTO.getProjectId())));
-        User mentionedBy = userRepository.findById(notificationDTO.getMentionedBy())
-                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, notificationDTO.getMentionedBy())));
-        User mentionedTo = userRepository.findById(notificationDTO.getMentionedTo())
-                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, notificationDTO.getMentionedTo())));
-
-        existingNotification.setProjectId(project);
-        existingNotification.setMentionedBy(mentionedBy);
-        existingNotification.setMentionedTo(mentionedTo);
-
-        notificationRepository.save(existingNotification);
-        return NotificationMapper.toDTO(existingNotification);
+        Notification savedNotification = notificationRepository.save(existingNotification);
+        return NotificationMapper.toDTO(savedNotification);
     }
 
     @Override

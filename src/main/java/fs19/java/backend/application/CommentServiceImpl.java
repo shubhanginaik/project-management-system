@@ -51,9 +51,8 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new TaskLevelException(String.format(TASK_NOT_FOUND_MESSAGE, commentRequestDTO.getTaskId())));
 
         Comment comment = commentMapper.toEntity(commentRequestDTO, task, createdBy);
-        commentRepository.save(comment);
-
-        return commentMapper.toDTO(comment);
+        Comment savedComment = commentRepository.save(comment);
+        return commentMapper.toDTO(savedComment);
     }
 
     @Override
@@ -62,9 +61,9 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new CommentNotFoundException(String.format(COMMENT_NOT_FOUND_MESSAGE, id)));
 
         existingComment.setContent(commentUpdateDTO.getContent());
-        commentRepository.save(existingComment);
+        Comment savedComment = commentRepository.save(existingComment);
 
-        return commentMapper.toDTO(existingComment);
+        return commentMapper.toDTO(savedComment);
     }
 
     @Override
