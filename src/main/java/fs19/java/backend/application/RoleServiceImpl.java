@@ -40,7 +40,7 @@ public class RoleServiceImpl implements RoleService {
             System.out.println("Role Name from DTO is null, cannot proceed with Role creation.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.ROLE_NAME_NOT_FOUND);
         }
-        if (roleRequestDTO.getCompanyId() == null) { // expected valid name only and that validation is enough
+        if (roleRequestDTO.getCompanyId() == null) {
             System.out.println("Role Name from DTO is null, cannot proceed with Role creation.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.COMPANY_ID_NOT_FOUND);
         }
@@ -61,7 +61,6 @@ public class RoleServiceImpl implements RoleService {
             System.out.println("Company-Name, cannot proceed with Role creation.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.COMPANY_NAME_NOT_FOUND);
         }
-
 
     }
 
