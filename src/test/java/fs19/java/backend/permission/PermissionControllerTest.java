@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fs19.java.backend.application.dto.permission.PermissionRequestDTO;
 import fs19.java.backend.application.dto.permission.PermissionResponseDTO;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,15 @@ class PermissionControllerTest {
 
     private static final String BASE_URL = "/app/v1/permissions";
 
+    @Autowired
+    private UserJpaRepo userJpaRepo;
+
     @Test
     @Order(1)
     @DisplayName("Test Create Permission")
     void testCreatePermission() throws Exception {
         PermissionRequestDTO request = new PermissionRequestDTO();
+        request.setCreated_user(userJpaRepo.findAll().getFirst().getId());
         request.setName("TEST_PERMISSION");
 
         String responseContent = mockMvc.perform(post(BASE_URL)
@@ -71,6 +76,7 @@ class PermissionControllerTest {
     @DisplayName("Test Update Permission")
     void testUpdatePermission() throws Exception {
         PermissionRequestDTO updateRequest = new PermissionRequestDTO();
+        updateRequest.setCreated_user(userJpaRepo.findAll().getFirst().getId());
         updateRequest.setName("UPDATED_PERMISSION");
 
         mockMvc.perform(put(BASE_URL + "/" + testPermissionId)

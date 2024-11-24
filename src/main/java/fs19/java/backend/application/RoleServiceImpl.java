@@ -6,6 +6,9 @@ import fs19.java.backend.application.mapper.RoleMapper;
 import fs19.java.backend.application.service.RoleService;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.Role;
+import fs19.java.backend.domain.entity.enums.ActionType;
+import fs19.java.backend.domain.entity.enums.EntityType;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.infrastructure.RoleRepoImpl;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import jakarta.validation.Valid;
@@ -22,9 +25,13 @@ import java.util.UUID;
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepoImpl roleRepo;
+    private final UserJpaRepo userJpaRepo;
+    private final ActivityLoggerService activityLoggerService;
 
-    public RoleServiceImpl(RoleRepoImpl roleRepo) {
+    public RoleServiceImpl(RoleRepoImpl roleRepo, UserJpaRepo userJpaRepo, ActivityLoggerService activityLoggerService) {
         this.roleRepo = roleRepo;
+        this.userJpaRepo = userJpaRepo;
+        this.activityLoggerService = activityLoggerService;
     }
 
     /**
@@ -45,7 +52,7 @@ public class RoleServiceImpl implements RoleService {
                 if (myRole == null) {
                     return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.INVALID_INFORMATION_ROLE_DETAILS_NOT_FOUND);
                 }
-                System.out.println("Role-Created successfully");
+                activityLoggerService.logActivity(EntityType.ROLE, myRole.getId(), ActionType.CREATED, userJpaRepo.findById(roleRequestDTO.getCreated_user()).get().getId());
                 return RoleMapper.toRoleResponseDTO(myRole, ResponseStatus.SUCCESSFULLY_CREATED);
             } else {
                 System.out.println("Role-Already Found");
@@ -78,7 +85,7 @@ public class RoleServiceImpl implements RoleService {
                 if (myRole == null) {
                     return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.INVALID_INFORMATION_ROLE_DETAILS_NOT_FOUND);
                 }
-                System.out.println("Role-Updated successfully");
+                activityLoggerService.logActivity(EntityType.ROLE, myRole.getId(), ActionType.UPDATED, userJpaRepo.findById(roleRequestDTO.getCreated_user()).get().getId());
                 return RoleMapper.toRoleResponseDTO(myRole, ResponseStatus.SUCCESSFULLY_UPDATED);
             } else {
                 System.out.println("Role-Already Found");
@@ -107,7 +114,7 @@ public class RoleServiceImpl implements RoleService {
         if (myRole == null) {
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.INVALID_INFORMATION_ROLE_DETAILS_NOT_FOUND);
         }
-        System.out.println("Role-Deleted successfully");
+        activityLoggerService.logActivity(EntityType.ROLE, myRole.getId(), ActionType.DELETED, myRole.getId());
         return RoleMapper.toRoleResponseDTO(myRole, ResponseStatus.SUCCESSFULLY_DELETED);
     }
 

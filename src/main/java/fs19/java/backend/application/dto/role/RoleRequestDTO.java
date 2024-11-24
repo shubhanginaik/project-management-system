@@ -26,4 +26,7 @@ public class RoleRequestDTO {
     @NotNull(message = "Company-Id cannot be null")
     @Schema(type = "string", format = "string", description = "Company Id defines here")
     private UUID companyId;
+    @Schema(type = "uuid", format = "uuid", description = "Role creating user Id")
+    @NotNull(message = "User id cannot be null")
+    private UUID created_user;
 }

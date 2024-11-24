@@ -23,5 +23,8 @@ public class PermissionRequestDTO {
     @NotNull(message = "Permission-Name cannot be null")
     @Schema(type = "string", format = "string", description = "permission name defines here")
     private String name;
+    @Schema(type = "uuid", format = "uuid", description = "Permission creating user Id")
+    @NotNull(message = "User id cannot be null")
+    private UUID created_user;
 
 }

@@ -6,7 +6,10 @@ public enum EntityType {
     INVITATION,
     WORKSPACE,
     PROJECT,
+    PERMISSION,
+    ROLE,
     TASK,
+    ROLE_PERMISSION,
     COMMENT,
     NOTIFICATION
 }

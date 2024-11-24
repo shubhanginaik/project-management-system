@@ -5,6 +5,11 @@ import fs19.java.backend.application.dto.permission.PermissionResponseDTO;
 import fs19.java.backend.application.mapper.PermissionMapper;
 import fs19.java.backend.application.service.PermissionService;
 import fs19.java.backend.domain.entity.Permission;
+import fs19.java.backend.domain.entity.enums.ActionType;
+import fs19.java.backend.domain.entity.enums.EntityType;
+import fs19.java.backend.infrastructure.InvitationRepoImpl;
+import fs19.java.backend.infrastructure.JpaRepositories.ActivityLogJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.infrastructure.PermissionRepoImpl;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import jakarta.validation.Valid;
@@ -20,13 +25,21 @@ import java.util.UUID;
 public class PermissionServiceImpl implements PermissionService {
 
     private final PermissionRepoImpl permissionRepo;
+    private final UserServiceImpl userService;
+    private final ActivityLoggerService activityLoggerService;
 
-    public PermissionServiceImpl(PermissionRepoImpl PermissionRepoImpl) {
+
+    public PermissionServiceImpl(PermissionRepoImpl PermissionRepoImpl,
+                                 InvitationRepoImpl invitationRepo,
+                                 UserServiceImpl userService, ActivityLoggerService activityLoggerService) {
         this.permissionRepo = PermissionRepoImpl;
+        this.userService = userService;
+        this.activityLoggerService = activityLoggerService;
     }
 
     /**
      * Create a new permission
+     *
      * @param permissionRequestDTO
      * @return
      */
@@ -42,7 +55,7 @@ public class PermissionServiceImpl implements PermissionService {
             if (myPermission == null) {
                 return PermissionMapper.toPermissionResponseDTO(new Permission(), ResponseStatus.INVALID_INFORMATION_PERMISSION_DETAILS_NOT_FOUND);
             }
-            System.out.println("Permission-Created successfully");
+            activityLoggerService.logActivity(EntityType.PERMISSION, myPermission.getId(), ActionType.CREATED, userService.findUserById(permissionRequestDTO.getCreated_user()).getId());
             return PermissionMapper.toPermissionResponseDTO(myPermission, ResponseStatus.SUCCESSFULLY_CREATED);
         } else {
             System.out.println("RoleModel-Already Found");
@@ -73,7 +86,7 @@ public class PermissionServiceImpl implements PermissionService {
             if (myPermission == null) {
                 return PermissionMapper.toPermissionResponseDTO(new Permission(), ResponseStatus.INVALID_INFORMATION_PERMISSION_DETAILS_NOT_FOUND);
             }
-            System.out.println("Permission-Updated successfully");
+            activityLoggerService.logActivity(EntityType.PERMISSION, myPermission.getId(), ActionType.UPDATED, userService.findUserById(permissionRequestDTO.getCreated_user()).getId());
             return PermissionMapper.toPermissionResponseDTO(myPermission, ResponseStatus.SUCCESSFULLY_UPDATED);
         } else {
             System.out.println("Permission-Already Found");
@@ -97,7 +110,7 @@ public class PermissionServiceImpl implements PermissionService {
         if (myPermission == null) {
             return PermissionMapper.toPermissionResponseDTO(new Permission(), ResponseStatus.INVALID_INFORMATION_PERMISSION_DETAILS_NOT_FOUND);
         }
-        System.out.println("Permission-Deleted successfully");
+        activityLoggerService.logActivity(EntityType.PERMISSION, myPermission.getId(), ActionType.DELETED, myPermission.getId());
         return PermissionMapper.toPermissionResponseDTO(myPermission, ResponseStatus.SUCCESSFULLY_DELETED);
     }
 

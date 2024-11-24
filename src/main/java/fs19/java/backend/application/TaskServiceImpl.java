@@ -6,6 +6,8 @@ import fs19.java.backend.application.mapper.TaskMapper;
 import fs19.java.backend.application.service.TaskService;
 import fs19.java.backend.domain.entity.Task;
 import fs19.java.backend.domain.entity.User;
+import fs19.java.backend.domain.entity.enums.ActionType;
+import fs19.java.backend.domain.entity.enums.EntityType;
 import fs19.java.backend.infrastructure.TaskRepoImpl;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import org.springframework.stereotype.Service;
@@ -18,9 +20,12 @@ import java.util.UUID;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepoImpl taskRepo;
+    private final ActivityLoggerService activityLoggerService;
 
-    public TaskServiceImpl(TaskRepoImpl taskRepo) {
+
+    public TaskServiceImpl(TaskRepoImpl taskRepo, ActivityLoggerService activityLoggerService) {
         this.taskRepo = taskRepo;
+        this.activityLoggerService = activityLoggerService;
     }
 
     @Override
@@ -41,7 +46,9 @@ public class TaskServiceImpl implements TaskService {
                 assignedUser = assignedUserById.get();
             }
             Task task = TaskMapper.toTask(taskRequestDTO, createdUserById.get(), assignedUser);
-            return TaskMapper.toTaskResponseDTO(taskRepo.save(task), ResponseStatus.SUCCESSFULLY_CREATED);
+            Task saveTask = taskRepo.save(task);
+            activityLoggerService.logActivity(EntityType.TASK, saveTask.getId(), ActionType.CREATED, saveTask.getCreatedUser().getId());
+            return TaskMapper.toTaskResponseDTO(saveTask, ResponseStatus.SUCCESSFULLY_CREATED);
 
         } else {
             System.out.println("Created User-Not Found");
@@ -71,6 +78,7 @@ public class TaskServiceImpl implements TaskService {
                 assignedUser = assignedUserById.get();
             }
             Task task = taskRepo.update(taskId, taskRequestDTO, assignedUser);
+            activityLoggerService.logActivity(EntityType.TASK, task.getId(), ActionType.UPDATED, task.getCreatedUser().getId());
             return TaskMapper.toTaskResponseDTO(task, ResponseStatus.SUCCESSFULLY_UPDATED);
 
         } else {
@@ -89,7 +97,7 @@ public class TaskServiceImpl implements TaskService {
         if (myTask == null) {
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.INVALID_INFORMATION_TASK_DETAILS_NOT_FOUND);
         }
-        System.out.println("Task-Deleted successfully");
+        activityLoggerService.logActivity(EntityType.TASK, myTask.getId(), ActionType.DELETED, myTask.getCreatedUser().getId());
         return TaskMapper.toTaskResponseDTO(myTask, ResponseStatus.SUCCESSFULLY_DELETED);
     }
 
