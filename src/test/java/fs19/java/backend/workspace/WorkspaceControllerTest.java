@@ -70,12 +70,10 @@ public class WorkspaceControllerTest {
         // Retrieve a user from the repository for the createdBy field
         User existingUser = userRepository.findAll().get(0); // Assuming at least one user exists
         testUserId = existingUser.getId();
-        System.out.println("Test User ID: " + testUserId);
 
         // Retrieve a company from the repository for the companyId field
         Company existingCompany = companyRepository.findAll().get(0); // Assuming at least one company exists
         testCompanyId = existingCompany.getId();
-        System.out.println("Test Company ID: " + testCompanyId);
     }
 
     @Test

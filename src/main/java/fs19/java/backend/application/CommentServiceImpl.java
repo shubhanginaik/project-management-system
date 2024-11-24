@@ -14,6 +14,8 @@ import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.presentation.shared.exception.CommentNotFoundException;
 import fs19.java.backend.presentation.shared.exception.TaskLevelException;
 import fs19.java.backend.presentation.shared.exception.UserNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements CommentService {
+
+    private static final Logger logger = LogManager.getLogger(CommentServiceImpl.class);
 
     private static final String COMMENT_NOT_FOUND_MESSAGE = "Comment with ID %s not found";
     private static final String TASK_NOT_FOUND_MESSAGE = "Task with ID %s not found";
@@ -41,6 +45,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentResponseDTO createComment(CommentRequestDTO commentRequestDTO) {
+        logger.info("Creating comment: {}", commentRequestDTO);
         if (commentRequestDTO == null) {
             throw new IllegalArgumentException("CommentRequestDTO must not be null");
         }
@@ -52,40 +57,52 @@ public class CommentServiceImpl implements CommentService {
 
         Comment comment = commentMapper.toEntity(commentRequestDTO, task, createdBy);
         Comment savedComment = commentRepository.save(comment);
+        logger.info("Comment created successfully: {}", savedComment);
         return commentMapper.toDTO(savedComment);
     }
 
     @Override
     public CommentResponseDTO updateComment(UUID id, CommentUpdateDTO commentUpdateDTO) {
+        logger.info("Updating comment with ID: {} and DTO: {}", id, commentUpdateDTO);
         Comment existingComment = commentRepository.findById(id)
                 .orElseThrow(() -> new CommentNotFoundException(String.format(COMMENT_NOT_FOUND_MESSAGE, id)));
 
         existingComment.setContent(commentUpdateDTO.getContent());
         Comment savedComment = commentRepository.save(existingComment);
-
+        logger.info("Comment updated successfully: {}", savedComment);
         return commentMapper.toDTO(savedComment);
     }
 
     @Override
     public CommentResponseDTO getCommentById(UUID id) {
+        logger.info("Retrieving comment with ID: {}", id);
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new CommentNotFoundException(String.format(COMMENT_NOT_FOUND_MESSAGE, id)));
 
+        logger.info("Comment retrieved successfully: {}", comment);
         return commentMapper.toDTO(comment);
     }
 
     @Override
     public List<CommentResponseDTO> getAllComments() {
-        return commentRepository.findAll().stream()
+        logger.info("Retrieving all comments");
+        List<CommentResponseDTO> comments = commentRepository.findAll().stream()
                 .map(commentMapper::toDTO)
                 .collect(Collectors.toList());
+        logger.info("All comments retrieved successfully");
+        return comments;
     }
 
     @Override
     public void deleteComment(UUID id) {
+        logger.info("Deleting comment with ID: {}", id);
         if (!commentRepository.existsById(id)) {
+            logger.error("Comment with ID: {} not found for deletion", id);
             throw new CommentNotFoundException(String.format(COMMENT_NOT_FOUND_MESSAGE, id));
         }
         commentRepository.deleteById(id);
+        logger.info("Comment with ID: {} deleted successfully", id);
+        //User createdBy = SecurityUtils.getCurrentUser();
+        //activityLoggerService.logActivity(EntityType.COMPANY, id, ActionType.DELETED, createdBy.getId());
     }
 }
