@@ -48,7 +48,6 @@ class CompanyControllerTest {
     void setUp() {
         // Retrieve a user from the repository for the createdBy field
         testUserId = userJpaRepo.findAll().get(0).getId();
-        System.out.println("Test User ID: " + testUserId);
     }
 
     @Test

@@ -121,5 +121,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         companyRepository.deleteById(id);
         logger.info("Company with ID: {} deleted", id);
+        //User createdBy = SecurityUtils.getCurrentUser();
+        //activityLoggerService.logActivity(EntityType.COMPANY, id, ActionType.DELETED, createdBy.getId());
     }
 }
