@@ -130,7 +130,7 @@ class UserControllerTest {
 
   @Test
   void shouldDeleteUserOnDelete() throws Exception {
-    userCreateDto.setEmail("Something@example.com");
+    userCreateDto.setEmail("Somethin@example.com");
     String response = performPostUser(userCreateDto)
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.firstName", is("Rony")))
@@ -140,6 +140,8 @@ class UserControllerTest {
         .getContentAsString();
 
     String userId = JsonPath.parse(response).read("$.data.id");
+
+    // Delete the user
     mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/users/{id}", userId))
         .andExpect(status().isNoContent());
   }

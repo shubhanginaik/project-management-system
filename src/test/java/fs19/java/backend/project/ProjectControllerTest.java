@@ -4,13 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import fs19.java.backend.application.dto.project.ProjectCreateDTO;
 import fs19.java.backend.application.dto.project.ProjectUpdateDTO;
+import fs19.java.backend.domain.entity.ActivityLog;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.domain.entity.Workspace;
+import fs19.java.backend.domain.entity.enums.EntityType;
+import fs19.java.backend.domain.entity.enums.ActionType;
 import fs19.java.backend.domain.entity.enums.WorkspaceType;
 import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.WorkspaceJpaRepo;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +59,21 @@ class ProjectControllerTest {
 
   @BeforeEach
   public void setUp() {
+
     user = userRepository.findAll().stream().findFirst().orElseGet(() -> {
-      User newUser = new User(UUID.randomUUID(), "user1", "Sony", "user1.sony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg");
+      var userId = UUID.randomUUID();
+      User newUser = new User(userId, "user1", "Sony", "user1.sony@example.com",
+          "password", "123456789", ZonedDateTime.now(), "profile.jpg", List.of());
+      var activityLogList = List.of(
+          ActivityLog.builder()
+              .entityType(EntityType.USER)
+              .entityId(UUID.randomUUID())
+              .action(ActionType.CREATED)
+              .createdDate(ZonedDateTime.now())
+              .userId(newUser)
+              .build()
+      );
+      newUser.setActivityLogs(activityLogList);
       return userRepository.save(newUser);
     });
 
