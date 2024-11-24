@@ -7,7 +7,9 @@ import fs19.java.backend.domain.entity.enums.NotificationType;
 import fs19.java.backend.domain.entity.enums.WorkspaceType;
 import fs19.java.backend.infrastructure.JpaRepositories.*;
 import fs19.java.backend.presentation.shared.Utilities.DateAndTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -28,6 +30,10 @@ public class DataLoader implements CommandLineRunner {
     private final NotificationJpaRepo notificationJpaRepo;
     private final ActivityLogJpaRepo activityLogJpaRepo;
     private final RolePermissionJpaRepo rolePermissionJpaRepo;
+
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public DataLoader(
             CompanyJpaRepo companyJpaRepo,
@@ -59,9 +65,9 @@ public class DataLoader implements CommandLineRunner {
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setEmail("aaaa@gmail.com");
-        user.setPassword("123456789");
+        user.setPassword(passwordEncoder.encode("123456789"));
         user.setCreatedDate(DateAndTime.getDateAndTime());
-        userJpaRepo.save(user);
+        User saveUser = userJpaRepo.save(user);
 
         Company company = new Company();
         company.setName("ABC");
@@ -70,13 +76,15 @@ public class DataLoader implements CommandLineRunner {
         companyJpaRepo.save(company);
 
         Permission permission = new Permission();
-        permission.setName("ACCESS");
-        permissionJpaRepo.save(permission);
+        permission.setName("ROLE_ACCESS");
+        Permission savePermission = permissionJpaRepo.save(permission);
+
+
         Role role = new Role();
         role.setName("ADMIN");
         role.setCreatedDate(DateAndTime.getDateAndTime());
         role.setCompany(companyJpaRepo.findAll().getFirst());
-        roleJpaRepo.save(role);
+        Role saveRole = roleJpaRepo.save(role);
 
         Role role2 = new Role();
         role2.setName("ROLE-NAME");
@@ -90,7 +98,7 @@ public class DataLoader implements CommandLineRunner {
         workspace.setType(WorkspaceType.PUBLIC);
         workspace.setCompanyId(companyJpaRepo.findAll().getFirst());
         workspace.setCreatedBy(userJpaRepo.findAll().getFirst());
-        workspaceJpaRepo.save(workspace);
+        Workspace saveWorkspace = workspaceJpaRepo.save(workspace);
 
         Project project = new Project();
         project.setName("Project1");
@@ -102,9 +110,9 @@ public class DataLoader implements CommandLineRunner {
         projectJpaRepo.save(project);
 
         WorkspaceUser workspaceUser = new WorkspaceUser();
-        workspaceUser.setRole(roleJpaRepo.findAll().getFirst());
-        workspaceUser.setUser(userJpaRepo.findAll().getFirst());
-        workspaceUser.setWorkspace(workspaceJpaRepo.findAll().getFirst());
+        workspaceUser.setRole(saveRole);
+        workspaceUser.setUser(saveUser);
+        workspaceUser.setWorkspace(saveWorkspace);
         workspaceUserJpaRepo.save(workspaceUser);
 
         Permission permission1 = new Permission();
@@ -116,8 +124,8 @@ public class DataLoader implements CommandLineRunner {
         permissionJpaRepo.save(permission2);
 
         RolePermission rolePermission = new RolePermission();
-        rolePermission.setRole(role);
-        rolePermission.setPermission(permission1);
+        rolePermission.setRole(saveRole);
+        rolePermission.setPermission(savePermission);
         rolePermissionJpaRepo.save(rolePermission);
 
         Task task = new Task();

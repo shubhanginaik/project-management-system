@@ -15,7 +15,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "role_permission")
+@Table(name = "role_permission", indexes = {
+        @Index(name = "idx_role_permission_role_id", columnList = "role_id"),
+        @Index(name = "idx_role_permission_permission_id", columnList = "permission_id")
+})
 public class RolePermission {
 
     @Id
@@ -23,11 +26,11 @@ public class RolePermission {
     @Column(updatable = false, nullable = false)
     private UUID id;
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "permission_id", nullable = false)
     private Permission permission;
 }

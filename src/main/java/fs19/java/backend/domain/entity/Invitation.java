@@ -14,7 +14,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "invitation")
+@Table(name = "invitation", indexes = {
+        @Index(name = "idx_invitation_company_id", columnList = "company_id"),
+        @Index(name = "idx_invitation_role_id", columnList = "role_id")
+})
 public class Invitation {
 
     @Id
@@ -22,21 +25,21 @@ public class Invitation {
     @Column(updatable = false, nullable = false)
     private UUID id;
     @NotNull
-    @Column(nullable = false,columnDefinition = "BOOLEAN DEFAULT false" )
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     private boolean isAccepted;
     @NotNull
     @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private ZonedDateTime expiredAt;
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, length = 25)
     private String email;
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 }

@@ -24,14 +24,14 @@ public class Role {
     @Column(updatable = false, nullable = false)
     private UUID id;
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, length = 25)
     private String name;
     @NotNull
     @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private ZonedDateTime createdDate;
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
