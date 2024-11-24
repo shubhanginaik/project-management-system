@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -13,12 +14,17 @@ import lombok.*;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-@Entity
-@Table(name = "project")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
+@Entity
+@Table(name = "project", indexes = {
+    @Index(name = "idx_project_name", columnList = "name"),
+    @Index(name = "idx_project_created_by_user_id", columnList = "created_by_user_id"),
+    @Index(name = "idx_project_workspace_id", columnList = "workspace_id"),
+    @Index(name = "idx_project_status", columnList = "status")
+})
 public class Project {
 
   @Id
@@ -51,3 +57,4 @@ public class Project {
   @Column(nullable = false)
   private Boolean status;
 }
+
