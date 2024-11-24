@@ -55,11 +55,8 @@ class CommentControllerTest {
 
     @BeforeEach
     public void setUp() {
-        System.out.println("CommentControllerTest.setUp");
         testUserId = userJpaRepo.findAll().get(0).getId();
         testTaskId = taskJpaRepo.findAll().get(0).getId();
-        System.out.println("testUserId: " + testUserId);
-        System.out.println("testTaskId: " + testTaskId);
     }
 
     @Test
@@ -79,8 +76,6 @@ class CommentControllerTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-
-        System.out.println("Response content: " + responseContent);
         saveIdForExecuteTest(responseContent);
     }
 
@@ -88,7 +83,6 @@ class CommentControllerTest {
     @Order(2)
     @DisplayName("Test Get Comment by ID")
     public void testGetCommentById() throws Exception {
-        System.out.println("testCommentId: " + testCommentId);
         mockMvc.perform(get(BASE_URL + "/" + testCommentId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.content").value("This is a test comment"));
@@ -101,8 +95,6 @@ class CommentControllerTest {
         CommentUpdateDTO updateRequest = new CommentUpdateDTO();
         updateRequest.setContent("This is an updated comment");
 
-        System.out.println("Updating comment with ID: " + testCommentId);
-
         mockMvc.perform(put(BASE_URL + "/" + testCommentId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
@@ -114,7 +106,6 @@ class CommentControllerTest {
     @Order(4)
     @DisplayName("Test Get All Comments")
     public void testGetAllComments() throws Exception {
-        System.out.println("Retrieving all comments.");
         mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
@@ -125,7 +116,6 @@ class CommentControllerTest {
     @Order(5)
     @DisplayName("Test Delete Comment by ID")
     public void testDeleteCommentById() throws Exception {
-        System.out.println("Deleting comment with ID: " + testCommentId);
         mockMvc.perform(delete(BASE_URL + "/" + testCommentId))
                 .andExpect(status().isNoContent());
     }
@@ -138,7 +128,6 @@ class CommentControllerTest {
             Object id = map.get("id");
             if (id != null) {
                 testCommentId = UUID.fromString((String) id);
-                System.out.println("Assigned testCommentId: " + testCommentId);
             } else {
                 throw new IllegalStateException("Comment ID not found in response");
             }

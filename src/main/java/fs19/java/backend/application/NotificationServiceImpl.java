@@ -12,6 +12,8 @@ import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.presentation.shared.exception.NotificationNotFoundException;
 import fs19.java.backend.presentation.shared.exception.ProjectNotFoundException;
 import fs19.java.backend.presentation.shared.exception.UserNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
+
+    private static final Logger logger = LogManager.getLogger(NotificationServiceImpl.class);
 
     private static final String NOTIFICATION_NOT_FOUND_MESSAGE = "Notification with ID %s not found";
     private static final String USER_NOT_FOUND_MESSAGE = "User with ID %s not found";
@@ -38,6 +42,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationDTO createNotification(NotificationDTO notificationDTO) {
+        logger.info("Creating notification: {}", notificationDTO);
         if (notificationDTO == null) {
             throw new IllegalArgumentException("NotificationDTO cannot be null.");
         }
@@ -53,11 +58,13 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setCreatedDate(ZonedDateTime.now());
 
         Notification savedNotification = notificationRepository.save(notification);
+        logger.info("Notification created successfully: {}", savedNotification);
         return NotificationMapper.toDTO(savedNotification);
     }
 
     @Override
     public NotificationDTO updateNotification(UUID id, NotificationDTO notificationDTO) {
+        logger.info("Updating notification with ID: {} and DTO: {}", id, notificationDTO);
         if (notificationDTO == null) {
             throw new IllegalArgumentException("NotificationDTO cannot be null.");
         }
@@ -107,28 +114,39 @@ public class NotificationServiceImpl implements NotificationService {
         existingNotification.setRead(notificationDTO.isRead());
 
         Notification savedNotification = notificationRepository.save(existingNotification);
+        logger.info("Notification updated successfully: {}", savedNotification);
         return NotificationMapper.toDTO(savedNotification);
     }
 
     @Override
     public NotificationDTO getNotificationById(UUID id) {
+        logger.info("Retrieving notification with ID: {}", id);
         Notification notification = notificationRepository.findById(id)
                 .orElseThrow(() -> new NotificationNotFoundException(String.format(NOTIFICATION_NOT_FOUND_MESSAGE, id)));
+        logger.info("Notification retrieved successfully: {}", notification);
         return NotificationMapper.toDTO(notification);
     }
 
     @Override
     public List<NotificationDTO> getAllNotifications() {
-        return notificationRepository.findAll().stream()
+        logger.info("Retrieving all notifications");
+        List<NotificationDTO> notifications = notificationRepository.findAll().stream()
                 .map(NotificationMapper::toDTO)
                 .collect(Collectors.toList());
+        logger.info("All notifications retrieved successfully");
+        return notifications;
     }
 
     @Override
     public void deleteNotification(UUID id) {
+        logger.info("Deleting notification with ID: {}", id);
         if (!notificationRepository.existsById(id)) {
+            logger.error("Notification with ID: {} not found for deletion", id);
             throw new NotificationNotFoundException(String.format(NOTIFICATION_NOT_FOUND_MESSAGE, id));
         }
         notificationRepository.deleteById(id);
+        logger.info("Notification with ID: {} deleted successfully", id);
+        //User createdBy = SecurityUtils.getCurrentUser();
+        //activityLoggerService.logActivity(EntityType.COMPANY, id, ActionType.DELETED, createdBy.getId());
     }
 }

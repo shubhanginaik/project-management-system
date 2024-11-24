@@ -17,6 +17,8 @@ import fs19.java.backend.presentation.shared.exception.CompanyNotFoundException;
 import fs19.java.backend.presentation.shared.exception.UserNotFoundException;
 import fs19.java.backend.presentation.shared.exception.WorkspaceNotFoundException;
 import fs19.java.backend.presentation.shared.exception.InvalidWorkspaceException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -26,6 +28,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class WorkspaceServiceImpl implements WorkspaceService {
+
+    private static final Logger logger = LogManager.getLogger(WorkspaceServiceImpl.class);
 
     private static final String WORKSPACE_NOT_FOUND_MESSAGE = "Workspace with ID %s not found";
     private static final String COMPANY_NOT_FOUND_MESSAGE = "Company with ID %s not found";
@@ -47,6 +51,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 
     @Override
     public WorkspaceResponseDTO createWorkspace(WorkspaceRequestDTO workspaceRequestDTO) {
+        logger.info("Creating workspace: {}", workspaceRequestDTO);
         if (workspaceRequestDTO == null) {
             throw new InvalidWorkspaceException("WorkspaceRequestDTO cannot be null.");
         }
@@ -59,11 +64,13 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         workspace.setCreatedDate(ZonedDateTime.now());
         Workspace savedWorkspace = workspaceRepository.save(workspace);
         activityLoggerService.logActivity(EntityType.WORKSPACE, savedWorkspace.getId(), ActionType.CREATED, createdBy.getId());
+        logger.info("Workspace created successfully: {}", savedWorkspace);
         return workspaceMapper.toDTO(savedWorkspace);
     }
 
     @Override
     public WorkspaceResponseDTO updateWorkspace(UUID id, WorkspaceUpdateDTO workspaceUpdateDTO) {
+        logger.info("Updating workspace with ID: {} and DTO: {}", id, workspaceUpdateDTO);
         if (workspaceUpdateDTO == null) {
             throw new InvalidWorkspaceException("WorkspaceUpdateDTO cannot be null.");
         }
@@ -102,32 +109,41 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         });
 
         Workspace savedWorkspace = workspaceRepository.save(existingWorkspace);
-        // Fetch the current user ID from the security context
-        //UUID userId = SecurityUtils.getCurrentUserId();
-        // Log the update in the activity log
-        //activityLoggerService.logActivity(EntityType.WORKSPACE, existingWorkspace.getId(), ActionType.UPDATED, userId);
+        // UUID createdBy = SecurityUtils.getCurrentUserId(); // Fetch the current user ID from the security context
+        //activityLoggerService.logActivity(EntityType.WORKSPACE, existingWorkspace.getId(), ActionType.UPDATED, createdBy);
+        logger.info("Workspace updated successfully: {}", savedWorkspace);
         return workspaceMapper.toDTO(savedWorkspace);
     }
 
     @Override
     public WorkspaceResponseDTO getWorkspaceById(UUID id) {
+        logger.info("Retrieving workspace with ID: {}", id);
         Workspace workspace = workspaceRepository.findById(id)
                 .orElseThrow(() -> new WorkspaceNotFoundException(String.format(WORKSPACE_NOT_FOUND_MESSAGE, id)));
+        logger.info("Workspace retrieved successfully: {}", workspace);
         return workspaceMapper.toDTO(workspace);
     }
 
     @Override
     public List<WorkspaceResponseDTO> getAllWorkspaces() {
-        return workspaceRepository.findAll().stream()
+        logger.info("Retrieving all workspaces");
+        List<WorkspaceResponseDTO> workspaces = workspaceRepository.findAll().stream()
                 .map(workspaceMapper::toDTO)
                 .collect(Collectors.toList());
+        logger.info("All workspaces retrieved successfully");
+        return workspaces;
     }
 
     @Override
     public void deleteWorkspace(UUID id) {
+        logger.info("Deleting workspace with ID: {}", id);
         if (!workspaceRepository.existsById(id)) {
+            logger.error("Workspace with ID: {} not found for deletion", id);
             throw new WorkspaceNotFoundException(String.format(WORKSPACE_NOT_FOUND_MESSAGE, id));
         }
         workspaceRepository.deleteById(id);
+        logger.info("Workspace with ID: {} deleted successfully", id);
+        //User createdBy = SecurityUtils.getCurrentUser();
+        //activityLoggerService.logActivity(EntityType.COMPANY, id, ActionType.DELETED, createdBy.getId());
     }
 }
