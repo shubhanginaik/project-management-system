@@ -24,6 +24,9 @@ public class InvitationRequestDTO {
     @Schema(type = "String", format = "String", description = "invitation sending email")
     @NotNull(message = "Email cannot be null")
     private String email;
+    @Schema(type = "uuid", format = "uuid", description = "invitation creating user Id")
+    @NotNull(message = "User id cannot be null")
+    private UUID created_user;
     @Schema(type = "uuid", format = "uuid", description = "invitation sending role Id")
     @NotNull(message = "Role id cannot be null")
     private UUID roleId;

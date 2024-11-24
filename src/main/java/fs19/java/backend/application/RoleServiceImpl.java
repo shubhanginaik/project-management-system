@@ -6,9 +6,15 @@ import fs19.java.backend.application.mapper.RoleMapper;
 import fs19.java.backend.application.service.RoleService;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.Role;
+import fs19.java.backend.domain.entity.enums.ActionType;
+import fs19.java.backend.domain.entity.enums.EntityType;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.infrastructure.RoleRepoImpl;
+import fs19.java.backend.presentation.controller.ActivityLogController;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,10 +27,15 @@ import java.util.UUID;
 @Service
 public class RoleServiceImpl implements RoleService {
 
+    private static final Logger logger = LogManager.getLogger(ActivityLogController.class);
     private final RoleRepoImpl roleRepo;
+    private final UserJpaRepo userJpaRepo;
+    private final ActivityLoggerService activityLoggerService;
 
-    public RoleServiceImpl(RoleRepoImpl roleRepo) {
+    public RoleServiceImpl(RoleRepoImpl roleRepo, UserJpaRepo userJpaRepo, ActivityLoggerService activityLoggerService) {
         this.roleRepo = roleRepo;
+        this.userJpaRepo = userJpaRepo;
+        this.activityLoggerService = activityLoggerService;
     }
 
     /**
@@ -45,14 +56,14 @@ public class RoleServiceImpl implements RoleService {
                 if (myRole == null) {
                     return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.INVALID_INFORMATION_ROLE_DETAILS_NOT_FOUND);
                 }
-                System.out.println("Role-Created successfully");
+                activityLoggerService.logActivity(EntityType.ROLE, myRole.getId(), ActionType.CREATED, userJpaRepo.findById(roleRequestDTO.getCreated_user()).get().getId());
                 return RoleMapper.toRoleResponseDTO(myRole, ResponseStatus.SUCCESSFULLY_CREATED);
             } else {
-                System.out.println("Role-Already Found");
+                logger.info("Role-Already Found. {}", roleRequestDTO);
                 return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.RECORD_ALREADY_CREATED);
             }
         } else {
-            System.out.println("Company-Name, cannot proceed with Role creation.");
+            logger.info("Company-Name, cannot proceed with Role creation.{}", roleRequestDTO);
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.COMPANY_ID_NOT_FOUND);
         }
 
@@ -78,14 +89,14 @@ public class RoleServiceImpl implements RoleService {
                 if (myRole == null) {
                     return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.INVALID_INFORMATION_ROLE_DETAILS_NOT_FOUND);
                 }
-                System.out.println("Role-Updated successfully");
+                activityLoggerService.logActivity(EntityType.ROLE, myRole.getId(), ActionType.UPDATED, userJpaRepo.findById(roleRequestDTO.getCreated_user()).get().getId());
                 return RoleMapper.toRoleResponseDTO(myRole, ResponseStatus.SUCCESSFULLY_UPDATED);
             } else {
-                System.out.println("Role-Already Found");
+                logger.info("Role-Already Found. {}", roleRequestDTO);
                 return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.RECORD_ALREADY_CREATED);
             }
         } else {
-            System.out.println("Company-Not Found, cannot proceed with Role creation.");
+            logger.info("Company-Not Found, cannot proceed with Role creation.{}", roleRequestDTO);
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.COMPANY_NAME_NOT_FOUND);
         }
     }
@@ -100,14 +111,14 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleResponseDTO delete(UUID roleId) {
         if (roleId == null) {
-            System.out.println("Role ID is null, cannot proceed with delete.");
+            logger.info("Role ID is null, cannot proceed with delete.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.ROLE_ID_NOT_FOUND);
         }
         Role myRole = this.roleRepo.delete(roleId);
         if (myRole == null) {
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.INVALID_INFORMATION_ROLE_DETAILS_NOT_FOUND);
         }
-        System.out.println("Role-Deleted successfully");
+        activityLoggerService.logActivity(EntityType.ROLE, myRole.getId(), ActionType.DELETED, myRole.getId());
         return RoleMapper.toRoleResponseDTO(myRole, ResponseStatus.SUCCESSFULLY_DELETED);
     }
 
@@ -130,7 +141,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleResponseDTO findById(UUID roleId) {
         if (roleId == null) {
-            System.out.println("Role ID is null, cannot proceed with search.");
+            logger.info("Role ID is null, cannot proceed with search.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.ROLE_ID_NOT_FOUND);
         }
         Role myRole = this.roleRepo.findById(roleId);
@@ -149,7 +160,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleResponseDTO findByName(String name) {
         if (name.isEmpty()) {
-            System.out.println("Role Name is null, cannot proceed with search.");
+            logger.info("Role Name is null, cannot proceed with search.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.ROLE_NAME_NOT_FOUND);
         }
         Role myRole = this.roleRepo.findByName(name);
@@ -167,11 +178,11 @@ public class RoleServiceImpl implements RoleService {
      */
     private RoleResponseDTO validateSaveDTO(RoleRequestDTO roleRequestDTO) {
         if (roleRequestDTO.getName().isEmpty()) { // expected valid name only and that validation is enough
-            System.out.println("Role Name from DTO is null, cannot proceed with Role creation.");
+            logger.info("Role Name from DTO is null, cannot proceed with Role creation.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.ROLE_NAME_NOT_FOUND);
         }
         if (roleRequestDTO.getCompanyId() == null) {
-            System.out.println("Role Name from DTO is null, cannot proceed with Role creation.");
+            logger.info("Role Name from DTO is null, cannot proceed with Role creation.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.COMPANY_ID_NOT_FOUND);
         }
         return null;
@@ -185,7 +196,7 @@ public class RoleServiceImpl implements RoleService {
      */
     private RoleResponseDTO validateUpdateDTO(UUID roleId, RoleRequestDTO roleRequestDTO) {
         if (roleId == null) {
-            System.out.println("Role ID is null, cannot proceed with update.");
+            logger.info("Role ID is null, cannot proceed with update.");
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.ROLE_ID_NOT_FOUND);
         }
         return validateSaveDTO(roleRequestDTO);

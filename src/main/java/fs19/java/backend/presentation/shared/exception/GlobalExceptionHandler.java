@@ -48,6 +48,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(UserAlreadyFoundException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleUserNotFoundException(UserAlreadyFoundException ex) {
+        ErrorItem error = new ErrorItem(ex.getMessage());
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.NOT_ACCEPTABLE.value(),
+                List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+
     @ExceptionHandler({UserValidationException.class, MethodArgumentNotValidException.class})
     public ResponseEntity<GlobalResponse<Void>> handleValidationException(Exception ex) {
         logger.error("ValidationException: {}", ex.getMessage(), ex);

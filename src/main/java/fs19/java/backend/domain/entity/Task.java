@@ -20,7 +20,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "task")
+@Table(name = "task", indexes = {
+        @Index(name = "idx_task_project_id", columnList = "project_id"),
+        @Index(name = "idx_task_created_user", columnList = "createduser_id"),
+        @Index(name = "idx_task_assigned_user", columnList = "assigneduser_id")
+})
 public class Task {
 
     @Id
@@ -28,8 +32,9 @@ public class Task {
     @Column(updatable = false, nullable = false)
     private UUID id;
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, length = 25)
     private String name;
+    @Column(length = 500)
     private String description;
     @NotNull
     @Column(nullable = false)
@@ -46,10 +51,10 @@ public class Task {
     @Column(nullable = false)
     private UUID projectId;
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "createduser_id", nullable = false)
     private User createdUser;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "assigneduser_id", nullable = false)
     private User assignedUser;
     @NotNull
@@ -58,3 +63,5 @@ public class Task {
     private String priority;
 
 }
+
+

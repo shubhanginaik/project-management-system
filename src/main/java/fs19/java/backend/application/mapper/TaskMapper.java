@@ -21,7 +21,12 @@ public class TaskMapper {
      * @return
      */
     public static TaskResponseDTO toTaskResponseDTO(Task task, ResponseStatus status) {
-        return new TaskResponseDTO(task.getId(), task.getName(), task.getDescription(), task.getCreatedDate(), task.getResolvedDate(), task.getDueDate(), task.getAttachments(), task.getTaskStatus(), task.getProjectId(), task.getCreatedUser() == null ? null : task.getCreatedUser().getId(), task.getAssignedUser() == null ? null : task.getAssignedUser().getId(), task.getPriority(), status);
+        return new TaskResponseDTO(task.getId(), task.getName(), task.getDescription(),
+                task.getCreatedDate(), task.getResolvedDate(), task.getDueDate(),
+                task.getAttachments(), task.getTaskStatus(), task.getProjectId(),
+                task.getCreatedUser() == null ? null : task.getCreatedUser().getId(),
+                task.getAssignedUser() == null ? null : task.getAssignedUser().getId(),
+                task.getPriority(), status);
     }
 
     /**
@@ -39,6 +44,10 @@ public class TaskMapper {
     }
 
     public static Task toTask(TaskRequestDTO taskRequestDTO, User createduser, User assignedUser) {
-        return new Task(UUID.randomUUID(), taskRequestDTO.getName(), taskRequestDTO.getDescription(), DateAndTime.getDateAndTime(), taskRequestDTO.getResolvedDate(), taskRequestDTO.getDueDate(), taskRequestDTO.getAttachments(), taskRequestDTO.getTaskStatus(), taskRequestDTO.getProjectId(), createduser, assignedUser, taskRequestDTO.getPriority());
+        return new Task(UUID.randomUUID(), taskRequestDTO.getName(), taskRequestDTO.getDescription(),
+                DateAndTime.getDateAndTime(), taskRequestDTO.getResolvedDate(),
+                taskRequestDTO.getDueDate(), taskRequestDTO.getAttachments(),
+                taskRequestDTO.getTaskStatus(), taskRequestDTO.getProjectId(),
+                createduser, assignedUser, taskRequestDTO.getPriority());
     }
 }

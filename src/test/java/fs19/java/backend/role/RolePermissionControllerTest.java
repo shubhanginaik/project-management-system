@@ -6,6 +6,7 @@ import fs19.java.backend.application.dto.role.RolePermissionRequestDTO;
 import fs19.java.backend.application.dto.role.RolePermissionResponseDTO;
 import fs19.java.backend.infrastructure.JpaRepositories.PermissionJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.RoleJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ class RolePermissionControllerTest {
     private RoleJpaRepo roleJpaRepo;
 
     @Autowired
+    private UserJpaRepo userJpaRepo;
+
+    @Autowired
     private PermissionJpaRepo permissionJpaRepo;
 
     @Test
@@ -53,6 +57,7 @@ class RolePermissionControllerTest {
         RolePermissionRequestDTO request = new RolePermissionRequestDTO();
         request.setRoleId(roleJpaRepo.findAll().getFirst().getId());
         request.setPermissionId(permissionJpaRepo.findAll().getFirst().getId());
+        request.setCreated_user(userJpaRepo.findAll().getFirst().getId());
 
         String responseContent = mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -84,6 +89,7 @@ class RolePermissionControllerTest {
         RolePermissionRequestDTO updateRequest = new RolePermissionRequestDTO();
         updateRequest.setRoleId(roleJpaRepo.findAll().getLast().getId());
         updateRequest.setPermissionId(permissionJpaRepo.findAll().getLast().getId());
+        updateRequest.setCreated_user(userJpaRepo.findAll().getFirst().getId());
 
         mockMvc.perform(put(BASE_URL + "/" + testRolePermissionId)
                         .contentType(MediaType.APPLICATION_JSON)

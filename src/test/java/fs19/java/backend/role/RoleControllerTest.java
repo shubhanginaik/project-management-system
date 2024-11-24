@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fs19.java.backend.application.dto.role.RoleRequestDTO;
 import fs19.java.backend.application.dto.role.RoleResponseDTO;
 import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,8 @@ class RoleControllerTest {
     @Autowired
     private CompanyJpaRepo companyJpaRepo;
 
+    @Autowired
+    private UserJpaRepo userJpaRepo;
 
     @Test
     @Order(1)
@@ -50,6 +53,7 @@ class RoleControllerTest {
         RoleRequestDTO request = new RoleRequestDTO();
         request.setName("Admin");
         request.setCompanyId(companyJpaRepo.findAll().getFirst().getId());
+        request.setCreated_user(userJpaRepo.findAll().getFirst().getId());
 
         String responseContent = mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +83,7 @@ class RoleControllerTest {
         RoleRequestDTO updateRequest = new RoleRequestDTO();
         updateRequest.setName("UpdatedRole");
         updateRequest.setCompanyId(companyJpaRepo.findAll().getFirst().getId());
-
+        updateRequest.setCreated_user(userJpaRepo.findAll().getFirst().getId());
 
         mockMvc.perform(put(BASE_URL + "/" + testRoleId)
                         .contentType(MediaType.APPLICATION_JSON)

@@ -5,9 +5,15 @@ import fs19.java.backend.application.dto.role.RolePermissionResponseDTO;
 import fs19.java.backend.application.mapper.RolePermissionMapper;
 import fs19.java.backend.application.service.RolePermissionService;
 import fs19.java.backend.domain.entity.RolePermission;
+import fs19.java.backend.domain.entity.enums.ActionType;
+import fs19.java.backend.domain.entity.enums.EntityType;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.infrastructure.RolePermissionRepoImpl;
+import fs19.java.backend.presentation.controller.ActivityLogController;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,10 +26,16 @@ import java.util.UUID;
 @Service
 public class RolePermissionServiceImpl implements RolePermissionService {
 
+    private static final Logger logger = LogManager.getLogger(ActivityLogController.class);
     private final RolePermissionRepoImpl rolePermissionRepo;
+    private final ActivityLoggerService activityLoggerService;
+    private final UserJpaRepo userJpaRepo;
+    private RolePermissionRepoImpl rolePermissionRepo1;
 
-    public RolePermissionServiceImpl(RolePermissionRepoImpl rolePermissionRepo) {
+    public RolePermissionServiceImpl(RolePermissionRepoImpl rolePermissionRepo, ActivityLoggerService activityLoggerService, UserJpaRepo userJpaRepo) {
         this.rolePermissionRepo = rolePermissionRepo;
+        this.activityLoggerService = activityLoggerService;
+        this.userJpaRepo = userJpaRepo;
     }
 
     /**
@@ -35,17 +47,19 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     @Override
     public RolePermissionResponseDTO create(@Valid RolePermissionRequestDTO rolePermissionRequestDTO) {
         if (rolePermissionRequestDTO.getRoleId() == null) {
-            System.out.println("Role Id is null, cannot proceed with create.");
+            logger.info("Role Id is null, cannot proceed with create. {}", rolePermissionRepo);
             return RolePermissionMapper.toPermissionResponseDTO(new RolePermission(), ResponseStatus.ROLE_ID_NOT_FOUND);
         } else if (rolePermissionRequestDTO.getPermissionId() == null) {
-            System.out.println("Permission Id is null, cannot proceed with create.");
+            logger.info("Permission Id is null, cannot proceed with create.{}", rolePermissionRepo1);
             return RolePermissionMapper.toPermissionResponseDTO(new RolePermission(), ResponseStatus.PERMISSION_ID_NOT_FOUND);
         }
         RolePermission resultIfExist = rolePermissionRepo.existsById(rolePermissionRequestDTO.getRoleId(), rolePermissionRequestDTO.getPermissionId());
         if (resultIfExist == null) {
-            return rolePermissionRepo.save(rolePermissionRequestDTO);
+            RolePermissionResponseDTO responseDTO = rolePermissionRepo.save(rolePermissionRequestDTO);
+            activityLoggerService.logActivity(EntityType.ROLE_PERMISSION, responseDTO.getId(), ActionType.CREATED, userJpaRepo.findById(rolePermissionRequestDTO.getCreated_user()).get().getId());
+            return responseDTO;
         }
-        System.out.println("Record Already created,Please use the existing information (Role permission id :" + resultIfExist.getId() + ")");
+        logger.info("Record Already created,Please use the existing information (Role permission id :" + resultIfExist.getId() + ") {}", rolePermissionRepo);
         return RolePermissionMapper.toPermissionResponseDTO(resultIfExist, ResponseStatus.ROLE_PERMISSION_ID_RECORD_ALREADY_EXIST);
     }
 
@@ -59,11 +73,12 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     @Override
     public RolePermissionResponseDTO update(UUID rolePermissionId, @Valid RolePermissionRequestDTO rolePermissionRequestDTO) {
         if (rolePermissionId == null) {
-            System.out.println("Role-Permission Id is null, cannot proceed with update.");
+            logger.info("Role-Permission Id is null, cannot proceed with update.");
             return RolePermissionMapper.toPermissionResponseDTO(new RolePermission(), ResponseStatus.ROLE_PERMISSION_ID_NOT_FOUND);
-        }
-        else {
-            return rolePermissionRepo.update(rolePermissionId, rolePermissionRequestDTO);
+        } else {
+            RolePermissionResponseDTO responseDTO = rolePermissionRepo.update(rolePermissionId, rolePermissionRequestDTO);
+            activityLoggerService.logActivity(EntityType.ROLE_PERMISSION, responseDTO.getId(), ActionType.UPDATED, userJpaRepo.findById(rolePermissionRequestDTO.getCreated_user()).get().getId());
+            return responseDTO;
         }
     }
 
@@ -87,7 +102,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     @Override
     public RolePermissionResponseDTO findByPermissionId(UUID permissionId) {
         if (permissionId == null) {
-            System.out.println("Role-Permission ID is null, cannot proceed with search.");
+            logger.info("Role-Permission ID is null, cannot proceed with search.");
             return RolePermissionMapper.toPermissionResponseDTO(new RolePermission(), ResponseStatus.ROLE_PERMISSION_ID_NOT_FOUND);
         }
         return rolePermissionRepo.findById(permissionId);
@@ -102,7 +117,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     @Override
     public List<RolePermissionResponseDTO> findByRoleId(UUID roleId) {
         if (roleId == null) {
-            System.out.println(" Role ID is null, cannot proceed with search.");
+            logger.info(" Role ID is null, cannot proceed with search.");
             return RolePermissionMapper.toPermissionResponseDTOs(new ArrayList<>(), ResponseStatus.ROLE_ID_NOT_FOUND);
         }
         return rolePermissionRepo.findByRoleId(roleId);
@@ -117,8 +132,9 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     @Override
     public RolePermissionResponseDTO delete(UUID rolePermissionId) {
         if (rolePermissionId.toString() == null) {
-            System.out.println("Role-Permission ID is null, cannot proceed with delete.");
-            return RolePermissionMapper.toPermissionResponseDTO(new RolePermission(), ResponseStatus.ROLE_PERMISSION_ID_NOT_FOUND);
+            RolePermissionResponseDTO responseDTO = RolePermissionMapper.toPermissionResponseDTO(new RolePermission(), ResponseStatus.ROLE_PERMISSION_ID_NOT_FOUND);
+            activityLoggerService.logActivity(EntityType.ROLE_PERMISSION, responseDTO.getId(), ActionType.DELETED, rolePermissionId);
+
         }
         return rolePermissionRepo.delete(rolePermissionId);
     }
@@ -132,7 +148,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     @Override
     public List<RolePermissionResponseDTO> findById(UUID permissionId) {
         if (permissionId == null) {
-            System.out.println(" Permission ID is null, cannot proceed with search.");
+            logger.info(" Permission ID is null, cannot proceed with search.");
             return RolePermissionMapper.toPermissionResponseDTOs(new ArrayList<>(), ResponseStatus.PERMISSION_ID_NOT_FOUND);
         }
         return rolePermissionRepo.findByPermissionId(permissionId);
@@ -148,15 +164,15 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     @Override
     public RolePermissionResponseDTO findByRoleIdAndPermissionId(UUID roleId, UUID permissionId) {
         if (roleId == null) {
-            System.out.println("Role Id is null, cannot proceed with search.");
+            logger.info("Role Id is null, cannot proceed with search.");
             return RolePermissionMapper.toPermissionResponseDTO(new RolePermission(), ResponseStatus.ROLE_ID_NOT_FOUND);
         } else if (permissionId == null) {
-            System.out.println("Permission Id is null, cannot proceed with search.");
+            logger.info("Permission Id is null, cannot proceed with search.");
             return RolePermissionMapper.toPermissionResponseDTO(new RolePermission(), ResponseStatus.PERMISSION_ID_NOT_FOUND);
         }
         RolePermission resultIfExist = rolePermissionRepo.existsById(roleId, permissionId);
         if (resultIfExist == null) {
-            System.out.println(" Invalid Information, records not found.");
+            logger.info(" Invalid Information, records not found.");
             return RolePermissionMapper.toPermissionResponseDTO(new RolePermission(), ResponseStatus.INVALID_INFORMATION_ROLE_PERMISSION_DETAILS_NOT_FOUND);
         }
         return RolePermissionMapper.toPermissionResponseDTO(resultIfExist, ResponseStatus.SUCCESSFULLY_FOUND);

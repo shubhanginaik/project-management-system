@@ -23,7 +23,7 @@ public class Permission {
     @Column(updatable = false, nullable = false)
     private UUID id;
     @NotNull
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false, length = 25)
     private String name;
 
 }
