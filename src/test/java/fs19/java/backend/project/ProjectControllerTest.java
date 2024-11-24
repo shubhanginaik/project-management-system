@@ -4,6 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import fs19.java.backend.application.dto.project.ProjectCreateDTO;
 import fs19.java.backend.application.dto.project.ProjectUpdateDTO;
+import fs19.java.backend.domain.entity.Company;
+import fs19.java.backend.domain.entity.User;
+import fs19.java.backend.domain.entity.Workspace;
+import fs19.java.backend.domain.entity.enums.WorkspaceType;
+import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.WorkspaceJpaRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,22 +32,53 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class ProjectControllerTest {
+
   @Autowired
   private MockMvc mockMvc;
 
   @Autowired
   private ObjectMapper objectMapper;
 
+  @Autowired
+  private UserJpaRepo userRepository;
+
+  @Autowired
+  private WorkspaceJpaRepo workspaceRepository;
+
+  @Autowired
+  private CompanyJpaRepo companyJpaRepo;
+
+  private User user;
+  private Workspace workspace;
   private ProjectCreateDTO projectCreateDto;
   private ProjectUpdateDTO projectUpdateDto;
 
   @BeforeEach
   public void setUp() {
+    user = userRepository.findAll().stream().findFirst().orElseGet(() -> {
+      User newUser = new User(UUID.randomUUID(), "user1", "Sony", "user1.sony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg");
+      return userRepository.save(newUser);
+    });
+
+    Company company = new Company(UUID.randomUUID(), "Test Company", ZonedDateTime.now(), user);
+    company = companyJpaRepo.save(company);
+
+    workspace = new Workspace();
+    workspace.setId(UUID.randomUUID());
+    workspace.setName("Test Workspace 1");
+    workspace.setDescription("Description");
+    workspace.setType(WorkspaceType.PUBLIC);
+    workspace.setCreatedBy(user);
+    workspace.setCompanyId(company);
+    workspace = workspaceRepository.save(workspace);
+
     projectCreateDto = ProjectCreateDTO.builder()
         .name("Project 1")
         .description("Description")
         .startDate(ZonedDateTime.now().plusDays(1))
         .endDate(ZonedDateTime.parse("2025-01-16T12:34:56Z"))
+        .createdByUserId(user.getId())
+        .workspaceId(workspace.getId())
         .status(false)
         .build();
 
@@ -54,11 +92,7 @@ class ProjectControllerTest {
 
   @Test
   void shouldCreateProject() throws Exception {
-    // Act and Assert
-    mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/projects")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(projectCreateDto)))
-        .andDo(print())
+    performPostProject(projectCreateDto)
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.code", is(201)))
         .andExpect(jsonPath("$.data.name", is("Project 1")));
@@ -66,15 +100,14 @@ class ProjectControllerTest {
 
   @Test
   void shouldGetAllProjects() throws Exception {
-    // Act and Assert
     mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/projects"))
         .andDo(print())
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data").isArray());
   }
 
   @Test
   void shouldGetProjectById() throws Exception {
-    // Arrange
     String response = performPostProject(projectCreateDto)
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.name", is("Project 1")))
@@ -85,13 +118,11 @@ class ProjectControllerTest {
 
     String projectId = JsonPath.parse(response).read("$.data.id");
 
-    // Act and Assert
     mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/projects/{id}", projectId))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.name", is("Project 1")));
 
-    // Check data array length
     mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/projects"))
         .andDo(print())
         .andExpect(status().isOk())
@@ -100,7 +131,6 @@ class ProjectControllerTest {
 
   @Test
   void shouldUpdateProject() throws Exception {
-    // Arrange
     String response = performPostProject(projectCreateDto)
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.name", is("Project 1")))
@@ -111,7 +141,6 @@ class ProjectControllerTest {
 
     String projectId = JsonPath.parse(response).read("$.data.id");
 
-    // Act and Assert
     mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/projects/{id}", projectId)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(projectUpdateDto)))
@@ -122,7 +151,6 @@ class ProjectControllerTest {
 
   @Test
   void shouldDeleteProject() throws Exception {
-    // Arrange
     String response = performPostProject(projectCreateDto)
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.name", is("Project 1")))
@@ -133,7 +161,6 @@ class ProjectControllerTest {
 
     String projectId = JsonPath.parse(response).read("$.data.id");
 
-    // Act and Assert
     mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/projects/{id}", projectId))
         .andDo(print())
         .andExpect(status().isNoContent());
@@ -141,7 +168,6 @@ class ProjectControllerTest {
 
   @Test
   void shouldDeleteProjectReturnProjectNotFound() throws Exception {
-    // Act and Assert
     UUID projectId = UUID.randomUUID();
     mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/projects/" + projectId))
         .andDo(print())
@@ -154,4 +180,3 @@ class ProjectControllerTest {
         .content(objectMapper.writeValueAsString(projectCreateDto)));
   }
 }
-

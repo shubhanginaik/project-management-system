@@ -45,9 +45,8 @@ public class UserServiceImpl implements UserService {
     }
 
     User user = UserMapper.toEntity(createUserDTO);
-    user.setId(UUID.randomUUID());
     user.setCreatedDate(ZonedDateTime.now());
-    userRepository.save(user);
+    user = userRepository.save(user);
     return UserMapper.toReadDTO(user);
   }
 
@@ -62,9 +61,11 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserReadDTO findUserById(UUID id) {
-    User user = userRepository.findById(id)
-        .orElseThrow(() -> new UserNotFoundException(ERROR_MESSAGE + id));
-    return UserMapper.toReadDTO(user);
+    Optional<User> userOptional = userRepository.findById(id);
+    if (userOptional.isEmpty()) {
+      throw new UserNotFoundException(ERROR_MESSAGE + id);
+    }
+    return UserMapper.toReadDTO(userOptional.get());
   }
 
   @Override
@@ -95,3 +96,4 @@ public class UserServiceImpl implements UserService {
     }
   }
 }
+

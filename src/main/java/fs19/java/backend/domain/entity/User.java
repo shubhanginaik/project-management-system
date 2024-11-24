@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 public class User {
   @Id
   @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
   @Column(nullable = false)
@@ -42,3 +43,4 @@ public class User {
   @Column
   private String profileImage;
 }
+
