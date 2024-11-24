@@ -5,6 +5,7 @@ import fs19.java.backend.domain.abstraction.InvitationRepository;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.Invitation;
 import fs19.java.backend.domain.entity.Role;
+import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.InvitationJpaRepo;
 import fs19.java.backend.presentation.shared.exception.InvitationLevelException;
@@ -19,51 +20,35 @@ import java.util.UUID;
 @Repository
 public class InvitationRepoImpl implements InvitationRepository {
     private final InvitationJpaRepo invitationJpaRepo;
-    private final CompanyJpaRepo companyJpaRepo;
 
     public InvitationRepoImpl(InvitationJpaRepo invitationJpaRepo, CompanyJpaRepo companyJpaRepo) {
         this.invitationJpaRepo = invitationJpaRepo;
-        this.companyJpaRepo = companyJpaRepo;
     }
 
     @Override
-    public Invitation save(Invitation invitation, @NotNull UUID companyId) {
+    public Invitation save(Invitation invitation) {
         try {
-            Optional<Company> company = companyJpaRepo.findById(companyId);
-            if (company.isEmpty()) {
-                System.out.println("No Valid Company Result Found");
-                throw new PermissionLevelException(" No-Valid Company Information Found: " + InvitationLevelException.INVITATION_CREATE);
-
-            } else {
-                invitation.setCompany(company.get());
-                return invitationJpaRepo.save(invitation);
-            }
+            return invitationJpaRepo.save(invitation);
         } catch (Exception e) {
             throw new PermissionLevelException(e.getLocalizedMessage() + " : " + InvitationLevelException.INVITATION_CREATE);
         }
     }
 
     @Override
-    public Invitation update(UUID invitationId, InvitationRequestDTO invitationRequestDTO, Role role) {
-        Optional<Company> company = companyJpaRepo.findById(invitationRequestDTO.getCompanyId());
-        if (company.isEmpty()) {
-            System.out.println("No Valid Company Result Found");
-            throw new PermissionLevelException(" No-Valid Company Information Found: " + InvitationLevelException.INVITATION_UPDATE);
-
+    public Invitation update(UUID invitationId, InvitationRequestDTO invitationRequestDTO, Role role, User user, Company company) {
+        Invitation myInvitation = findById(invitationId);
+        if (myInvitation != null) {
+            myInvitation.setAccepted(invitationRequestDTO.isAccepted());
+            myInvitation.setEmail(invitationRequestDTO.getEmail());
+            myInvitation.setRole(role);
+            myInvitation.setCreatedBy(user);
+            myInvitation.setCompany(company);
+            myInvitation.setExpiredAt(invitationRequestDTO.getExpiredAt());
+            return invitationJpaRepo.save(myInvitation);
         } else {
-
-            Invitation myInvitation = findById(invitationId);
-            if (myInvitation != null) {
-                myInvitation.setAccepted(invitationRequestDTO.isAccepted());
-                myInvitation.setEmail(invitationRequestDTO.getEmail());
-                myInvitation.setRole(role);
-                myInvitation.setCompany(company.get());
-                myInvitation.setExpiredAt(invitationRequestDTO.getExpiredAt());
-                return invitationJpaRepo.save(myInvitation);
-            } else {
-                throw new PermissionLevelException(" DB is empty: " + InvitationLevelException.INVITATION_UPDATE);
-            }
+            throw new PermissionLevelException(" DB is empty: " + InvitationLevelException.INVITATION_UPDATE);
         }
+
     }
 
     @Override

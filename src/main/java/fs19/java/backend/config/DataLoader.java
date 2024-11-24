@@ -153,6 +153,7 @@ public class DataLoader implements CommandLineRunner {
         invitation.setEmail("invitee@example.com");
         invitation.setRole(role);
         invitation.setCompany(company);
+        invitation.setCreatedBy(saveUser);
         invitationJpaRepo.save(invitation);
 
         Notification notification = new Notification();

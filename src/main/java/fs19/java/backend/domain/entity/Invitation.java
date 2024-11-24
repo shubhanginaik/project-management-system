@@ -16,7 +16,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "invitation", indexes = {
         @Index(name = "idx_invitation_company_id", columnList = "company_id"),
-        @Index(name = "idx_invitation_role_id", columnList = "role_id")
+        @Index(name = "idx_invitation_role_id", columnList = "role_id"),
+        @Index(name = "idx_invitation_user_id", columnList = "user_id")
 })
 public class Invitation {
 
@@ -34,6 +35,10 @@ public class Invitation {
     @NotNull
     @Column(nullable = false, length = 25)
     private String email;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User createdBy;
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
