@@ -24,6 +24,8 @@ import java.util.UUID;
 @Service
 public class WorkspaceUserServiceImpl implements WorkspaceUserService {
 
+  private static final String ERROR_MESSAGE = "Workspace User not found with ID ";
+
   private final WorkspaceUserJpaRepo workspaceUserRepository;
   @Autowired
   private UserJpaRepo userRepository;
@@ -32,15 +34,12 @@ public class WorkspaceUserServiceImpl implements WorkspaceUserService {
   @Autowired
   private WorkspaceJpaRepo workspaceRepository;
 
-  private static final String ERROR_MESSAGE = "Workspace User not found with ID ";
-
   public WorkspaceUserServiceImpl(WorkspaceUserJpaRepo workspaceUsersRepository) {
     this.workspaceUserRepository = workspaceUsersRepository;
   }
 
   @Override
   public WorkspaceUserResponseDTO createWorkspaceUser(WorkspaceUserRequestDTO workspaceUsersDTO) {
-    validateWorkspaceUserRequestDTO(workspaceUsersDTO);
 
     User user = findUserById(workspaceUsersDTO.getUserId());
     Role role = findRoleById(workspaceUsersDTO.getRoleId());
@@ -52,39 +51,29 @@ public class WorkspaceUserServiceImpl implements WorkspaceUserService {
     workspaceUser.setRole(role);
     workspaceUser.setWorkspace(workspace);
 
-    workspaceUserRepository.save(workspaceUser);
+    workspaceUser = workspaceUserRepository.save(workspaceUser);
     return WorkspaceUserMapper.toDTO(workspaceUser);
   }
 
   @Override
   public WorkspaceUserResponseDTO updateWorkspaceUser(UUID id, WorkspaceUserRequestDTO workspaceUsersDTO) {
-    Optional<WorkspaceUser> existingWorkspaceUsers = workspaceUserRepository.findById(id);
-    if (existingWorkspaceUsers.isPresent()) {
-      WorkspaceUser workspaceUsers = existingWorkspaceUsers.get();
 
-      if (workspaceUsersDTO.getRoleId() != null) {
-        Role role = findRoleById(workspaceUsersDTO.getRoleId());
-        workspaceUsers.setRole(role);
-      }
-      if (workspaceUsersDTO.getWorkspaceId() != null) {
-        Workspace workspace = findWorkspaceById(workspaceUsersDTO.getWorkspaceId());
-        workspaceUsers.setWorkspace(workspace);
-      }
-      if (workspaceUsersDTO.getUserId() != null) {
-        User user = findUserById(workspaceUsersDTO.getUserId());
-        workspaceUsers.setUser(user);
-      }
+    Optional<WorkspaceUser> existingWorkspaceUser = workspaceUserRepository.findById(id);
+    if (existingWorkspaceUser.isPresent()) {
+      WorkspaceUser workspaceUser = existingWorkspaceUser.get();
 
-      workspaceUserRepository.save(workspaceUsers);
-      return WorkspaceUserMapper.toDTO(workspaceUsers);
+      updateWorkspaceUserFields(workspaceUsersDTO, workspaceUser);
+
+      workspaceUser = workspaceUserRepository.save(workspaceUser);
+      return WorkspaceUserMapper.toDTO(workspaceUser);
     }
     throw new WorkspaceUserNotFoundException(ERROR_MESSAGE + id);
   }
 
   @Override
   public WorkspaceUserResponseDTO getWorkspaceUserById(UUID id) {
-    Optional<WorkspaceUser> workspaceUsers = workspaceUserRepository.findById(id);
-    return workspaceUsers.map(WorkspaceUserMapper::toDTO)
+    Optional<WorkspaceUser> workspaceUser = workspaceUserRepository.findById(id);
+    return workspaceUser.map(WorkspaceUserMapper::toDTO)
         .orElseThrow(() -> new WorkspaceUserNotFoundException(ERROR_MESSAGE + id));
   }
 
@@ -103,23 +92,19 @@ public class WorkspaceUserServiceImpl implements WorkspaceUserService {
     workspaceUserRepository.deleteById(id);
   }
 
-  @Override
-  public boolean existsById(UUID id) {
-    if (workspaceUserRepository.existsById(id)) {
-      workspaceUserRepository.deleteById(id);
+  private void updateWorkspaceUserFields(WorkspaceUserRequestDTO workspaceUsersDTO,
+      WorkspaceUser workspaceUser) {
+    if (workspaceUsersDTO.getRoleId() != null) {
+      Role role = findRoleById(workspaceUsersDTO.getRoleId());
+      workspaceUser.setRole(role);
     }
-    return false;
-  }
-
-  private void validateWorkspaceUserRequestDTO(WorkspaceUserRequestDTO workspaceUsersDTO) {
-    if (workspaceUsersDTO.getRoleId() == null) {
-      throw new IllegalArgumentException("Role ID is required");
+    if (workspaceUsersDTO.getWorkspaceId() != null) {
+      Workspace workspace = findWorkspaceById(workspaceUsersDTO.getWorkspaceId());
+      workspaceUser.setWorkspace(workspace);
     }
-    if (workspaceUsersDTO.getWorkspaceId() == null) {
-      throw new IllegalArgumentException("Workspace ID is required");
-    }
-    if (workspaceUsersDTO.getUserId() == null) {
-      throw new IllegalArgumentException("User ID is required");
+    if (workspaceUsersDTO.getUserId() != null) {
+      User user = findUserById(workspaceUsersDTO.getUserId());
+      workspaceUser.setUser(user);
     }
   }
 

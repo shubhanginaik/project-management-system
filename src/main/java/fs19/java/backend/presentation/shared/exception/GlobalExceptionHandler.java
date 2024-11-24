@@ -136,4 +136,12 @@ public class GlobalExceptionHandler {
                 List.of(error));
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorItem error = new ErrorItem(ex.getMessage());
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.BAD_REQUEST.value(),
+                List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }
