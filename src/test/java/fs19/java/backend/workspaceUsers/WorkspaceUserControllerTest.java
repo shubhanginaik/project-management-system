@@ -1,18 +1,33 @@
 package fs19.java.backend.workspaceUsers;
+
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import fs19.java.backend.application.dto.workspace_user.WorkspaceUserRequestDTO;
+import fs19.java.backend.domain.entity.ActivityLog;
 import fs19.java.backend.domain.entity.Company;
-import fs19.java.backend.domain.entity.enums.WorkspaceType;
 import fs19.java.backend.domain.entity.Role;
 import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.domain.entity.Workspace;
+import fs19.java.backend.domain.entity.enums.ActionType;
+import fs19.java.backend.domain.entity.enums.EntityType;
+import fs19.java.backend.domain.entity.enums.WorkspaceType;
 import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.RoleJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.WorkspaceJpaRepo;
 import fs19.java.backend.presentation.shared.Utilities.DateAndTime;
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +36,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
-import java.util.UUID;
-
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -61,8 +68,12 @@ class WorkspaceUserControllerTest {
   @BeforeEach
   void setUp() {
     user = userRepository.findAll().stream().findFirst().orElseGet(() -> {
-      User newUser = new User(UUID.randomUUID(), "user1", "Sony", "user1.sony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg");
+      User newUser = new User(UUID.randomUUID(), "user1", "Sony", "user1.sony@example.com",
+          "password", "123456789", ZonedDateTime.now(), "profile.jpg",List.of());
+      var activityLogList = getActivityLogs(newUser);
+      newUser.setActivityLogs(activityLogList);
       return userRepository.save(newUser);
+
     });
 
     Company company = new Company(UUID.randomUUID(), "Test Company", ZonedDateTime.now(), user);
@@ -99,6 +110,18 @@ class WorkspaceUserControllerTest {
         .build();
   }
 
+  private static List<ActivityLog> getActivityLogs(User newUser) {
+    return List.of(
+        ActivityLog.builder()
+            .entityType(EntityType.USER)
+            .entityId(UUID.randomUUID())
+            .action(ActionType.CREATED)
+            .createdDate(ZonedDateTime.now())
+            .userId(newUser)
+            .build()
+    );
+  }
+
   @Test
   void shouldCreateWorkspaceUser() throws Exception {
     mockMvc.perform(post("/api/v1/workspace-users")
@@ -119,7 +142,10 @@ class WorkspaceUserControllerTest {
 
   @Test
   void shouldGetWorkspaceUserById() throws Exception {
-    User user2 = new User(UUID.randomUUID(), "User2", "Pony", "user2.pony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg");
+    User user2 = new User(UUID.randomUUID(), "User2", "Pony", "user2.pony@example.com",
+        "password", "123456789", ZonedDateTime.now(), "profile.jpg", List.of());
+    var activityLogList = getActivityLogs(user2);
+    user2.setActivityLogs(activityLogList);
     user2 = userRepository.save(user2);
 
     WorkspaceUserRequestDTO workspaceUserRequestDTO2 = WorkspaceUserRequestDTO.builder()
@@ -145,7 +171,10 @@ class WorkspaceUserControllerTest {
 
   @Test
   void shouldUpdateWorkspaceUser() throws Exception {
-    User user3 = new User(UUID.randomUUID(), "User3", "Pony", "user3.pony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg");
+    User user3 = new User(UUID.randomUUID(), "User3", "Pony", "user3.pony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg",
+        List.of());
+    var activityLogList = getActivityLogs(user3);
+    user3.setActivityLogs(activityLogList);
     user3 = userRepository.save(user3);
 
     WorkspaceUserRequestDTO workspaceUserRequestDTO3 = WorkspaceUserRequestDTO.builder()
@@ -179,7 +208,10 @@ class WorkspaceUserControllerTest {
 
   @Test
   void shouldDeleteWorkspaceUser() throws Exception {
-    User user4 = new User(UUID.randomUUID(), "User4", "Tony", "user4.tony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg");
+    User user4 = new User(UUID.randomUUID(), "User4", "Tony", "user4.tony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg",
+        List.of());
+    var activityLogList = getActivityLogs(user4);
+    user4.setActivityLogs(activityLogList);
     user4 = userRepository.save(user4);
 
     WorkspaceUserRequestDTO workspaceUserRequestDTO4 = WorkspaceUserRequestDTO.builder()

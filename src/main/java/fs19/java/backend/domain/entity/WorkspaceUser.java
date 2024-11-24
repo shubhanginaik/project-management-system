@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -19,7 +20,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "workspace_user")
+@Table(name = "workspace_user",
+    indexes = {
+        @Index(name = "idx_workspace_user_user_id", columnList = "user_id"),
+        @Index(name = "idx_workspace_user_role_id", columnList = "role_id"),
+        @Index(name = "idx_workspace_user_workspace_id", columnList = "workspace_id")
+    })
 public class WorkspaceUser {
 
   @Id
