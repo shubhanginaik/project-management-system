@@ -10,6 +10,8 @@ import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,7 +30,7 @@ public class AuthController {
 
     private final AuthServiceImpl authService;
     private final AuthenticationManager authenticationManager;
-
+    private static final Logger logger = LogManager.getLogger(ActivityLogController.class);
 
     public AuthController(AuthServiceImpl authService, AuthenticationManager authenticationManager) {
         this.authService = authService;
@@ -37,12 +39,14 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<GlobalResponse<UserReadDTO>> signup(@RequestBody @Valid SignupRequestDTO signupRequestDTO) {
+        logger.info("Received signUp request: {}", signupRequestDTO);
         User signUpUser = authService.signup(signupRequestDTO);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), UserMapper.toReadDTO(Objects.requireNonNullElseGet(signUpUser, User::new))), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<GlobalResponse<AuthResponseDTO>> login(@RequestBody @Valid LoginRequestDTO request) {
+        logger.info("Received Login request: {}", request);
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
         AuthResponseDTO authenticateDto = authService.authenticate(request);
         return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.FOUND.value(), authenticateDto), HttpStatus.FOUND);

@@ -14,8 +14,11 @@ import fs19.java.backend.infrastructure.InvitationRepoImpl;
 import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.infrastructure.RoleRepoImpl;
+import fs19.java.backend.presentation.controller.ActivityLogController;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +27,8 @@ import java.util.UUID;
 
 @Service
 public class InvitationServiceImpl implements InvitationService {
+
+    private static final Logger logger = LogManager.getLogger(ActivityLogController.class);
 
     private final InvitationRepoImpl invitationRepo;
     private final RoleRepoImpl roleRepo;
@@ -44,12 +49,12 @@ public class InvitationServiceImpl implements InvitationService {
     public InvitationResponseDTO save(InvitationRequestDTO invitationRequestDTO) {
         Invitation myInvitation;
         if (invitationRequestDTO.getEmail().isEmpty()) {
-            System.out.println("Invitation Email from DTO is null, cannot proceed with Invitation creation.");
+            logger.info("Invitation Email from DTO is null, cannot proceed with Invitation creation {}", invitationRequestDTO);
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_EMAIL_NOT_FOUND);
         }
         Role roleById = roleRepo.findById(invitationRequestDTO.getRoleId());
         if (roleById == null) {
-            System.out.println("No Valid Role Result Found");
+            logger.info("No Valid Role Result Found when trying to create. {}", invitationRequestDTO.getRoleId());
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ROLE_NOT_FOUND);
         } else {
             Optional<User> created_userOptional = userJpaRepo.findById(invitationRequestDTO.getCreated_user());
@@ -81,15 +86,15 @@ public class InvitationServiceImpl implements InvitationService {
     public InvitationResponseDTO update(UUID invitationId, @Valid InvitationRequestDTO invitationRequestDTO) {
         Invitation myInvitation;
         if (invitationId == null) {
-            System.out.println("Invitation Id is null, cannot proceed with Invitation update.");
+            logger.info("Invitation Id is null, cannot proceed with Invitation update.{}", invitationRequestDTO);
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ID_NOT_FOUND);
         } else if (invitationRequestDTO.getEmail().isEmpty()) {
-            System.out.println("Invitation Email from DTO is null, cannot proceed with Invitation update.");
+            logger.info("Invitation Email from DTO is null, cannot proceed with Invitation update.{}", invitationRequestDTO);
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_EMAIL_NOT_FOUND);
         }
         Role roleById = roleRepo.findById(invitationRequestDTO.getRoleId());
         if (roleById == null) {
-            System.out.println("No Valid Role Result Found");
+            logger.info("No Valid Role Result Found when trying to create. {}", invitationRequestDTO.getRoleId());
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ROLE_NOT_FOUND);
         } else {
             if (invitationRequestDTO.getCompanyId() != null) {
@@ -114,7 +119,7 @@ public class InvitationServiceImpl implements InvitationService {
 
                 }
             } else {
-                System.out.println("No Valid Company ID Found");
+                logger.info("No Valid Company ID Found. {}", invitationRequestDTO);
                 return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_COMPANY_ID_NOT_FOUND);
 
             }
@@ -127,7 +132,7 @@ public class InvitationServiceImpl implements InvitationService {
     public InvitationResponseDTO delete(UUID invitationId) {
         Invitation myInvitation;
         if (invitationId == null) {
-            System.out.println("Invitation Id is null, cannot proceed with Invitation delete.");
+            logger.info("Invitation Id is null, cannot proceed with Invitation delete. {}", invitationId);
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ID_NOT_FOUND);
         }
         myInvitation = invitationRepo.findById(invitationId);
@@ -147,7 +152,7 @@ public class InvitationServiceImpl implements InvitationService {
     public InvitationResponseDTO findById(UUID invitationId) {
         Invitation myInvitation;
         if (invitationId == null) {
-            System.out.println("Invitation Id is null, cannot proceed with Invitation search.");
+            logger.info("Invitation Id is null, cannot proceed with Invitation search.{}", invitationId);
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ID_NOT_FOUND);
         }
         myInvitation = invitationRepo.findById(invitationId);

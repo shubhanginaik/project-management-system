@@ -9,7 +9,10 @@ import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.domain.entity.enums.ActionType;
 import fs19.java.backend.domain.entity.enums.EntityType;
 import fs19.java.backend.infrastructure.TaskRepoImpl;
+import fs19.java.backend.presentation.controller.ActivityLogController;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.UUID;
 @Service
 public class TaskServiceImpl implements TaskService {
 
+    private static final Logger logger = LogManager.getLogger(ActivityLogController.class);
     private final TaskRepoImpl taskRepo;
     private final ActivityLoggerService activityLoggerService;
 
@@ -31,7 +35,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDTO create(TaskRequestDTO taskRequestDTO) {
         if (taskRequestDTO.getName().isEmpty()) { // expected valid name only and that validation is enough
-            System.out.println("Task Name from DTO is null, cannot proceed with Task creation.");
+            logger.info("Task Name from DTO is null, cannot proceed with Task creation. {}", taskRequestDTO);
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_NAME_NOT_FOUND);
         }
         Optional<User> createdUserById = taskRepo.findTaskUserByUserId(taskRequestDTO.getCreatedUserId());
@@ -40,7 +44,7 @@ public class TaskServiceImpl implements TaskService {
             if (taskRequestDTO.getAssignedUserId() != null) {
                 Optional<User> assignedUserById = taskRepo.findTaskUserByUserId(taskRequestDTO.getCreatedUserId());
                 if (assignedUserById.isEmpty()) {
-                    System.out.println("Assigned User-Not Found");
+                    logger.info("Assigned User-Not Found {}", taskRequestDTO);
                     return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_LEVEL_ASSIGNED_USER_NOT_FOUND);
                 }
                 assignedUser = assignedUserById.get();
@@ -51,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
             return TaskMapper.toTaskResponseDTO(saveTask, ResponseStatus.SUCCESSFULLY_CREATED);
 
         } else {
-            System.out.println("Created User-Not Found");
+            logger.info("Created User-Not Found {}", taskRequestDTO);
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_LEVEL_CREATED_USER_NOT_FOUND);
         }
     }
@@ -59,11 +63,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDTO update(UUID taskId, TaskRequestDTO taskRequestDTO) {
         if (taskId == null) {
-            System.out.println("Task Id is null, cannot proceed with Task update.");
+            logger.info("Task Id is null, cannot proceed with Task update. {}", taskRequestDTO);
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_ID_NOT_FOUND);
         }
         if (taskRequestDTO.getName().isEmpty()) { // expected valid name only and that validation is enough
-            System.out.println("Task Name from DTO is null, cannot proceed with Task creation.");
+            logger.info("Task Name from DTO is null, cannot proceed with Task creation. {}", taskRequestDTO);
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_NAME_NOT_FOUND);
         }
         Optional<User> createdUserById = taskRepo.findTaskUserByUserId(taskRequestDTO.getCreatedUserId());
@@ -72,7 +76,7 @@ public class TaskServiceImpl implements TaskService {
             if (taskRequestDTO.getAssignedUserId() != null) {
                 Optional<User> assignedUserById = taskRepo.findTaskUserByUserId(taskRequestDTO.getCreatedUserId());
                 if (assignedUserById.isEmpty()) {
-                    System.out.println("Assigned User-Not Found");
+                    logger.info("Assigned User-Not Found  {}", taskRequestDTO);
                     return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_LEVEL_ASSIGNED_USER_NOT_FOUND);
                 }
                 assignedUser = assignedUserById.get();
@@ -82,7 +86,7 @@ public class TaskServiceImpl implements TaskService {
             return TaskMapper.toTaskResponseDTO(task, ResponseStatus.SUCCESSFULLY_UPDATED);
 
         } else {
-            System.out.println("Created User-Not Found");
+            logger.info("Created User-Not Found  {}", taskRequestDTO);
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_LEVEL_CREATED_USER_NOT_FOUND);
         }
     }
@@ -90,7 +94,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDTO delete(UUID taskId) {
         if (taskId == null) {
-            System.out.println("Task ID is null, cannot proceed with delete.");
+            logger.info("Task ID is null, cannot proceed with delete.");
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_ID_NOT_FOUND);
         }
         Task myTask = this.taskRepo.delete(taskId);
@@ -109,7 +113,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDTO getById(UUID taskId) {
         if (taskId == null) {
-            System.out.println("Task ID is null, cannot proceed with search.");
+            logger.info("Task ID is null, cannot proceed with search.");
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_ID_NOT_FOUND);
         }
         Task myTask = taskRepo.findById(taskId);
