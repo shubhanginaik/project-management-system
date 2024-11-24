@@ -1,5 +1,4 @@
 package fs19.java.backend.workspaceUsers;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import fs19.java.backend.application.dto.workspace_user.WorkspaceUserRequestDTO;
@@ -54,37 +53,20 @@ class WorkspaceUserControllerTest {
   private CompanyJpaRepo companyJpaRepo;
 
   private User user;
-  private User user2;
-  private User user3;
-  private User user4;
   private Workspace workspace;
-  private Workspace workspace2;
   private Role role;
   private Role role2;
   private WorkspaceUserRequestDTO workspaceUserRequestDTO;
-  private WorkspaceUserRequestDTO workspaceUserRequestDTO2;
-  private WorkspaceUserRequestDTO workspaceUserRequestDTO3;
-  private WorkspaceUserRequestDTO workspaceUserRequestDTO4;
 
   @BeforeEach
   void setUp() {
-    user = new User(
-        UUID.randomUUID(),
-        "user1",
-        "Sony",
-        "user1.sony@example.com",
-        "password",
-        "123456789",
-        ZonedDateTime.now(),
-        "profile.jpg");
-    user = userRepository.findAll().stream().findFirst().orElseGet(() -> userRepository.save(user));
+    user = userRepository.findAll().stream().findFirst().orElseGet(() -> {
+      User newUser = new User(UUID.randomUUID(), "user1", "Sony", "user1.sony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg");
+      return userRepository.save(newUser);
+    });
 
-
-
-    Company company= new Company(UUID.randomUUID(), "Test Company", ZonedDateTime.now(), user);
-
+    Company company = new Company(UUID.randomUUID(), "Test Company", ZonedDateTime.now(), user);
     company = companyJpaRepo.save(company);
-
 
     workspace = new Workspace();
     workspace.setId(UUID.randomUUID());
@@ -92,8 +74,8 @@ class WorkspaceUserControllerTest {
     workspace.setDescription("Description");
     workspace.setType(WorkspaceType.PUBLIC);
     workspace.setCreatedBy(user);
-    workspace.setCompanyId( company);
-    workspace= workspaceRepository.save(workspace);
+    workspace.setCompanyId(company);
+    workspace = workspaceRepository.save(workspace);
 
     role = new Role();
     role.setId(UUID.randomUUID());
@@ -107,7 +89,7 @@ class WorkspaceUserControllerTest {
     role2.setName("Role2");
     role2.setCreatedDate(DateAndTime.getDateAndTime());
     role2.setCompany(company);
-    role2 = roleRepository.save(role);
+    role2 = roleRepository.save(role2);
 
     workspaceUserRequestDTO = WorkspaceUserRequestDTO.builder()
         .id(UUID.randomUUID())
@@ -137,18 +119,10 @@ class WorkspaceUserControllerTest {
 
   @Test
   void shouldGetWorkspaceUserById() throws Exception {
-    user2 = new User(
-        UUID.randomUUID(),
-        "User2",
-        "Pony",
-        "user2.pony@example.com",
-        "password",
-        "123456789",
-        ZonedDateTime.now(),
-        "profile.jpg");
+    User user2 = new User(UUID.randomUUID(), "User2", "Pony", "user2.pony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg");
     user2 = userRepository.save(user2);
-    // Create a workspace user first
-    workspaceUserRequestDTO2 = WorkspaceUserRequestDTO.builder()
+
+    WorkspaceUserRequestDTO workspaceUserRequestDTO2 = WorkspaceUserRequestDTO.builder()
         .id(UUID.randomUUID())
         .roleId(role.getId())
         .userId(user2.getId())
@@ -171,23 +145,16 @@ class WorkspaceUserControllerTest {
 
   @Test
   void shouldUpdateWorkspaceUser() throws Exception {
-    user3 = new User(
-        UUID.randomUUID(),
-        "User3",
-        "Pony",
-        "user3.pony@example.com",
-        "password",
-        "123456789",
-        ZonedDateTime.now(),
-        "profile.jpg");
+    User user3 = new User(UUID.randomUUID(), "User3", "Pony", "user3.pony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg");
     user3 = userRepository.save(user3);
-    // Create a workspace user first
-    workspaceUserRequestDTO3 = WorkspaceUserRequestDTO.builder()
+
+    WorkspaceUserRequestDTO workspaceUserRequestDTO3 = WorkspaceUserRequestDTO.builder()
         .id(UUID.randomUUID())
         .roleId(role.getId())
         .userId(user3.getId())
         .workspaceId(workspace.getId())
         .build();
+
     String response = performPostWorkspaceUser(workspaceUserRequestDTO3)
         .andExpect(status().isCreated())
         .andReturn()
@@ -212,24 +179,16 @@ class WorkspaceUserControllerTest {
 
   @Test
   void shouldDeleteWorkspaceUser() throws Exception {
-
-    user4 = new User(
-        UUID.randomUUID(),
-        "User4",
-        "Tony",
-        "user4.tony@example.com",
-        "password",
-        "123456789",
-        ZonedDateTime.now(),
-        "profile.jpg");
+    User user4 = new User(UUID.randomUUID(), "User4", "Tony", "user4.tony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg");
     user4 = userRepository.save(user4);
-    // Create a workspace user first
-    workspaceUserRequestDTO4 = WorkspaceUserRequestDTO.builder()
+
+    WorkspaceUserRequestDTO workspaceUserRequestDTO4 = WorkspaceUserRequestDTO.builder()
         .id(UUID.randomUUID())
         .roleId(role2.getId())
         .userId(user4.getId())
         .workspaceId(workspace.getId())
         .build();
+
     String response = performPostWorkspaceUser(workspaceUserRequestDTO4)
         .andExpect(status().isCreated())
         .andReturn()

@@ -4,6 +4,7 @@ import fs19.java.backend.application.ProjectServiceImpl;
 import fs19.java.backend.application.dto.project.ProjectCreateDTO;
 import fs19.java.backend.application.dto.project.ProjectReadDTO;
 import fs19.java.backend.application.dto.project.ProjectUpdateDTO;
+import fs19.java.backend.presentation.shared.exception.ProjectValidationException;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,11 @@ public class ProjectController {
 
   @PostMapping
   public ResponseEntity<GlobalResponse<ProjectReadDTO>> createProject(@Valid @RequestBody ProjectCreateDTO projectDTO) {
+    // validate the request
+    validateProjectRequestDTO(projectDTO);
+    // create the project
     ProjectReadDTO createdProject = projectService.createProject(projectDTO);
+    // return the response
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.CREATED.value(), createdProject),
         HttpStatus.CREATED);
   }
@@ -56,5 +61,19 @@ public class ProjectController {
     projectService.deleteProject(projectId);
     return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.NO_CONTENT.value(), null),
         HttpStatus.NO_CONTENT);
+  }
+
+  private void validateProjectRequestDTO(ProjectCreateDTO projectDTO) {
+    if (projectDTO.getName() == null || projectDTO.getName().isEmpty()) {
+      throw new ProjectValidationException("Project name is required");
+    }
+    if (projectDTO.getStartDate() == null || projectDTO.getStartDate()
+        .isAfter(projectDTO.getEndDate())) {
+      throw new ProjectValidationException("Start date is required and must be before end date");
+    }
+    if (projectDTO.getEndDate() == null || projectDTO.getEndDate()
+        .isBefore(projectDTO.getStartDate())) {
+      throw new ProjectValidationException("End date is required and must be after start date");
+    }
   }
 }

@@ -26,27 +26,22 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private final ProjectJpaRepo projectRepository;
+
+    @Autowired
     private final WorkspaceJpaRepo workspaceRepository;
+
+    @Autowired
     private final UserJpaRepo userRepository;
 
     private static final String ERROR_MESSAGE = "Project not found with Id ";
 
-    public ProjectServiceImpl(ProjectJpaRepo projectRepository, UserJpaRepo userRepositor, WorkspaceJpaRepo workspaceRepository) {
+    public ProjectServiceImpl(ProjectJpaRepo projectRepository, UserJpaRepo userRepository, WorkspaceJpaRepo workspaceRepository) {
         this.projectRepository = projectRepository;
-        this.userRepository = userRepositor;
+        this.userRepository = userRepository;
         this.workspaceRepository = workspaceRepository;
     }
     @Override
     public ProjectReadDTO createProject(ProjectCreateDTO projectDTO) {
-        if (projectDTO.getName() == null || projectDTO.getName().isEmpty()) {
-            throw new ProjectValidationException("Project name is required");
-        }
-        if (projectDTO.getStartDate() == null || projectDTO.getStartDate().isAfter(projectDTO.getEndDate())) {
-            throw new ProjectValidationException("Start date is required and must be before end date");
-        }
-        if (projectDTO.getEndDate() == null || projectDTO.getEndDate().isBefore(projectDTO.getStartDate())) {
-            throw new ProjectValidationException("End date is required and must be after start date");
-        }
 
         User createdBy = userRepository.findById(projectDTO.getCreatedByUserId())
             .orElseThrow(() -> new ProjectValidationException("User not found with ID " + projectDTO.getCreatedByUserId()));
@@ -61,7 +56,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setCreatedByUser(createdBy);
         project.setWorkspace(workspace);
 
-        projectRepository.save(project);
+        project = projectRepository.save(project);
         return ProjectMapper.toReadDTO(project);
     }
 
@@ -76,7 +71,7 @@ public class ProjectServiceImpl implements ProjectService {
             updatedProject.setEndDate(projectDTO.getEndDate());
             updatedProject.setStatus(projectDTO.getStatus());
 
-            projectRepository.save(updatedProject);
+            updatedProject = projectRepository.save(updatedProject);
             return ProjectMapper.toReadDTO(updatedProject);
         }
         else {
