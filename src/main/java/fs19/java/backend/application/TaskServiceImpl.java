@@ -4,6 +4,7 @@ import fs19.java.backend.application.dto.task.TaskRequestDTO;
 import fs19.java.backend.application.dto.task.TaskResponseDTO;
 import fs19.java.backend.application.mapper.TaskMapper;
 import fs19.java.backend.application.service.TaskService;
+import fs19.java.backend.domain.entity.Project;
 import fs19.java.backend.domain.entity.Task;
 import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.domain.entity.enums.ActionType;
@@ -49,11 +50,16 @@ public class TaskServiceImpl implements TaskService {
                 }
                 assignedUser = assignedUserById.get();
             }
-            Task task = TaskMapper.toTask(taskRequestDTO, createdUserById.get(), assignedUser);
-            Task saveTask = taskRepo.save(task);
-            activityLoggerService.logActivity(EntityType.TASK, saveTask.getId(), ActionType.CREATED, saveTask.getCreatedUser().getId());
-            return TaskMapper.toTaskResponseDTO(saveTask, ResponseStatus.SUCCESSFULLY_CREATED);
-
+            Optional<Project> projectById = taskRepo.findProjectById(taskRequestDTO.getProjectId());
+            if (projectById.isPresent()) {
+                Task task = TaskMapper.toTask(taskRequestDTO, createdUserById.get(), assignedUser, projectById.get());
+                Task saveTask = taskRepo.save(task);
+                activityLoggerService.logActivity(EntityType.TASK, saveTask.getId(), ActionType.CREATED, saveTask.getCreatedUser().getId());
+                return TaskMapper.toTaskResponseDTO(saveTask, ResponseStatus.SUCCESSFULLY_CREATED);
+            } else {
+                logger.info("Project-Not Found {}", taskRequestDTO);
+                return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.PROJECT_ID_NOT_FOUND);
+            }
         } else {
             logger.info("Created User-Not Found {}", taskRequestDTO);
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_LEVEL_CREATED_USER_NOT_FOUND);
@@ -81,9 +87,15 @@ public class TaskServiceImpl implements TaskService {
                 }
                 assignedUser = assignedUserById.get();
             }
-            Task task = taskRepo.update(taskId, taskRequestDTO, assignedUser);
-            activityLoggerService.logActivity(EntityType.TASK, task.getId(), ActionType.UPDATED, task.getCreatedUser().getId());
-            return TaskMapper.toTaskResponseDTO(task, ResponseStatus.SUCCESSFULLY_UPDATED);
+            Optional<Project> projectById = taskRepo.findProjectById(taskRequestDTO.getProjectId());
+            if (projectById.isPresent()) {
+                Task task = taskRepo.update(taskId, taskRequestDTO, assignedUser, projectById.get());
+                activityLoggerService.logActivity(EntityType.TASK, task.getId(), ActionType.UPDATED, task.getCreatedUser().getId());
+                return TaskMapper.toTaskResponseDTO(task, ResponseStatus.SUCCESSFULLY_UPDATED);
+            } else {
+                logger.info("Project-Not Found {}", taskRequestDTO);
+                return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.PROJECT_ID_NOT_FOUND);
+            }
 
         } else {
             logger.info("Created User-Not Found  {}", taskRequestDTO);

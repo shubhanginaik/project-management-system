@@ -1,6 +1,7 @@
 package fs19.java.backend.domain.abstraction;
 
 import fs19.java.backend.application.dto.task.TaskRequestDTO;
+import fs19.java.backend.domain.entity.Project;
 import fs19.java.backend.domain.entity.Task;
 import fs19.java.backend.domain.entity.User;
 
@@ -11,7 +12,7 @@ public interface TaskRepository {
 
     Task save(Task task);
 
-    Task update(UUID taskId, TaskRequestDTO taskRequestDTO, User assignedUser);
+    Task update(UUID taskId, TaskRequestDTO taskRequestDTO, User assignedUser, Project project);
 
     Task delete(UUID taskId);
 

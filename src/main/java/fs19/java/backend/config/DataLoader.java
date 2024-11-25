@@ -107,7 +107,7 @@ public class DataLoader implements CommandLineRunner {
         project.setCreatedByUser(userJpaRepo.findAll().getFirst());
         project.setCreatedDate(DateAndTime.getDateAndTime());
         project.setWorkspace(workspaceJpaRepo.findAll().getFirst());
-        projectJpaRepo.save(project);
+        Project saveProject = projectJpaRepo.save(project);
 
         WorkspaceUser workspaceUser = new WorkspaceUser();
         workspaceUser.setRole(saveRole);
@@ -134,7 +134,7 @@ public class DataLoader implements CommandLineRunner {
         task.setCreatedDate(DateAndTime.getDateAndTime());
         task.setTaskStatus("TODO");
         task.setAttachments(Arrays.asList("doc1.pdf", "image1.png"));
-        task.setProjectId(project.getId());
+        task.setProject(saveProject);
         task.setCreatedUser(user);
         task.setAssignedUser(user);
         task.setPriority("LOW_PRIORITY");
