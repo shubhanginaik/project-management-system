@@ -1,13 +1,19 @@
 package fs19.java.backend.application;
 
+import fs19.java.backend.application.dto.auth.AuthResponseDTO;
+import fs19.java.backend.application.dto.auth.LoginRequestDTO;
+import fs19.java.backend.application.dto.auth.SignupRequestDTO;
 import fs19.java.backend.application.dto.user.UserCreateDTO;
 import fs19.java.backend.application.dto.user.UserReadDTO;
 import fs19.java.backend.application.mapper.UserMapper;
 import fs19.java.backend.application.service.UserService;
+import fs19.java.backend.config.JwtValidator;
 import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.domain.entity.enums.ActionType;
 import fs19.java.backend.domain.entity.enums.EntityType;
 import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
+import fs19.java.backend.presentation.shared.Utilities.DateAndTime;
+import fs19.java.backend.presentation.shared.exception.UserAlreadyFoundException;
 import fs19.java.backend.presentation.shared.exception.UserNotFoundException;
 import fs19.java.backend.presentation.shared.exception.UserValidationException;
 import java.time.ZonedDateTime;
@@ -17,6 +23,7 @@ import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,13 +32,18 @@ public class UserServiceImpl implements UserService {
 
   private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
   private static final String ERROR_MESSAGE = "User not found with ID ";
+  private final PasswordEncoder passwordEncoder;
+  private final JwtValidator jwtValidator;
   private final UserJpaRepo userRepository;
 
   private final ActivityLoggerService activityLoggerService;
 
-  public UserServiceImpl(UserJpaRepo userRepository, ActivityLoggerService activityLoggerService) {
+  public UserServiceImpl(UserJpaRepo userRepository, ActivityLoggerService activityLoggerService,
+       PasswordEncoder passwordEncoder, JwtValidator jwtValidator) {
     this.userRepository = userRepository;
     this.activityLoggerService = activityLoggerService;
+    this.passwordEncoder = passwordEncoder;
+    this.jwtValidator = jwtValidator;
   }
 
   @Override
@@ -104,7 +116,6 @@ public class UserServiceImpl implements UserService {
 
   }
 
-
   @Override
   public boolean deleteUser(UUID id) {
     logger.info("Deleting user with ID: {}", id);
@@ -120,6 +131,45 @@ public class UserServiceImpl implements UserService {
     } else {
       throw new UserNotFoundException(ERROR_MESSAGE + id);
     }
+  }
+  //------signup and authenticate methods------
+
+  /**
+   * Sign up the user
+   * @param signupRequestDTO
+   * @return
+   */
+  public User signup(SignupRequestDTO signupRequestDTO) {
+    String email = signupRequestDTO.email();
+    Optional<User> existingUser = userRepository.findByEmail(email);
+    if (existingUser.isPresent()) {
+      logger.error("Given Email Already exist, Can't create a new User record ");
+      throw new UserAlreadyFoundException(
+          "Given Email Already exist, Can't create a new User record ");
+    }
+    User user = new User();
+    user.setFirstName(signupRequestDTO.firstName());
+    user.setLastName(signupRequestDTO.LastName());
+    user.setEmail(signupRequestDTO.email());
+    user.setPassword(passwordEncoder.encode(signupRequestDTO.password()));
+    user.setCreatedDate(DateAndTime.getDateAndTime());
+    return userRepository.save(user);
+  }
+
+  /**
+   * Authenticate the login access
+   * @param request
+   * @return
+   */
+  public AuthResponseDTO authenticate(LoginRequestDTO request) {
+    Optional<User> user = userRepository.findByEmail(request.email());
+    if (user.isEmpty()) {
+      logger.error("Given Email Not exist: User Not Found");
+      throw new UserNotFoundException("Given Email Not exist: User Not Found");
+    }
+    String accessToken = jwtValidator.generateToken(user.get());
+    logger.info("User Authenticated Successfully");
+    return UserMapper.toAuthResponseDTO(user.get(), accessToken);
   }
 
   private void validateUserCreateDTO(UserCreateDTO createUserDTO) {
