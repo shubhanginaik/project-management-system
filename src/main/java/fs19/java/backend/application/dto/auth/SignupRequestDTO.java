@@ -15,7 +15,7 @@ public record SignupRequestDTO(
         @NotBlank(message = "FirstName is required")
         String firstName,
         @NotBlank(message = "LastName is required")
-        String LastName
+        String lastName
 
 ) {
 }
