@@ -136,6 +136,7 @@ public class UserServiceImpl implements UserService {
 
   /**
    * Sign up the user
+   *
    * @param signupRequestDTO
    * @return
    */
@@ -144,12 +145,15 @@ public class UserServiceImpl implements UserService {
     Optional<User> existingUser = userRepository.findByEmail(email);
     if (existingUser.isPresent()) {
       logger.error("Given Email Already exist, Can't create a new User record ");
+
       throw new UserAlreadyFoundException(
           "Given Email Already exist, Can't create a new User record ");
     }
+
+    validateSignUpRequest(signupRequestDTO);
     User user = new User();
     user.setFirstName(signupRequestDTO.firstName());
-    user.setLastName(signupRequestDTO.LastName());
+    user.setLastName(signupRequestDTO.lastName());
     user.setEmail(signupRequestDTO.email());
     user.setPassword(passwordEncoder.encode(signupRequestDTO.password()));
     user.setCreatedDate(DateAndTime.getDateAndTime());
@@ -158,6 +162,7 @@ public class UserServiceImpl implements UserService {
 
   /**
    * Authenticate the login access
+   *
    * @param request
    * @return
    */
@@ -189,6 +194,26 @@ public class UserServiceImpl implements UserService {
       throw new UserValidationException("Phone number must be between 10 and 15 characters long");
     }
   }
+
+
+  public static void validateSignUpRequest(SignupRequestDTO signupRequestDTO) {
+    if (signupRequestDTO.email() == null || signupRequestDTO.email().isEmpty()) {
+      throw new UserValidationException("Email is required");
+    }
+    if (signupRequestDTO.password() == null || signupRequestDTO.password().isEmpty()) {
+      throw new UserValidationException("Password is required");
+    }
+    if (signupRequestDTO.password().length() < 6 || signupRequestDTO.password().length() > 40) {
+      throw new UserValidationException("Password must be between 6 and 40 characters");
+    }
+    if (signupRequestDTO.firstName() == null || signupRequestDTO.firstName().isEmpty()) {
+      throw new UserValidationException("FirstName is required");
+    }
+    if (signupRequestDTO.lastName() == null || signupRequestDTO.lastName().isEmpty()) {
+      throw new UserValidationException("LastName is required");
+    }
+  }
+
 }
 
 
