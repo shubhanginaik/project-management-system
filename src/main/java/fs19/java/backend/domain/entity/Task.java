@@ -48,8 +48,10 @@ public class Task {
     @Column(nullable = false)
     @ValidTaskStatus
     private String taskStatus;
-    @Column(nullable = false)
-    private UUID projectId;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "project_Id", nullable = false)
+    private Project project;
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "createduser_id", nullable = false)

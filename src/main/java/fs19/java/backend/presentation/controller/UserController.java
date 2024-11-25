@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Users and Auth", description = "Manage Users and Authentication")
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
   private static final Logger logger = LogManager.getLogger(UserController.class);

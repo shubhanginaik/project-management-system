@@ -2,6 +2,7 @@ package fs19.java.backend.application.mapper;
 
 import fs19.java.backend.application.dto.task.TaskRequestDTO;
 import fs19.java.backend.application.dto.task.TaskResponseDTO;
+import fs19.java.backend.domain.entity.Project;
 import fs19.java.backend.domain.entity.Task;
 import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.presentation.shared.Utilities.DateAndTime;
@@ -16,6 +17,7 @@ public class TaskMapper {
 
     /**
      * Convert task into task response dto
+     *
      * @param task
      * @param status
      * @return
@@ -23,14 +25,15 @@ public class TaskMapper {
     public static TaskResponseDTO toTaskResponseDTO(Task task, ResponseStatus status) {
         return new TaskResponseDTO(task.getId(), task.getName(), task.getDescription(),
                 task.getCreatedDate(), task.getResolvedDate(), task.getDueDate(),
-                task.getAttachments(), task.getTaskStatus(), task.getProjectId(),
+                task.getAttachments(), task.getTaskStatus(), task.getProject() == null ? null : task.getProject().getId(),
                 task.getCreatedUser() == null ? null : task.getCreatedUser().getId(),
                 task.getAssignedUser() == null ? null : task.getAssignedUser().getId(),
                 task.getPriority(), status);
     }
 
     /**
-     *      * Convert task into task response dt list
+     * * Convert task into task response dt list
+     *
      * @param tasks
      * @param status
      * @return
@@ -43,11 +46,11 @@ public class TaskMapper {
         return responseDTOS;
     }
 
-    public static Task toTask(TaskRequestDTO taskRequestDTO, User createduser, User assignedUser) {
+    public static Task toTask(TaskRequestDTO taskRequestDTO, User createduser, User assignedUser, Project project) {
         return new Task(UUID.randomUUID(), taskRequestDTO.getName(), taskRequestDTO.getDescription(),
                 DateAndTime.getDateAndTime(), taskRequestDTO.getResolvedDate(),
                 taskRequestDTO.getDueDate(), taskRequestDTO.getAttachments(),
-                taskRequestDTO.getTaskStatus(), taskRequestDTO.getProjectId(),
+                taskRequestDTO.getTaskStatus(), project,
                 createduser, assignedUser, taskRequestDTO.getPriority());
     }
 }
