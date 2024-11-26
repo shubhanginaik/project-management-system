@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -108,6 +109,7 @@ class ProjectControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldCreateProject() throws Exception {
     performPostProject(projectCreateDto)
         .andExpect(status().isCreated())
@@ -116,6 +118,7 @@ class ProjectControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldGetAllProjects() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/projects"))
         .andDo(print())
@@ -124,6 +127,7 @@ class ProjectControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldGetProjectById() throws Exception {
     String response = performPostProject(projectCreateDto)
         .andExpect(status().isCreated())
@@ -147,6 +151,7 @@ class ProjectControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldUpdateProject() throws Exception {
     String response = performPostProject(projectCreateDto)
         .andExpect(status().isCreated())
@@ -167,6 +172,7 @@ class ProjectControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldDeleteProject() throws Exception {
     String response = performPostProject(projectCreateDto)
         .andExpect(status().isCreated())
@@ -184,6 +190,7 @@ class ProjectControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldDeleteProjectReturnProjectNotFound() throws Exception {
     UUID projectId = UUID.randomUUID();
     mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/projects/" + projectId))

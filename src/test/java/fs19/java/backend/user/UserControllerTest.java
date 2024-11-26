@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -55,6 +56,7 @@ class UserControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldCreateUserOnPost() throws Exception {
 
     String jsonResponse = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users"))
@@ -78,6 +80,7 @@ class UserControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldGetAllUsersOnGet() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users"))
         .andExpect(status().isOk())
@@ -86,6 +89,7 @@ class UserControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldGetUserByIdOnGet() throws Exception {
     userCreateDto.setFirstName("Dolly");
     userCreateDto.setEmail("get.id@example.com"); // need unique email
@@ -105,6 +109,7 @@ class UserControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldUpdateUserOnPut() throws Exception {
     userCreateDto.setEmail("changed.email@example.com");
     userCreateDto.setFirstName("Anna");
@@ -129,6 +134,7 @@ class UserControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldDeleteUserOnDelete() throws Exception {
     userCreateDto.setEmail("Somethin@example.com");
     String response = performPostUser(userCreateDto)
