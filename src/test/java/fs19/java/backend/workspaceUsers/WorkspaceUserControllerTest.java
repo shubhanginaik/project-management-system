@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -123,6 +124,7 @@ class WorkspaceUserControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldCreateWorkspaceUser() throws Exception {
     mockMvc.perform(post("/api/v1/workspace-users")
             .contentType(MediaType.APPLICATION_JSON)
@@ -133,6 +135,7 @@ class WorkspaceUserControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldGetAllWorkspaceUsers() throws Exception {
     mockMvc.perform(get("/api/v1/workspace-users"))
         .andDo(print())
@@ -141,6 +144,7 @@ class WorkspaceUserControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldGetWorkspaceUserById() throws Exception {
     User user2 = new User(UUID.randomUUID(), "User2", "Pony", "user2.pony@example.com",
         "password", "123456789", ZonedDateTime.now(), "profile.jpg", List.of());
@@ -170,6 +174,7 @@ class WorkspaceUserControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldUpdateWorkspaceUser() throws Exception {
     User user3 = new User(UUID.randomUUID(), "User3", "Pony", "user3.pony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg",
         List.of());
@@ -207,6 +212,7 @@ class WorkspaceUserControllerTest {
   }
 
   @Test
+  @WithMockUser(username = "admin", roles = {"ADMIN"})
   void shouldDeleteWorkspaceUser() throws Exception {
     User user4 = new User(UUID.randomUUID(), "User4", "Tony", "user4.tony@example.com", "password", "123456789", ZonedDateTime.now(), "profile.jpg",
         List.of());
