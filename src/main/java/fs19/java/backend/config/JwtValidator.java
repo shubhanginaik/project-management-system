@@ -50,8 +50,7 @@ public class JwtValidator {
 
         // Get claims
         Claims claims = claimsJws.getPayload();
-        List<UUID> permission = (List<UUID>) claims.get("permission");
-        return permission;
+        return (List<UUID>) claims.get("permission");
     }
 
     public String generateToken(User user, List<UUID> workspacePermission) {
