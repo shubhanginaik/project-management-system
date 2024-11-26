@@ -63,7 +63,7 @@ public class ResponseHandler {
                     errors.add(new ErrorItem(" Can't create an Invitation, Company Information Not Found", "" + status.getStatus()));
             case INVALID_INFORMATION_INVITATION_DETAILS_NOT_CREATED ->
                     errors.add(new ErrorItem(" Can't create an Invitation, Something missing in request", "" + status.getStatus()));
-            case INVITATION_COMPANY_ID_NOT_FOUND ->
+            case INVITATION_WORKSPACE_ID_NOT_FOUND ->
                     errors.add(new ErrorItem(" Can't create an Invitation, Company Id Not Found", "" + status.getStatus()));
             case INVITATION_ID_NOT_FOUND ->
                     errors.add(new ErrorItem(" Invitation Id Not Found", "" + status.getStatus()));
@@ -97,7 +97,7 @@ public class ResponseHandler {
                  TASK_LEVEL_CREATED_USER_NOT_FOUND, TASK_LEVEL_ASSIGNED_USER_NOT_FOUND, TASK_ID_NOT_FOUND,
                  INVALID_INFORMATION_TASK_DETAILS_NOT_FOUND, INVITATION_EMAIL_NOT_FOUND, INVITATION_ROLE_ID_NOT_FOUND,
                  INVITATION_ROLE_NOT_FOUND, INVITATION_COMPANY_NOT_FOUND,
-                 INVALID_INFORMATION_INVITATION_DETAILS_NOT_CREATED, INVITATION_COMPANY_ID_NOT_FOUND,
+                 INVALID_INFORMATION_INVITATION_DETAILS_NOT_CREATED, INVITATION_WORKSPACE_ID_NOT_FOUND,
                  INVITATION_ID_NOT_FOUND, INVALID_INFORMATION_INVITATION_DETAILS_NOT_DELETED,
                  INVALID_INFORMATION_INVITATION_DETAILS_NOT_FOUND, COMPANY_ID_NOT_FOUND,
                  COMPANY_NAME_NOT_FOUND, USER_ID_NOT_FOUND, PROJECT_ID_NOT_FOUND -> {
