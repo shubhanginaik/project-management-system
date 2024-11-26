@@ -1,4 +1,16 @@
 
+# User Management System
+- # Spring Boot Application with PostgreSQL, Hibernate, JPA, and JWT
+
+
+---
+
+## Team Members
+
+- [Danushka](https://github.com/Nandalochana)
+- [Naga](https://github.com/nagadheerajb)
+- [Shubhangi](https://github.com/shubhanginaik)
+
 
 # Teamwork
 
@@ -6,7 +18,83 @@
 - Database schema
 - Workable backend server with Spring Boot & Hibernate
 
----
+
+# Project Description
+
+This application is a Spring Boot-based backend service that provides:
+- Secure JWT-based authentication.
+- Data persistence using PostgreSQL.
+- Entity management using Hibernate and JPA.
+
+
+# Features
+
+- **User Management**
+    - User registration and login functionality
+    - User authentication using email/password
+    - Custom roles and permissions (e.g., Admin, Dev, PM)
+    - User profile management
+  - **Projects and Workspaces**
+  - Ability to create and manage multiple projects/workspaces
+  - Project details: name, description, start/end dates, status
+  - **Tasks and Issues**
+  - Task/issue creation with title, description, priority, and deadline
+  - Task/issue tracking: status updates (e.g., To-Do, In Progress, Done)
+  - Activity tracking: status updates (e.g., To-Do, In Progress, Done)
+
+
+
+# Prerequisites
+
+-List the software and tools required to run the application.
+
+- Java 17 or later
+- Spring Boot
+- PostgreSQL
+- Maven
+- Postman
+- IDE (IntelliJ IDEA, Eclipse, etc.)
+- Git
+- JWT (JSON Web Token)
+- Hibernate
+- JPA (Java Persistence API)
+- Lombok
+- Swagger
+  
+
+# Getting Started
+
+## Cloning the Repository
+    
+- Clone the repository using the following command:
+    ```bash
+    git clone https://github.com/nagadheerajb/fs19-java-backend.git
+    ```
+  
+- Change the directory to the project root:
+    ```bash
+    cd fs19-java-backend
+    ```
+
+Configuration
+
+- Database Setup:
+
+-- Create a PostgreSQL database (e.g., your_database_name).
+-- Update the application.properties file with your database name, username, and password.
+-- The application will automatically create the necessary tables in the database.
+
+## Running the Application
+
+- Run the application using the following command:
+    ```bash
+    mvn spring-boot:run
+    ``` 
+- The application will start on port 8080 by default.
+- Open a web browser and navigate to `http://localhost:8080` to access the application.
+- Use Postman or Swagger to test the API endpoints.
+- The application will automatically create the necessary tables in the PostgreSQL database.
+
 
 ## Menu
 
