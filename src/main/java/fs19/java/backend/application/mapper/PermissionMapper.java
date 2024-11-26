@@ -22,7 +22,7 @@ public class PermissionMapper {
      * @return
      */
     public static PermissionResponseDTO toPermissionResponseDTO(Permission permission, ResponseStatus responseStatus) {
-        return new PermissionResponseDTO(permission.getId(), permission.getName(), responseStatus);
+        return new PermissionResponseDTO(permission.getId(), permission.getName(),permission.getUrl(),permission.getPermissionType(), responseStatus);
     }
 
     /**
