@@ -1,5 +1,6 @@
 package fs19.java.backend.domain.entity;
 
+import fs19.java.backend.domain.entity.enums.PermissionType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -25,5 +26,11 @@ public class Permission {
     @NotNull
     @Column(unique = true, nullable = false, length = 25)
     private String name;
-
+    @NotNull
+    @Column(nullable = false, length = 25)
+    private String url;
+    @NotNull
+    @Column(nullable = false, length = 25)
+    private PermissionType permissionType;
 }
+
