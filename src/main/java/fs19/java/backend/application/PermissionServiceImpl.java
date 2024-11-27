@@ -113,7 +113,7 @@ public class PermissionServiceImpl implements PermissionService {
         if (myPermission == null) {
             return PermissionMapper.toPermissionResponseDTO(new Permission(), ResponseStatus.INVALID_INFORMATION_PERMISSION_DETAILS_NOT_FOUND);
         }
-        activityLoggerService.logActivity(EntityType.PERMISSION, myPermission.getId(), ActionType.DELETED, myPermission.getId());
+        //activityLoggerService.logActivity(EntityType.PERMISSION, myPermission.getId(), ActionType.DELETED, SecurityConfig.getCurrentUser().getId());
         return PermissionMapper.toPermissionResponseDTO(myPermission, ResponseStatus.SUCCESSFULLY_DELETED);
     }
 

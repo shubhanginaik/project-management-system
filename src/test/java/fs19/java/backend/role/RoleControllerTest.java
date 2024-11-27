@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,8 +49,16 @@ class RoleControllerTest {
     @Autowired
     private UserJpaRepo userJpaRepo;
 
+    @BeforeEach
+    void printAuthorities() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("User Authorities: " + auth.getAuthorities());
+    }
+
+
     @Test
     @Order(1)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Create Role")
     void testCreateRole() throws Exception {
         RoleRequestDTO request = new RoleRequestDTO();
@@ -69,6 +80,7 @@ class RoleControllerTest {
 
     @Test
     @Order(2)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Get Role by ID")
     void testGetRoleById() throws Exception {
         mockMvc.perform(get(BASE_URL + "/" + testRoleId))
@@ -78,6 +90,7 @@ class RoleControllerTest {
 
     @Test
     @Order(3)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Update Role")
     void testUpdateRole() throws Exception {
         RoleRequestDTO updateRequest = new RoleRequestDTO();
@@ -94,6 +107,7 @@ class RoleControllerTest {
 
     @Test
     @Order(4)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Get All Roles")
     void testGetAllRoles() throws Exception {
         mockMvc.perform(get(BASE_URL))
@@ -105,6 +119,7 @@ class RoleControllerTest {
     @Test
     @Order(5)
     @DisplayName("Test Search Role by Name")
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     void testSearchRoleByName() throws Exception {
         mockMvc.perform(get(BASE_URL + "/search/UpdatedRole"))
                 .andExpect(status().isOk())
@@ -114,6 +129,7 @@ class RoleControllerTest {
     @Test
     @Order(6)
     @DisplayName("Test Delete Role by ID")
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     void testDeleteRoleById() throws Exception {
         mockMvc.perform(delete(BASE_URL + "/" + testRoleId))
                 .andExpect(status().isOk())
@@ -122,6 +138,7 @@ class RoleControllerTest {
 
     @Test
     @Order(7)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Clean Up Database")
     void testCleanUp() throws Exception {
         mockMvc.perform(get(BASE_URL + "/" + testRoleId))
