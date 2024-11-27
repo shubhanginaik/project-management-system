@@ -41,7 +41,7 @@ class RoleControllerTest {
 
     private static UUID testRoleId;
 
-    private static final String BASE_URL = "/app/v1/roles";
+    private static final String BASE_URL = "/api/v1/roles";
 
     @Autowired
     private CompanyJpaRepo companyJpaRepo;

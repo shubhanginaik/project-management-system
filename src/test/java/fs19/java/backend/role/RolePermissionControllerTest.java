@@ -41,7 +41,7 @@ class RolePermissionControllerTest {
     private ObjectMapper objectMapper;
 
     private static UUID testRolePermissionId;
-    private static final String BASE_URL = "/app/v1/rolePermissions";
+    private static final String BASE_URL = "/api/v1/rolePermissions";
 
 
     @Autowired
