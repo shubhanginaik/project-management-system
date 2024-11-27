@@ -5,16 +5,20 @@ import fs19.java.backend.application.mapper.ActivityLogMapper;
 import fs19.java.backend.application.service.ActivityLogService;
 import fs19.java.backend.domain.entity.ActivityLog;
 import fs19.java.backend.domain.entity.User;
+import fs19.java.backend.domain.entity.enums.EntityType;
 import fs19.java.backend.infrastructure.JpaRepositories.ActivityLogJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.presentation.shared.exception.ActivityLogNotFoundException;
 import fs19.java.backend.presentation.shared.exception.UserNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -115,4 +119,26 @@ public class ActivityLogServiceImpl implements ActivityLogService {
         //User createdBy = SecurityUtils.getCurrentUser();
         //activityLoggerService.logActivity(EntityType.COMPANY, id, ActionType.DELETED, createdBy.getId());
     }
+
+    @Override
+    public List<ActivityLogDTO> getActivityLogsByEntity(UUID entityId) {
+        String entityType = determineEntityType(entityId);
+        List<ActivityLog> logs = activityLogRepository.findLogsByEntity(entityId, entityType);
+        return logs.stream().map(ActivityLogMapper::toDTO).collect(Collectors.toList());
+    }
+
+    private String determineEntityType(UUID entityId) {
+        if (activityLogRepository.findCompanyById(entityId).isPresent()) {
+            return "COMPANY";
+        } else if (activityLogRepository.findWorkspaceById(entityId).isPresent()) {
+            return "WORKSPACE";
+        } else if (activityLogRepository.findProjectById(entityId).isPresent()) {
+            return "PROJECT";
+        } else if (activityLogRepository.findTaskById(entityId).isPresent()) {
+            return "TASK";
+        } else {
+            throw new IllegalArgumentException("Entity ID not found in any known entities.");
+        }
+    }
+
 }
