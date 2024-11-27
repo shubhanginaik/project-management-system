@@ -6,6 +6,7 @@ import fs19.java.backend.application.mapper.UserMapper;
 import fs19.java.backend.application.mapper.WorkspaceUserMapper;
 import fs19.java.backend.application.service.UserService;
 import fs19.java.backend.config.URLParameterExtractor;
+import fs19.java.backend.domain.abstraction.UserRepository;
 import fs19.java.backend.domain.entity.*;
 import fs19.java.backend.domain.entity.enums.ActionType;
 import fs19.java.backend.domain.entity.enums.EntityType;
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserService {
     private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
     private static final String ERROR_MESSAGE = "User not found with ID ";
 
-    private final UserJpaRepo userRepository;
+    private final UserRepository userRepository;
     private final InvitationJpaRepo invitationJpaRepo;
     private final WorkspaceJpaRepo workspaceJpaRepo;
     private final RoleJpaRepo roleJpaRepo;
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
     private final ActivityLoggerService activityLoggerService;
 
-    public UserServiceImpl(UserJpaRepo userRepository, InvitationJpaRepo invitationJpaRepo, WorkspaceJpaRepo workspaceJpaRepo, RoleJpaRepo roleJpaRepo, WorkspaceUserJpaRepo workspaceUserJpaRepo, ActivityLoggerService activityLoggerService) {
+    public UserServiceImpl(UserRepository userRepository, InvitationJpaRepo invitationJpaRepo, WorkspaceJpaRepo workspaceJpaRepo, RoleJpaRepo roleJpaRepo, WorkspaceUserJpaRepo workspaceUserJpaRepo, ActivityLoggerService activityLoggerService) {
         this.userRepository = userRepository;
         this.invitationJpaRepo = invitationJpaRepo;
         this.workspaceJpaRepo = workspaceJpaRepo;
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
         validateUserCreateDTO(createUserDTO);
         User user = UserMapper.toEntity(createUserDTO);
         user.setCreatedDate(ZonedDateTime.now());
-        user = userRepository.save(user);
+        user = userRepository.saveUser(user);
         updateWorkSpaceUserInfo(createUserDTO, user);
         logger.info("User created and saved: {}", user);
 
@@ -121,7 +122,7 @@ public class UserServiceImpl implements UserService {
             updatedUser.setEmail(userDTO.getEmail());
             updatedUser.setPhone(userDTO.getPhone());
             updatedUser.setProfileImage(userDTO.getProfileImage());
-            updatedUser = userRepository.save(updatedUser);
+            updatedUser = userRepository.saveUser(updatedUser);
             logger.info("User updated and saved: {}", updatedUser);
             activityLoggerService.logActivity(EntityType.USER, updatedUser.getId(), ActionType.UPDATED,
                     updatedUser.getId());
@@ -148,7 +149,7 @@ public class UserServiceImpl implements UserService {
     public List<UserReadDTO> findAllUsers() {
         logger.info("Finding all users");
 
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAllUsers();
         List<UserReadDTO> userReadDTOs = users.stream()
                 .map(UserMapper::toReadDTO)
                 .toList();
@@ -165,7 +166,7 @@ public class UserServiceImpl implements UserService {
         if (user.isPresent()) {
             logger.info("User found for deletion: {}", user.get());
 
-            userRepository.delete(user.get());
+            userRepository.deleteUser(user.get());
             logger.info("User deleted successfully");
 
             return true;
