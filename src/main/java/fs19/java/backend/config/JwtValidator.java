@@ -33,7 +33,7 @@ public class JwtValidator {
         final String userEmail = extractUserEmail(token);
         boolean isFound = true;
         List<UUID> workspace_ids = extractPermissions(token);
-        if (workspace_ids != null) {
+        if (workspace_ids != null || workspace_ids.contains(workspaceId)) {
             isFound = workspace_ids.contains(workspaceId);
         }
         final Date tokenExpirationDate = extractClaim(token, Claims::getExpiration);

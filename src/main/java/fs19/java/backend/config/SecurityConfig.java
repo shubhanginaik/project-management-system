@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -46,6 +47,30 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Profile("test")
+    public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.cors(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> {
+                    // Public endpoints that can be accessed without authentication
+                    auth.requestMatchers("/api/v1/**").hasAnyAuthority("TEST-USER");
+                    // Block all other requests that don't match any of the above rules
+                    auth.anyRequest().denyAll();  // This ensures other requests are blocked
+
+                }).exceptionHandling(exception ->
+                        exception.accessDeniedHandler(accessDeniedHandler())
+                                .authenticationEntryPoint((req, res, authEx) -> {
+                                    res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                                    res.getWriter().write("Unauthorized access: " + authEx.getMessage());
+                                })
+                )
+
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).authenticationManager(authenticationManager(http));
+
+        return http.build();
+    }
+
+
+    @Bean
+    @Profile("!test")
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         final List<SecurityRole> rolePermissions = getRolePermissionsFromDatabase();
         http.cors(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> {
@@ -55,9 +80,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.POST, "/api/v1/companies").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/workspaces").permitAll()
                             .requestMatchers("/api/v1/accept-invitation/redirect").permitAll()
-                            .requestMatchers("/api/v1/**").hasAnyAuthority("TEST-USER", DataLoader.ADMIN_USER_NAME)
                             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
-
                     // Loop through dynamic role-permission mappings from the database
                     for (SecurityRole rolePermission : rolePermissions) {
                         // Example: check GET /api/v1/resource for specific role permissions
