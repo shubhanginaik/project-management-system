@@ -1,5 +1,6 @@
 package fs19.java.backend.application.mapper;
 
+import fs19.java.backend.application.dto.invitation.InvitationAcceptDTO;
 import fs19.java.backend.application.dto.invitation.InvitationRequestDTO;
 import fs19.java.backend.application.dto.invitation.InvitationResponseDTO;
 import fs19.java.backend.domain.entity.Invitation;
@@ -22,8 +23,8 @@ public class InvitationMapper {
      * @return
      */
     public static InvitationResponseDTO toInvitationResponseDTO(Invitation invitation, ResponseStatus responseStatus) {
-        return new InvitationResponseDTO(invitation.getId(), invitation.isAccepted(), invitation.getExpiredAt(), invitation.getUrl(),
-                invitation.getEmail(), invitation.getCreatedBy().getId(),
+        return new InvitationResponseDTO(invitation.getId(), invitation.isAccepted(), invitation.getExpiredAt(), invitation.getEmail(),
+                invitation.getUrl(), invitation.getCreatedBy().getId(),
                 invitation.getRole() == null ? null : invitation.getRole().getId(),
                 invitation.getWorkspace() == null ? null : invitation.getWorkspace().getId(), responseStatus);
     }
@@ -53,5 +54,9 @@ public class InvitationMapper {
         invitation.setEmail(invitationRequestDTO.getEmail());
         invitation.setRole(role);
         return invitation;
+    }
+
+    public static InvitationAcceptDTO toInvitationAcceptDTO(Invitation invitation, ResponseStatus responseStatus) {
+        return new InvitationAcceptDTO(invitation.getUrl(), responseStatus);
     }
 }

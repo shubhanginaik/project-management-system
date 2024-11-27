@@ -2,6 +2,7 @@ package fs19.java.backend.config;
 
 import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.presentation.shared.Utilities.DateAndTime;
+import fs19.java.backend.presentation.shared.exception.AuthenticationNotFoundException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -76,12 +77,16 @@ public class JwtValidator {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parser()
-                .verifyWith(getSignInKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts
+                    .parser()
+                    .verifyWith(getSignInKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (Exception ex) {
+            throw new AuthenticationNotFoundException(ex.getMessage());
+        }
     }
 
     private SecretKey getSignInKey() {

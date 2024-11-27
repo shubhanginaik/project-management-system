@@ -76,6 +76,10 @@ public class ResponseHandler {
                     errors.add(new ErrorItem(" Company name Not Found", "" + status.getStatus()));
             case USER_ID_NOT_FOUND -> errors.add(new ErrorItem("User Id Not Found", "" + status.getStatus()));
             case PROJECT_ID_NOT_FOUND -> errors.add(new ErrorItem("Project Id is invalid", "" + status.getStatus()));
+            case INVITATION_ALREADY_ACCEPTED ->
+                    errors.add(new ErrorItem("Invitation Already Accepted", "" + status.getStatus()));
+
+
         }
         return errors;
     }
@@ -104,7 +108,7 @@ public class ResponseHandler {
 
                 return HttpStatus.NOT_FOUND;
             }
-            case RECORD_ALREADY_CREATED, ROLE_PERMISSION_ID_RECORD_ALREADY_EXIST -> {
+            case RECORD_ALREADY_CREATED, ROLE_PERMISSION_ID_RECORD_ALREADY_EXIST, INVITATION_ALREADY_ACCEPTED -> {
                 return HttpStatus.NOT_ACCEPTABLE;
             }
 

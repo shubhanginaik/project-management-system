@@ -139,6 +139,9 @@ public class DataLoader implements CommandLineRunner {
             workspaceUser2.setWorkspace(saveWorkspace2);
             workspaceUserJpaRepo.save(workspaceUser2);
 
+
+
+
             Permission permission1 = new Permission();
             permission1.setName("TASK_VIEW");
             permission1.setUrl("app/v1/tasks");
@@ -156,6 +159,19 @@ public class DataLoader implements CommandLineRunner {
             permission4.setUrl("app/v1/invitations");
             permission4.setPermissionType(PermissionType.GET);
             Permission permission5 = permissionJpaRepo.save(permission4);
+
+
+            Permission permission6 = new Permission();
+            permission6.setName("USER_CREATE");
+            permission6.setUrl("/api/v1/users");
+            permission6.setPermissionType(PermissionType.POST);
+            Permission permission7 = permissionJpaRepo.save(permission6);
+
+            RolePermission rolePermission8 = new RolePermission();
+            rolePermission8.setRole(saveRole);
+            rolePermission8.setPermission(permission7);
+            rolePermissionJpaRepo.save(rolePermission8);
+
 
             RolePermission rolePermission = new RolePermission();
             rolePermission.setRole(saveRole);
@@ -183,6 +199,15 @@ public class DataLoader implements CommandLineRunner {
             rolePermissionJpaRepo.save(rolePermission5);
 
 
+
+
+
+
+
+
+
+
+
             Task task = new Task();
             task.setName("Task 1");
             task.setDescription("Initial setup task");
@@ -204,7 +229,7 @@ public class DataLoader implements CommandLineRunner {
 
             Invitation invitation1 = new Invitation();
             invitation1.setAccepted(false);
-            invitation1.setExpiredAt(DateAndTime.getDateAndTime().plusDays(7));
+            invitation1.setExpiredAt(DateAndTime.getExpiredDateAndTime());
             invitation1.setEmail("invitee@example.com");
             invitation1.setRole(saveRole);
             invitation1.setWorkspace(saveWorkspace);

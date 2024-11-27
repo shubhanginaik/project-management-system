@@ -53,13 +53,7 @@ public class WorkspaceUserServiceImpl implements WorkspaceUserService {
     User user = findUserById(workspaceUsersDTO.getUserId());
     Role role = findRoleById(workspaceUsersDTO.getRoleId());
     Workspace workspace = findWorkspaceById(workspaceUsersDTO.getWorkspaceId());
-
-    WorkspaceUser workspaceUser = WorkspaceUserMapper.toEntity(workspaceUsersDTO, user, role, workspace);
-    workspaceUser.setId(UUID.randomUUID());
-    workspaceUser.setUser(user);
-    workspaceUser.setRole(role);
-    workspaceUser.setWorkspace(workspace);
-
+    WorkspaceUser workspaceUser = WorkspaceUserMapper.toEntity(user, role, workspace);
     workspaceUser = workspaceUserRepository.save(workspaceUser);
     logger.info("Workspace user created and saved: {}", workspaceUser);
     return WorkspaceUserMapper.toDTO(workspaceUser);

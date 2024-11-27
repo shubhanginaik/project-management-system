@@ -7,6 +7,7 @@ import fs19.java.backend.application.dto.invitation.InvitationResponseDTO;
 import fs19.java.backend.infrastructure.JpaRepositories.CompanyJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.RoleJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.WorkspaceJpaRepo;
 import fs19.java.backend.presentation.shared.Utilities.DateAndTime;
 import fs19.java.backend.presentation.shared.response.GlobalResponse;
 import org.junit.jupiter.api.*;
@@ -45,7 +46,7 @@ class InvitationControllerTest {
     private RoleJpaRepo roleJpaRepo;
 
     @Autowired
-    private CompanyJpaRepo companyJpaRepo;
+    private WorkspaceJpaRepo workspaceJpaRepo;
 
     @Autowired
     private UserJpaRepo userJpaRepo;
@@ -59,7 +60,7 @@ class InvitationControllerTest {
         request.setAccepted(false);
         request.setEmail("abc@gmail.com");
         request.setRoleId(roleJpaRepo.findAll().getFirst().getId());
-        request.setCompanyId(companyJpaRepo.findAll().getFirst().getId());
+        request.setWorkspaceId(workspaceJpaRepo.findAll().getFirst().getId());
         request.setCreated_user(userJpaRepo.findAll().getFirst().getId());
 
         String responseContent = mockMvc.perform(post(BASE_URL)
@@ -94,7 +95,7 @@ class InvitationControllerTest {
         updateRequest.setAccepted(true);
         updateRequest.setEmail("abc@gmail.com");
         updateRequest.setRoleId(roleJpaRepo.findAll().getFirst().getId());
-        updateRequest.setCompanyId(companyJpaRepo.findAll().getFirst().getId());
+        updateRequest.setWorkspaceId(workspaceJpaRepo.findAll().getFirst().getId());
         updateRequest.setCreated_user(userJpaRepo.findAll().getFirst().getId());
 
         mockMvc.perform(put(BASE_URL + "/" + testInvitationId)

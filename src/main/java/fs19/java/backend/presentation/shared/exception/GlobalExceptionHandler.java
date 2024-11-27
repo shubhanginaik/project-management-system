@@ -179,6 +179,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(InvalidInvitationFoundException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleIlleInvalidInvitationException(InvalidInvitationFoundException ex) {
+        ErrorItem error = new ErrorItem(ex.getMessage());
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.BAD_REQUEST.value(),
+                List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
 
     @ExceptionHandler(AuthenticationNotFoundException.class)
     public ResponseEntity<GlobalResponse<Void>> handleAccessDeniedException(AuthenticationNotFoundException ex) {
