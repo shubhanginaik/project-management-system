@@ -46,7 +46,7 @@ class TaskControllerTest {
     private ProjectJpaRepo projectJpaRepo;
 
     private static UUID testTaskId;
-    private static final String BASE_URL = "/app/v1/tasks";
+    private static final String BASE_URL = "/api/v1/tasks";
 
     @BeforeEach
     void printAuthorities() {

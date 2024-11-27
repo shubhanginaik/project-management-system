@@ -43,7 +43,7 @@ class PermissionControllerTest {
 
     private static UUID testPermissionId;
 
-    private static final String BASE_URL = "/app/v1/permissions";
+    private static final String BASE_URL = "/api/v1/permissions";
 
     @Autowired
     private UserJpaRepo userJpaRepo;

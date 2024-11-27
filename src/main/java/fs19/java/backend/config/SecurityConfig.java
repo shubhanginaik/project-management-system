@@ -62,7 +62,7 @@ public class SecurityConfig {
                         // Example: check GET /api/v1/resource for specific role permissions
                         auth.requestMatchers(rolePermission.getMethod(), rolePermission.getPermission()).hasAuthority(rolePermission.getRole());
                     }
-                    auth.requestMatchers("/app/v1/**").hasAnyAuthority("TEST-USER");
+                    auth.requestMatchers("/api/v1/**").hasAnyAuthority("TEST-USER");
                     // Block all other requests that don't match any of the above rules
                     auth.anyRequest().denyAll();  // This ensures other requests are blocked
 
