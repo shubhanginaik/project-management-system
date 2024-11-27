@@ -8,8 +8,6 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -27,8 +25,6 @@ public class JwtValidator {
     @Value("${jwt.secret}")
     private String JWT_SECRET;
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtValidator.class);
-
     public String extractUserEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -37,23 +33,12 @@ public class JwtValidator {
         final String userEmail = extractUserEmail(token);
         boolean isFound = true;
         List<UUID> workspace_ids = extractPermissions(token);
-
-        logger.info("Validating token for user: {}", userEmail);
-        logger.info("Extracted workspace IDs: {}", workspace_ids);
-
         if (workspace_ids != null) {
             isFound = workspace_ids.contains(workspaceId);
-            logger.info("Workspace ID {} is {} in the token permissions", workspaceId, isFound ? "found" : "not found");
         }
-
         final Date tokenExpirationDate = extractClaim(token, Claims::getExpiration);
         boolean usernameMatch = Objects.equals(userEmail, systemUserDetails.getUsername());
         boolean tokenIsExpired = tokenExpirationDate.before(DateAndTime.getCurrentDate());
-
-        logger.info("Username match: {}", usernameMatch);
-        logger.info("Token expiration date: {}", tokenExpirationDate);
-        logger.info("Is token expired: {}", tokenIsExpired);
-
         return usernameMatch && !tokenIsExpired && isFound;
     }
 

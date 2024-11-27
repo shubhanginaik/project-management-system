@@ -5,7 +5,6 @@ import fs19.java.backend.application.dto.company.CompanyResponseDTO;
 import fs19.java.backend.application.dto.company.CompanyUpdateDTO;
 import fs19.java.backend.application.mapper.CompanyMapper;
 import fs19.java.backend.application.service.CompanyService;
-import fs19.java.backend.config.SecurityConfig;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.domain.entity.enums.ActionType;
@@ -28,7 +27,8 @@ public class CompanyServiceImpl implements CompanyService {
 
     private static final Logger logger = LogManager.getLogger(CompanyServiceImpl.class);
     private static final String COMPANY_NOT_FOUND_MESSAGE = "Company with ID %s not found";
-    private static final String USER_NOT_FOUND_MESSAGE = "Logged-in user not found";
+    private static final String USER_NOT_FOUND_MESSAGE = "User not found with ID %s";
+
 
     private final CompanyJpaRepo companyRepository;
     private final UserJpaRepo userRepository;
@@ -46,11 +46,8 @@ public class CompanyServiceImpl implements CompanyService {
     public CompanyResponseDTO createCompany(CompanyRequestDTO companyDTO) {
         logger.info("Creating company with DTO: {}", companyDTO);
 
-        // Get the logged-in user
-        User createdBy = SecurityConfig.getCurrentUser();
-        if (createdBy == null) {
-            throw new UserNotFoundException(USER_NOT_FOUND_MESSAGE);
-        }
+        User createdBy = userRepository.findById(companyDTO.getCreatedBy())
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, companyDTO.getCreatedBy())));
         logger.info("User found for company creation: {}", createdBy);
 
         Company company = CompanyMapper.toEntity(companyDTO, createdBy);
@@ -59,9 +56,10 @@ public class CompanyServiceImpl implements CompanyService {
         Company savedCompany = companyRepository.save(company);
         logger.info("Company created and saved: {}", savedCompany);
 
-        // Send general notification
-        String notificationMessage = String.format("Company '%s' created by user '%s'", savedCompany.getName(), createdBy.getId());
-        notificationSender.sendNotification(notificationMessage);
+        logger.info("EntityType: {}", EntityType.COMPANY);
+        logger.info("Entity ID: {}", savedCompany.getId());
+        logger.info("Action: {}", ActionType.CREATED);
+        logger.info("User ID: {}", createdBy.getId());
 
         activityLoggerService.logActivity(EntityType.COMPANY, savedCompany.getId(), ActionType.CREATED, createdBy.getId());
         logger.info("Activity logged for company creation");
@@ -77,11 +75,8 @@ public class CompanyServiceImpl implements CompanyService {
                 .orElseThrow(() -> new CompanyNotFoundException(String.format(COMPANY_NOT_FOUND_MESSAGE, id)));
         logger.info("Existing company found: {}", existingCompany);
 
-        // Get the logged-in user
-        User createdBy = SecurityConfig.getCurrentUser();
-        if (createdBy == null) {
-            throw new UserNotFoundException(USER_NOT_FOUND_MESSAGE);
-        }
+        User createdBy = userRepository.findById(companyDTO.getCreatedBy())
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, companyDTO.getCreatedBy())));
         logger.info("User found for company update: {}", createdBy);
 
         CompanyMapper.updateEntity(existingCompany, companyDTO, createdBy);
@@ -129,16 +124,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         companyRepository.deleteById(id);
         logger.info("Company with ID: {} deleted", id);
-
-        // Retrieve the logged-in user
-        User createdBy = SecurityConfig.getCurrentUser();
-        if (createdBy == null) {
-            logger.error("Logged-in user not found for activity logging");
-            throw new UserNotFoundException(USER_NOT_FOUND_MESSAGE);
-        }
-
-        activityLoggerService.logActivity(EntityType.COMPANY, id, ActionType.DELETED, createdBy.getId());
-        logger.info("Activity logged for company deletion");
+        //User createdBy = SecurityUtils.getCurrentUser();
+        //activityLoggerService.logActivity(EntityType.COMPANY, id, ActionType.DELETED, createdBy.getId());
     }
-
 }

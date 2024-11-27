@@ -7,8 +7,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +24,6 @@ import java.util.UUID;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtValidator jwtValidator;
 
@@ -39,7 +36,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            // Allow specific endpoints without authentication
+            //allow swagger
             String requestURI = request.getRequestURI();
             if (requestURI.startsWith("/swagger-ui/") ||
                     requestURI.startsWith("/v3/api-docs") ||
@@ -51,16 +48,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-
             String token = request.getHeader("Authorization");
             String workspaceId = request.getHeader("workspaceId");
             String username = null;
             if (token != null) {
-                username = jwtValidator.extractUserEmail(token);
-                logger.info("Extracted username from token: {}", username);
+                String signature = getSignature(token);
+                if (signature != null) {
+                    username = jwtValidator.extractUserEmail(token);
+                }
             }
             if (token == null) {
-                logger.info("No token found in request");
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -73,25 +70,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (AccessDeniedException e) {
-            logger.error("Access denied: {}", e.getMessage());
             response.getWriter().write(e.getMessage());
             throw new AuthenticationNotFoundException(e.getMessage());
         } catch (IOException e) {
-            logger.error("IO Exception: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
     private void handleUserInfo(HttpServletRequest request, String token, UserDetails userDetails, String workspaceId, String username) {
         if (jwtValidator.isTokenValid(token, userDetails, workspaceId)) {
-            logger.info("Token is valid for user: {}", username);
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(userDetails, userDetailsService.loadUserByUsername(username), userDetails.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            logger.info("Authentication set for user: {}", username);
-        } else {
-            logger.error("Invalid token for user: {}", username);
         }
     }
 
