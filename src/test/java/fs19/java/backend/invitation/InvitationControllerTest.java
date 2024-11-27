@@ -41,7 +41,7 @@ class InvitationControllerTest {
     private ObjectMapper objectMapper;
 
     private static UUID testInvitationId;
-    private static final String BASE_URL = "/app/v1/invitations";
+    private static final String BASE_URL = "/api/v1/invitations";
 
     @Autowired
     private RoleJpaRepo roleJpaRepo;
