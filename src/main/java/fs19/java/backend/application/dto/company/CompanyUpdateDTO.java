@@ -16,6 +16,6 @@ public class CompanyUpdateDTO {
     @Size(min = 1, max = 255, message = "Company name must be between 1 and 255 characters")
     private String name;
 
-    @NotNull(message = "Created by User ID is required")
-    private UUID createdBy;
+//    @NotNull(message = "Created by User ID is required")
+//    private UUID createdBy;
 }
