@@ -36,6 +36,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUserNameAndWorkspaceId(String username, UUID workspaceId) throws UsernameNotFoundException {
         var userWithPermissionsDTO = userJpaRepoCustom.findPermissionsByUserEmailAndWorkspaceId(username, workspaceId);
         if (userWithPermissionsDTO.isEmpty()) {
+            // todo: workspaceID
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
         return getUserDetails(userWithPermissionsDTO.get());

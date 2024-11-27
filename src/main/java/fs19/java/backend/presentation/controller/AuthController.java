@@ -45,7 +45,7 @@ public class AuthController {
   public ResponseEntity<GlobalResponse<AuthResponseDTO>> login(@RequestBody @Valid LoginRequestDTO request) {
     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
     AuthResponseDTO authenticateDto = authService.authenticate(request);
-    return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.FOUND.value(), authenticateDto), HttpStatus.FOUND);
+    return new ResponseEntity<>(new GlobalResponse<>(HttpStatus.OK.value(), authenticateDto), HttpStatus.OK);
 
   }
 }

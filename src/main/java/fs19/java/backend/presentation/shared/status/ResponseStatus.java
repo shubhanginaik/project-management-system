@@ -48,7 +48,8 @@ public enum ResponseStatus {
     COMPANY_ID_NOT_FOUND(-1027),
     COMPANY_NAME_NOT_FOUND(-1028),
     USER_ID_NOT_FOUND(-1029),
-    PROJECT_ID_NOT_FOUND(-1030);
+    PROJECT_ID_NOT_FOUND(-1030),
+    INVITATION_ALREADY_ACCEPTED(-1031);
 
     final private int status;
 

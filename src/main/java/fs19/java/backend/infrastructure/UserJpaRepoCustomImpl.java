@@ -40,9 +40,9 @@ public class UserJpaRepoCustomImpl implements UserJpaRepoCustom {
                         "SELECT u.email as userName,u.password as password, " +
                                 "p.id as permissionId, p.name as permissionName " +
                                 "FROM users u " +
-                                "LEFT JOIN workspace_user wu ON wu.user_id = u.id " +
-                                "LEFT JOIN role_permission r ON wu.role_id = r.role_id " +
-                                "LEFT JOIN permission p ON r.permission_id = p.id " +
+                                "JOIN workspace_user wu ON wu.user_id = u.id " +
+                                "JOIN role_permission r ON wu.role_id = r.role_id " +
+                                "JOIN permission p ON r.permission_id = p.id " +
                                 "WHERE u.email = :email AND wu.workspace_Id = :workspaceId")
                 .setParameter("email", email).setParameter("workspaceId", workspaceId);
 

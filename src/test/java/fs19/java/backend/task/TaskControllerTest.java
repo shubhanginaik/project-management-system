@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,6 +104,7 @@ class TaskControllerTest {
     @Test
     @Order(4)
     @DisplayName("Test Get All Tasks")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testGetAllTasks() throws Exception {
         mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
