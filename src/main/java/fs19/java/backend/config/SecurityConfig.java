@@ -51,6 +51,7 @@ public class SecurityConfig {
         http.cors(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> {
                     // Public endpoints that can be accessed without authentication
                     auth
+                            .requestMatchers("/api/v1/**").hasAnyAuthority("TEST-USER")
                             .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/login").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/companies").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/workspaces").permitAll()
@@ -62,7 +63,7 @@ public class SecurityConfig {
                         // Example: check GET /api/v1/resource for specific role permissions
                         auth.requestMatchers(rolePermission.getMethod(), rolePermission.getPermission()).hasAuthority(rolePermission.getRole());
                     }
-                    auth.requestMatchers("/api/v1/**").hasAnyAuthority("TEST-USER");
+
                     // Block all other requests that don't match any of the above rules
                     auth.anyRequest().denyAll();  // This ensures other requests are blocked
 
