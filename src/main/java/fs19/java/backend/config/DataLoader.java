@@ -64,6 +64,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Optional<User> byEmail = userJpaRepo.findByEmail("aaaa@gmail.com");
         if (byEmail.isEmpty()) {
+            // Step 1: Create a default admin user
             User user = new User();
             user.setFirstName("John");
             user.setLastName("Doe");
@@ -72,132 +73,77 @@ public class DataLoader implements CommandLineRunner {
             user.setCreatedDate(DateAndTime.getDateAndTime());
             User saveUser = userJpaRepo.save(user);
 
+            // Step 2: Create a default company
             Company company = new Company();
             company.setName("ABC");
             company.setCreatedBy(user);
             company.setCreatedDate(DateAndTime.getDateAndTime());
             companyJpaRepo.save(company);
 
-            Permission permission = new Permission();
-            permission.setName("ROLE_VIEW");
-            permission.setPermissionType(PermissionType.GET);
-            permission.setUrl("app/v1/roles");
-            Permission savePermission1 = permissionJpaRepo.save(permission);
+            // Step 3: Create roles (Admin, Member, etc.)
+            Role adminRole = new Role();
+            adminRole.setName(ADMIN_USER_NAME);
+            adminRole.setCreatedDate(DateAndTime.getDateAndTime());
+            adminRole.setCompany(company);
+            Role saveAdminRole = roleJpaRepo.save(adminRole);
 
+            Role memberRole = new Role();
+            memberRole.setName("MEMBER");
+            memberRole.setCreatedDate(DateAndTime.getDateAndTime());
+            memberRole.setCompany(company);
+            Role saveMemberRole = roleJpaRepo.save(memberRole);
 
-            Role role = new Role();
-            role.setName(ADMIN_USER_NAME);
-            role.setCreatedDate(DateAndTime.getDateAndTime());
-            role.setCompany(companyJpaRepo.findAll().getFirst());
-            Role saveRole = roleJpaRepo.save(role);
-
-            Role role2 = new Role();
-            role2.setName("ROLE-NAME");
-            role2.setCreatedDate(DateAndTime.getDateAndTime());
-            role2.setCompany(companyJpaRepo.findAll().getFirst());
-            roleJpaRepo.save(role2);
-
-            Role role3 = new Role();
-            role3.setName("MEMBER");
-            role3.setCreatedDate(DateAndTime.getDateAndTime());
-            role3.setCompany(companyJpaRepo.findAll().getFirst());
-            Role saveRole3 = roleJpaRepo.save(role3);
-
+            // Step 4: Create workspaces
             Workspace workspace = new Workspace();
             workspace.setName("Workspace1");
             workspace.setDescription("Workspace1");
             workspace.setType(WorkspaceType.PUBLIC);
-            workspace.setCompanyId(companyJpaRepo.findAll().getFirst());
-            workspace.setCreatedBy(userJpaRepo.findAll().getFirst());
+            workspace.setCompanyId(company);
+            workspace.setCreatedBy(user);
             Workspace saveWorkspace = workspaceJpaRepo.save(workspace);
 
             Workspace workspace2 = new Workspace();
-            workspace2.setName("workspace2");
-            workspace2.setDescription("workspace2");
+            workspace2.setName("Workspace2");
+            workspace2.setDescription("Workspace2");
             workspace2.setType(WorkspaceType.PUBLIC);
-            workspace2.setCompanyId(companyJpaRepo.findAll().getFirst());
+            workspace2.setCompanyId(company);
             workspace2.setCreatedBy(user);
             Workspace saveWorkspace2 = workspaceJpaRepo.save(workspace2);
 
+            // Step 5: Assign users to workspaces
+            WorkspaceUser adminWorkspaceUser = new WorkspaceUser();
+            adminWorkspaceUser.setRole(saveAdminRole);
+            adminWorkspaceUser.setUser(saveUser);
+            adminWorkspaceUser.setWorkspace(saveWorkspace);
+            workspaceUserJpaRepo.save(adminWorkspaceUser);
+
+            WorkspaceUser memberWorkspaceUser = new WorkspaceUser();
+            memberWorkspaceUser.setRole(saveMemberRole);
+            memberWorkspaceUser.setUser(saveUser);
+            memberWorkspaceUser.setWorkspace(saveWorkspace2);
+            workspaceUserJpaRepo.save(memberWorkspaceUser);
+
+            // Step 6: Create CRUD permissions for all entities
+            String[] entities = {
+                    "activity-log", "comments", "companies", "invitations",
+                    "notifications", "permissions", "projects", "roles",
+                    "rolePermissions", "tasks", "users", "workspaces", "workspace-users"
+            };
+
+            for (String entity : entities) {
+                String baseUrl = "/api/v1/" + entity; // E.g., "/api/v1/users"
+                assignCrudPermissionsForEntity(entity, baseUrl, saveAdminRole);
+            }
+
+            // Step 7: Additional setup for Projects, Tasks, etc.
             Project project = new Project();
             project.setName("Project1");
             project.setStatus(true);
             project.setStartDate(DateAndTime.getDateAndTime());
             project.setCreatedByUser(user);
             project.setCreatedDate(DateAndTime.getDateAndTime());
-            project.setWorkspace(workspaceJpaRepo.findAll().getFirst());
+            project.setWorkspace(saveWorkspace);
             Project saveProject = projectJpaRepo.save(project);
-
-            WorkspaceUser workspaceUser = new WorkspaceUser();
-            workspaceUser.setRole(saveRole);
-            workspaceUser.setUser(saveUser);
-            workspaceUser.setWorkspace(saveWorkspace);
-            workspaceUserJpaRepo.save(workspaceUser);
-
-
-            WorkspaceUser workspaceUser2 = new WorkspaceUser();
-            workspaceUser2.setRole(role3);
-            workspaceUser2.setUser(saveUser);
-            workspaceUser2.setWorkspace(saveWorkspace2);
-            workspaceUserJpaRepo.save(workspaceUser2);
-
-
-            Permission permission1 = new Permission();
-            permission1.setName("TASK_VIEW");
-            permission1.setUrl("app/v1/tasks");
-            permission1.setPermissionType(PermissionType.GET);
-            Permission savePermission2 = permissionJpaRepo.save(permission1);
-
-            Permission permission2 = new Permission();
-            permission2.setName("PERMISSION_VIEW");
-            permission2.setUrl("app/v1/permissions");
-            permission2.setPermissionType(PermissionType.GET);
-            Permission permission3 = permissionJpaRepo.save(permission2);
-
-            Permission permission4 = new Permission();
-            permission4.setName("INVITATION_VIEW");
-            permission4.setUrl("app/v1/invitations");
-            permission4.setPermissionType(PermissionType.GET);
-            Permission permission5 = permissionJpaRepo.save(permission4);
-
-
-            Permission permission6 = new Permission();
-            permission6.setName("USER_CREATE");
-            permission6.setUrl("/api/v1/users");
-            permission6.setPermissionType(PermissionType.POST);
-            Permission permission7 = permissionJpaRepo.save(permission6);
-
-            RolePermission rolePermission8 = new RolePermission();
-            rolePermission8.setRole(saveRole);
-            rolePermission8.setPermission(permission7);
-            rolePermissionJpaRepo.save(rolePermission8);
-
-
-            RolePermission rolePermission = new RolePermission();
-            rolePermission.setRole(saveRole);
-            rolePermission.setPermission(savePermission1);
-            rolePermissionJpaRepo.save(rolePermission);
-
-            RolePermission rolePermission1 = new RolePermission();
-            rolePermission1.setRole(saveRole);
-            rolePermission1.setPermission(savePermission2);
-            rolePermissionJpaRepo.save(rolePermission1);
-
-            RolePermission rolePermission3 = new RolePermission();
-            rolePermission3.setRole(saveRole);
-            rolePermission3.setPermission(permission3);
-            rolePermissionJpaRepo.save(rolePermission3);
-
-            RolePermission rolePermission4 = new RolePermission();
-            rolePermission4.setRole(saveRole3);
-            rolePermission4.setPermission(savePermission2);
-            RolePermission rolePermissions4 = rolePermissionJpaRepo.save(rolePermission4);
-
-            RolePermission rolePermission5 = new RolePermission();
-            rolePermission5.setRole(saveRole);
-            rolePermission5.setPermission(permission5);
-            rolePermissionJpaRepo.save(rolePermission5);
-
 
             Task task = new Task();
             task.setName("Task 1");
@@ -218,33 +164,43 @@ public class DataLoader implements CommandLineRunner {
             comment.setCreatedBy(user);
             commentJpaRepo.save(comment);
 
-            Invitation invitation1 = new Invitation();
-            invitation1.setAccepted(false);
-            invitation1.setExpiredAt(DateAndTime.getExpiredDateAndTime());
-            invitation1.setEmail("invitee@example.com");
-            invitation1.setRole(saveRole);
-            invitation1.setWorkspace(saveWorkspace);
-            invitation1.setCreatedBy(saveUser);
-            invitation1.setUrl(String.format(InvitationServiceImpl.urlBody, "invitee@example.com", saveRole.getId(), saveWorkspace.getId()));
-            Invitation saveInvitation = invitationJpaRepo.save(invitation1);
-
+            // Notifications, Invitations, etc.
             Notification notification = new Notification();
             notification.setContent("You have a new task assigned.");
             notification.setNotifyType(NotificationType.PROJECT_UPDATED);
             notification.setCreatedDate(DateAndTime.getDateAndTime());
             notification.setRead(false);
-            notification.setProjectId(project);
+            notification.setProjectId(saveProject);
             notification.setMentionedBy(user);
             notification.setMentionedTo(user);
             notificationJpaRepo.save(notification);
 
-            ActivityLog activityLog = new ActivityLog();
-            activityLog.setEntityType(EntityType.TASK);
-            activityLog.setEntityId(task.getId());
-            activityLog.setAction(ActionType.CREATED);
-            activityLog.setCreatedDate(DateAndTime.getDateAndTime());
-            activityLog.setUserId(user);
+            Invitation invitation = new Invitation();
+            invitation.setAccepted(false);
+            invitation.setExpiredAt(DateAndTime.getExpiredDateAndTime());
+            invitation.setEmail("invitee@example.com");
+            invitation.setRole(saveAdminRole);
+            invitation.setWorkspace(saveWorkspace);
+            invitation.setCreatedBy(saveUser);
+            invitation.setUrl(String.format(InvitationServiceImpl.urlBody, "invitee@example.com", saveAdminRole.getId(), saveWorkspace.getId()));
+            invitationJpaRepo.save(invitation);
+        }
+    }
 
+    // Utility method to create CRUD permissions for an entity
+    private void assignCrudPermissionsForEntity(String entity, String baseUrl, Role role) {
+        for (PermissionType type : PermissionType.values()) {
+            String action = type.name(); // GET, POST, DELETE, PUT
+            Permission permission = new Permission();
+            permission.setName(entity + "_" + action);
+            permission.setUrl(baseUrl);
+            permission.setPermissionType(type);
+            Permission savedPermission = permissionJpaRepo.save(permission);
+
+            RolePermission rolePermission = new RolePermission();
+            rolePermission.setRole(role);
+            rolePermission.setPermission(savedPermission);
+            rolePermissionJpaRepo.save(rolePermission);
         }
     }
 }
