@@ -51,7 +51,7 @@ public class SecurityConfig {
         http.cors(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> {
                     // Public endpoints that can be accessed without authentication
                     auth
-                            .requestMatchers("/app/v1/**").hasAnyAuthority("TEST-USER")
+                            .requestMatchers("/api/v1/**").hasAnyAuthority("TEST-USER")
                             .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/login").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/companies").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/workspaces").permitAll()
