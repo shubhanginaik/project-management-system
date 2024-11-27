@@ -48,6 +48,8 @@ public class PermissionMapper {
     public static Permission toPermission(@Valid PermissionRequestDTO permissionRequestDTO) {
         Permission myPermission = new Permission();
         myPermission.setName(permissionRequestDTO.getName());
+        myPermission.setPermissionType(permissionRequestDTO.getPermissionType());
+        myPermission.setUrl(permissionRequestDTO.getPermissionUrl());
         return myPermission;
     }
 }

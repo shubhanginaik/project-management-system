@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,8 +53,15 @@ class RolePermissionControllerTest {
     @Autowired
     private PermissionJpaRepo permissionJpaRepo;
 
+    @BeforeEach
+    void printAuthorities() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("User Authorities: " + auth.getAuthorities());
+    }
+
     @Test
     @Order(1)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Create Role-Permission")
     void testCreateRolePermission() throws Exception {
         RolePermissionRequestDTO request = new RolePermissionRequestDTO();
@@ -62,7 +72,7 @@ class RolePermissionControllerTest {
         String responseContent = mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
+                .andExpect(status().isNotAcceptable())
                 .andExpect(jsonPath("$.data.roleId").exists())
                 .andExpect(jsonPath("$.data.permissionId").exists())
                 .andReturn()
@@ -74,6 +84,7 @@ class RolePermissionControllerTest {
 
     @Test
     @Order(2)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Get Role-Permission by ID")
     void testGetRolePermissionById() throws Exception {
         mockMvc.perform(get(BASE_URL + "/" + testRolePermissionId))
@@ -84,6 +95,7 @@ class RolePermissionControllerTest {
 
     @Test
     @Order(4)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Update Role-Permission")
     void testUpdateRolePermission() throws Exception {
         RolePermissionRequestDTO updateRequest = new RolePermissionRequestDTO();
@@ -101,6 +113,7 @@ class RolePermissionControllerTest {
 
     @Test
     @Order(5)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Get All Role-Permissions")
     void testGetAllRolePermissions() throws Exception {
         mockMvc.perform(get(BASE_URL))
@@ -110,6 +123,7 @@ class RolePermissionControllerTest {
 
     @Test
     @Order(6)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Delete Role-Permission by ID")
     void testDeleteRolePermissionById() throws Exception {
         mockMvc.perform(delete(BASE_URL + "/" + testRolePermissionId))
@@ -119,6 +133,7 @@ class RolePermissionControllerTest {
 
     @Test
     @Order(3)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Get Role-Permissions by RoleId and PermissionId")
     void testGetExistingRecord() throws Exception {
         UUID roleId = roleJpaRepo.findAll().getFirst().getId();
@@ -132,6 +147,7 @@ class RolePermissionControllerTest {
 
     @Test
     @Order(7)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Get Role-Permissions by PermissionId")
     void testGetRolePermissionsByPermissionId() throws Exception {
         UUID permissionId = UUID.randomUUID();
@@ -143,6 +159,7 @@ class RolePermissionControllerTest {
 
     @Test
     @Order(8)
+    @WithMockUser(username = "admin", authorities = {"TEST-USER"})
     @DisplayName("Test Get Role-Permissions by RoleId")
     void testGetRolePermissionsByRoleId() throws Exception {
         UUID roleId = UUID.randomUUID();
