@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -46,12 +47,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Fetch dynamic role-permission mappings from the database
         final List<SecurityRole> rolePermissions = getRolePermissionsFromDatabase();
         http.cors(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> {
                     // Public endpoints that can be accessed without authentication
                     auth
                             .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/login").permitAll()
+                            .requestMatchers(HttpMethod.POST,"/api/v1/companies").permitAll()
+                            .requestMatchers(HttpMethod.POST,"/api/v1/workspaces").permitAll()
                             .requestMatchers("/api/v1/accept-invitation/redirect").permitAll()
                             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
 
