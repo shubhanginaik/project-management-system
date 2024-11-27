@@ -16,6 +16,8 @@ import java.util.Optional;
 @Component
 public class DataLoader implements CommandLineRunner {
 
+    public static String ADMIN_USER_NAME = "ADMIN";
+
     private final CompanyJpaRepo companyJpaRepo;
     private final RoleJpaRepo roleJpaRepo;
     private final PermissionJpaRepo permissionJpaRepo;
@@ -84,7 +86,7 @@ public class DataLoader implements CommandLineRunner {
 
 
             Role role = new Role();
-            role.setName("ADMIN");
+            role.setName(ADMIN_USER_NAME);
             role.setCreatedDate(DateAndTime.getDateAndTime());
             role.setCompany(companyJpaRepo.findAll().getFirst());
             Role saveRole = roleJpaRepo.save(role);
@@ -138,8 +140,6 @@ public class DataLoader implements CommandLineRunner {
             workspaceUser2.setUser(saveUser);
             workspaceUser2.setWorkspace(saveWorkspace2);
             workspaceUserJpaRepo.save(workspaceUser2);
-
-
 
 
             Permission permission1 = new Permission();
@@ -197,15 +197,6 @@ public class DataLoader implements CommandLineRunner {
             rolePermission5.setRole(saveRole);
             rolePermission5.setPermission(permission5);
             rolePermissionJpaRepo.save(rolePermission5);
-
-
-
-
-
-
-
-
-
 
 
             Task task = new Task();
