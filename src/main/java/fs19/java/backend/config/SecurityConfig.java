@@ -2,6 +2,8 @@ package fs19.java.backend.config;
 
 import fs19.java.backend.application.UserDetailsServiceImpl;
 import fs19.java.backend.domain.entity.User;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.List;
@@ -46,23 +49,41 @@ public class SecurityConfig {
         // Fetch dynamic role-permission mappings from the database
         final List<SecurityRole> rolePermissions = getRolePermissionsFromDatabase();
         http.cors(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> {
-            // Public endpoints that can be accessed without authentication
-            auth
-                    .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/login").permitAll()
-                    .requestMatchers("/api/v1/invitation/redirect").permitAll()
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
+                    // Public endpoints that can be accessed without authentication
+                    auth
+                            .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/login").permitAll()
+                            .requestMatchers("/api/v1/accept-invitation/redirect").permitAll()
+                            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
 
-            // Loop through dynamic role-permission mappings from the database
-            for (SecurityRole rolePermission : rolePermissions) {
-                // Example: check GET /api/v1/resource for specific role permissions
-                auth.requestMatchers(rolePermission.getMethod(), rolePermission.getPermission()).hasAuthority(rolePermission.getRole());
-            }
+                    // Loop through dynamic role-permission mappings from the database
+                    for (SecurityRole rolePermission : rolePermissions) {
+                        // Example: check GET /api/v1/resource for specific role permissions
+                        auth.requestMatchers(rolePermission.getMethod(), rolePermission.getPermission()).hasAuthority(rolePermission.getRole());
+                    }
 
-            // Block all other requests that don't match any of the above rules
-            auth.anyRequest().denyAll();  // This ensures other requests are blocked
-        }).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).authenticationManager(authenticationManager(http));
+                    // Block all other requests that don't match any of the above rules
+                    auth.anyRequest().denyAll();  // This ensures other requests are blocked
+
+                }).exceptionHandling(exception ->
+                        exception.accessDeniedHandler(accessDeniedHandler())
+                                .authenticationEntryPoint((req, res, authEx) -> {
+                                    res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                                    res.getWriter().write("Unauthorized access: " + authEx.getMessage());
+                                })
+                )
+
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).authenticationManager(authenticationManager(http));
 
         return http.build();
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (HttpServletRequest request, HttpServletResponse response, org.springframework.security.access.AccessDeniedException accessDeniedException) -> {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Access Denied\", \"message\": \"" + accessDeniedException.getMessage() + "\"}");
+        };
     }
 
     private List<SecurityRole> getRolePermissionsFromDatabase() {

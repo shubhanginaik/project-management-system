@@ -1,6 +1,7 @@
 package fs19.java.backend.config;
 
 import fs19.java.backend.application.UserDetailsServiceImpl;
+import fs19.java.backend.presentation.shared.exception.AuthenticationNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -69,8 +70,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (AccessDeniedException e) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.getWriter().write(e.getMessage());
+            throw new AuthenticationNotFoundException(e.getMessage());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

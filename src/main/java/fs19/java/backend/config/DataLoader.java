@@ -1,5 +1,6 @@
 package fs19.java.backend.config;
 
+import fs19.java.backend.application.InvitationServiceImpl;
 import fs19.java.backend.domain.entity.*;
 import fs19.java.backend.domain.entity.enums.*;
 import fs19.java.backend.infrastructure.JpaRepositories.*;
@@ -150,6 +151,12 @@ public class DataLoader implements CommandLineRunner {
             permission2.setPermissionType(PermissionType.GET);
             Permission permission3 = permissionJpaRepo.save(permission2);
 
+            Permission permission4 = new Permission();
+            permission4.setName("INVITATION_VIEW");
+            permission4.setUrl("app/v1/invitations");
+            permission4.setPermissionType(PermissionType.GET);
+            Permission permission5 = permissionJpaRepo.save(permission4);
+
             RolePermission rolePermission = new RolePermission();
             rolePermission.setRole(saveRole);
             rolePermission.setPermission(savePermission1);
@@ -170,6 +177,12 @@ public class DataLoader implements CommandLineRunner {
             rolePermission4.setPermission(savePermission2);
             RolePermission rolePermissions4 = rolePermissionJpaRepo.save(rolePermission4);
 
+            RolePermission rolePermission5 = new RolePermission();
+            rolePermission5.setRole(saveRole);
+            rolePermission5.setPermission(permission5);
+            rolePermissionJpaRepo.save(rolePermission5);
+
+
             Task task = new Task();
             task.setName("Task 1");
             task.setDescription("Initial setup task");
@@ -189,14 +202,15 @@ public class DataLoader implements CommandLineRunner {
             comment.setCreatedBy(user);
             commentJpaRepo.save(comment);
 
-            Invitation invitation = new Invitation();
-            invitation.setAccepted(false);
-            invitation.setExpiredAt(DateAndTime.getDateAndTime().plusDays(7));
-            invitation.setEmail("invitee@example.com");
-            invitation.setRole(role);
-            invitation.setCompany(company);
-            invitation.setCreatedBy(saveUser);
-            invitationJpaRepo.save(invitation);
+            Invitation invitation1 = new Invitation();
+            invitation1.setAccepted(false);
+            invitation1.setExpiredAt(DateAndTime.getDateAndTime().plusDays(7));
+            invitation1.setEmail("invitee@example.com");
+            invitation1.setRole(saveRole);
+            invitation1.setWorkspace(saveWorkspace);
+            invitation1.setCreatedBy(saveUser);
+            invitation1.setUrl(String.format(InvitationServiceImpl.urlBody, "invitee@example.com", saveRole.getId(), saveWorkspace.getId()));
+            Invitation saveInvitation = invitationJpaRepo.save(invitation1);
 
             Notification notification = new Notification();
             notification.setContent("You have a new task assigned.");
