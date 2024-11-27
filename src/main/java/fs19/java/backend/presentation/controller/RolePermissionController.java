@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Tag(name = "Role-Permission", description = "Manage Role-Permission")
 @RestController
-@RequestMapping("app/v1/rolePermissions")
+@RequestMapping("api/v1/rolePermissions")
 public class RolePermissionController {
 
     @Autowired
