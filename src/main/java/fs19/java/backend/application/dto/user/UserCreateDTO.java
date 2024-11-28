@@ -45,5 +45,5 @@ public class UserCreateDTO {
 
   @Schema(type = "string", format = "string", description = "Invitation url")
   @Size(max = 3000, message = "Field must be at most 3000 characters")
-  String invitation_url;
+  String invitationUrl = "";
 }

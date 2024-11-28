@@ -113,18 +113,6 @@ public class WorkspaceUserServiceImpl implements WorkspaceUserService {
 
       workspaceUser.setRole(role);
     }
-    if (workspaceUsersDTO.getWorkspaceId() != null) {
-      Workspace workspace = findWorkspaceById(workspaceUsersDTO.getWorkspaceId());
-      logger.info("Workspace found: {}", workspace);
-
-      workspaceUser.setWorkspace(workspace);
-    }
-    if (workspaceUsersDTO.getUserId() != null) {
-      User user = findUserById(workspaceUsersDTO.getUserId());
-      logger.info("User found: {}", user);
-
-      workspaceUser.setUser(user);
-    }
   }
 
 

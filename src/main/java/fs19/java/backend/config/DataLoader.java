@@ -70,6 +70,7 @@ public class DataLoader implements CommandLineRunner {
             user.setFirstName("John");
             user.setLastName("Doe");
             user.setEmail("admin@gmail.com");
+            user.setPhone("1234567890");
             user.setPassword(passwordEncoder.encode("123456789"));
             user.setCreatedDate(DateAndTime.getDateAndTime());
             User saveUser = userJpaRepo.save(user);
@@ -78,6 +79,7 @@ public class DataLoader implements CommandLineRunner {
             user2.setFirstName("Test");
             user2.setLastName("Test");
             user2.setEmail("test@gmail.com");
+            user2.setPhone("1234567890");
             user2.setPassword(passwordEncoder.encode("123456789"));
             user2.setCreatedDate(DateAndTime.getDateAndTime());
             User saveUser2 = userJpaRepo.save(user2);

@@ -139,7 +139,7 @@ class UserControllerTest {
   @Test
   @WithMockUser(username = "admin", authorities = {"TEST-USER"})
   void shouldDeleteUserOnDelete() throws Exception {
-    userCreateDto.setEmail("Somethin" + emailCounter++ + "@example.com");
+    userCreateDto.setEmail("delete" + emailCounter++ + "@example.com");
     String response = performPostUser(userCreateDto)
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.firstName", is("Rony")))
