@@ -196,4 +196,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(CredentialNotFoundException.class)
+    public ResponseEntity<GlobalResponse<Void>> handleCredentialDeniedException(CredentialNotFoundException ex) {
+        ErrorItem error = new ErrorItem(ex.getMessage());
+        GlobalResponse<Void> response = new GlobalResponse<>(HttpStatus.FORBIDDEN.value(),
+                List.of(error));
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
 }

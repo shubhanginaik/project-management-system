@@ -4,7 +4,11 @@ import fs19.java.backend.application.dto.invitation.InvitationRequestDTO;
 import fs19.java.backend.application.dto.invitation.InvitationResponseDTO;
 import fs19.java.backend.application.mapper.InvitationMapper;
 import fs19.java.backend.application.service.InvitationService;
-import fs19.java.backend.domain.entity.*;
+import fs19.java.backend.config.SecurityConfig;
+import fs19.java.backend.domain.entity.Invitation;
+import fs19.java.backend.domain.entity.Role;
+import fs19.java.backend.domain.entity.User;
+import fs19.java.backend.domain.entity.Workspace;
 import fs19.java.backend.domain.entity.enums.ActionType;
 import fs19.java.backend.domain.entity.enums.EntityType;
 import fs19.java.backend.infrastructure.InvitationRepoImpl;
@@ -138,7 +142,7 @@ public class InvitationServiceImpl implements InvitationService {
         if (myInvitation == null) {
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVALID_INFORMATION_INVITATION_DETAILS_NOT_DELETED);
         }
-        activityLoggerService.logActivity(EntityType.INVITATION, myInvitation.getId(), ActionType.DELETED, myInvitation.getCreatedBy().getId());
+        activityLoggerService.logActivity(EntityType.INVITATION, myInvitation.getId(), ActionType.DELETED, SecurityConfig.getCurrentUser().getId());
         return InvitationMapper.toInvitationResponseDTO(invitationRepo.delete(invitationId), ResponseStatus.SUCCESSFULLY_DELETED);
     }
 
@@ -158,7 +162,7 @@ public class InvitationServiceImpl implements InvitationService {
         if (myInvitation == null) {
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVALID_INFORMATION_INVITATION_DETAILS_NOT_FOUND);
         }
-        activityLoggerService.logActivity(EntityType.INVITATION, myInvitation.getId(), ActionType.DELETED, myInvitation.getCreatedBy().getId());
+        activityLoggerService.logActivity(EntityType.INVITATION, myInvitation.getId(), ActionType.VIEWED, myInvitation.getCreatedBy().getId());
         return InvitationMapper.toInvitationResponseDTO(myInvitation, ResponseStatus.SUCCESSFULLY_FOUND);
     }
 }

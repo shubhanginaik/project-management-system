@@ -74,6 +74,14 @@ public class DataLoader implements CommandLineRunner {
             user.setCreatedDate(DateAndTime.getDateAndTime());
             User saveUser = userJpaRepo.save(user);
 
+            User user2 = new User();
+            user2.setFirstName("Test");
+            user2.setLastName("Test");
+            user2.setEmail("test@gmail.com");
+            user2.setPassword(passwordEncoder.encode("123456789"));
+            user2.setCreatedDate(DateAndTime.getDateAndTime());
+            User saveUser2 = userJpaRepo.save(user2);
+
 
             // Step 2: Create a default company
             Company company = new Company();
