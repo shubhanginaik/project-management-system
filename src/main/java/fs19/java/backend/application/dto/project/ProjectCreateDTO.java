@@ -16,9 +16,6 @@ import java.util.UUID;
 @Builder
 public class ProjectCreateDTO {
 
-  @Schema(type = "uuid", format = "string", description = "Project ID")
-  UUID id;
-
   @Schema(type = "string", format = "string", description = "Name of the project", example = "Test Project")
   @Size(min = 3, max = 45, message = "Project name must be between 3 and 50 characters")
   @NotNull(message = "Project name is required")
