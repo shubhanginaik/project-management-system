@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -73,12 +74,16 @@ public class DataLoader implements CommandLineRunner {
             user.setCreatedDate(DateAndTime.getDateAndTime());
             User saveUser = userJpaRepo.save(user);
 
+
             // Step 2: Create a default company
             Company company = new Company();
             company.setName("ABC");
             company.setCreatedBy(user);
             company.setCreatedDate(DateAndTime.getDateAndTime());
-            companyJpaRepo.save(company);
+            Company saveCompany =companyJpaRepo.save(company);
+
+
+
 
             // Step 3: Create roles (Admin, Member, etc.)
             Role adminRole = new Role();
@@ -102,6 +107,9 @@ public class DataLoader implements CommandLineRunner {
             workspace.setCreatedBy(user);
             Workspace saveWorkspace = workspaceJpaRepo.save(workspace);
 
+
+
+
             Workspace workspace2 = new Workspace();
             workspace2.setName("Workspace2");
             workspace2.setDescription("Workspace2");
@@ -109,6 +117,8 @@ public class DataLoader implements CommandLineRunner {
             workspace2.setCompanyId(company);
             workspace2.setCreatedBy(user);
             Workspace saveWorkspace2 = workspaceJpaRepo.save(workspace2);
+
+
 
             // Step 5: Assign users to workspaces
             WorkspaceUser adminWorkspaceUser = new WorkspaceUser();
@@ -155,7 +165,10 @@ public class DataLoader implements CommandLineRunner {
             task.setCreatedUser(user);
             task.setAssignedUser(user);
             task.setPriority("LOW_PRIORITY");
-            taskJpaRepo.save(task);
+            Task saveTask =taskJpaRepo.save(task);
+
+
+
 
             Comment comment = new Comment();
             comment.setTaskId(task);
@@ -203,4 +216,18 @@ public class DataLoader implements CommandLineRunner {
             rolePermissionJpaRepo.save(rolePermission);
         }
     }
+
+    private void createActivityLog(EntityType entityType, UUID entityId, ActionType action, String description, User user) {
+        ActivityLog activityLog = ActivityLog.builder()
+                .entityType(entityType)
+                .entityId(entityId)
+                .action(action)
+                .createdDate(DateAndTime.getDateAndTime())
+                .userId(user)
+                .build();
+
+        activityLogJpaRepo.save(activityLog);
+    }
+
+
 }

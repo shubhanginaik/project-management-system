@@ -22,7 +22,7 @@ public class ActivityLog {
     @GeneratedValue(generator = "UUID")
     private UUID id;
     @Enumerated(EnumType.STRING)
-    @Column(name = "entity_type", nullable = false)
+    @Column(name = "entity_type", nullable = false, length = 45)
     private EntityType entityType;
 
 
@@ -32,7 +32,7 @@ public class ActivityLog {
     @Enumerated(EnumType.STRING)
     @Column(name = "action", nullable = false)
     private ActionType action;
-    @Column(name = "created_date")
+    @Column(name = "created_date",length = 45)
     private ZonedDateTime createdDate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
