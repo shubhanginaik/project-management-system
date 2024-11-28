@@ -18,9 +18,9 @@ public class TaskMapper {
     /**
      * Convert task into task response dto
      *
-     * @param task
-     * @param status
-     * @return
+     * @param task   Task
+     * @param status ResponseStatus
+     * @return TaskResponseDTO
      */
     public static TaskResponseDTO toTaskResponseDTO(Task task, ResponseStatus status) {
         return new TaskResponseDTO(task.getId(), task.getName(), task.getDescription(),
@@ -34,23 +34,29 @@ public class TaskMapper {
     /**
      * * Convert task into task response dt list
      *
-     * @param tasks
-     * @param status
-     * @return
+     * @param tasks  List<Task>
+     * @param status ResponseStatus
+     * @return List<TaskResponseDTO>
      */
     public static List<TaskResponseDTO> toTaskResponseDTOs(List<Task> tasks, ResponseStatus status) {
         List<TaskResponseDTO> responseDTOS = new ArrayList<>();
-        tasks.forEach(role -> {
-            responseDTOS.add(toTaskResponseDTO(role, status));
-        });
+        tasks.forEach(role -> responseDTOS.add(toTaskResponseDTO(role, status)));
         return responseDTOS;
     }
 
-    public static Task toTask(TaskRequestDTO taskRequestDTO, User createduser, User assignedUser, Project project) {
+    /**
+     * Covert to a Task entity object
+     * @param taskRequestDTO TaskRequestDTO
+     * @param createUser    User
+     * @param assignedUser   User
+     * @param project        Project
+     * @return Task
+     */
+    public static Task toTask(TaskRequestDTO taskRequestDTO, User createUser, User assignedUser, Project project) {
         return new Task(UUID.randomUUID(), taskRequestDTO.getName(), taskRequestDTO.getDescription(),
                 DateAndTime.getDateAndTime(), taskRequestDTO.getResolvedDate(),
                 taskRequestDTO.getDueDate(), taskRequestDTO.getAttachments(),
                 taskRequestDTO.getTaskStatus(), project,
-                createduser, assignedUser, taskRequestDTO.getPriority());
+                createUser, assignedUser, taskRequestDTO.getPriority());
     }
 }

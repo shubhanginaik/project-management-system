@@ -8,12 +8,8 @@ import java.util.UUID;
 
 public interface InvitationRepository {
     Invitation save(Invitation invitation);
-
     Invitation findById(UUID invitationId);
-
     List<Invitation> findAll();
-
     Invitation delete(UUID invitationId);
-
     Invitation update(UUID invitationId, InvitationRequestDTO invitationRequestDTO, Role role, User user, Workspace workspace, String url);
 }

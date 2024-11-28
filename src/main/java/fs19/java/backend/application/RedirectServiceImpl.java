@@ -6,6 +6,8 @@ import fs19.java.backend.application.service.RedirectService;
 import fs19.java.backend.domain.entity.Invitation;
 import fs19.java.backend.infrastructure.JpaRepositories.InvitationJpaRepo;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -14,15 +16,15 @@ import java.util.UUID;
 public class RedirectServiceImpl implements RedirectService {
     private final InvitationJpaRepo invitationJpaRepo;
 
+    private static final Logger logger = LogManager.getLogger(RedirectServiceImpl.class);
+
     public RedirectServiceImpl(InvitationJpaRepo invitationJpaRepo) {
         this.invitationJpaRepo = invitationJpaRepo;
     }
 
     @Override
     public InvitationAcceptDTO processRedirect(String email, UUID roleId, UUID workspaceId) {
-        System.out.println("Email: " + email);
-        System.out.println("Role ID: " + roleId);
-        System.out.println("Workspace ID: " + workspaceId);
+        logger.info("Invitation level : Email,WorkspaceId,RoleId.{}{}{}", email, roleId, workspaceId);
         Invitation invitation = invitationJpaRepo.finByEmailRoleIdAndWorkspaceId(email, roleId, workspaceId);
         if (invitation != null) {
             boolean accepted = invitation.isAccepted();
@@ -30,7 +32,6 @@ public class RedirectServiceImpl implements RedirectService {
                 return InvitationMapper.toInvitationAcceptDTO(invitation, ResponseStatus.INVITATION_ID_NOT_FOUND);
             } else {
                 return InvitationMapper.toInvitationAcceptDTO(invitation, ResponseStatus.SUCCESSFULLY_FOUND);
-
             }
         }
         return InvitationMapper.toInvitationAcceptDTO(new Invitation(), ResponseStatus.INVITATION_ID_NOT_FOUND);

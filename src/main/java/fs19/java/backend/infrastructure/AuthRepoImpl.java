@@ -1,7 +1,8 @@
 package fs19.java.backend.infrastructure;
 
 import fs19.java.backend.domain.entity.User;
-import fs19.java.backend.infrastructure.JpaRepositories.*;
+import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.UserPermissionConfig;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,19 +12,11 @@ import java.util.UUID;
 @Repository
 public class AuthRepoImpl {
 
-    private final RoleJpaRepo roleJpaRepo;
-    private final RolePermissionJpaRepo rolePermissionJpaRepo;
-    private final PermissionJpaRepo permissionJpaRepo;
-    private final WorkspaceUserJpaRepo workspaceUserJpaRepo;
     private final UserJpaRepo userRepo;
     private final UserPermissionConfig userJpaRepoCustom;
 
 
-    public AuthRepoImpl(RoleJpaRepo roleJpaRepo, RolePermissionJpaRepo rolePermissionJpaRepo, PermissionJpaRepo permissionJpaRepo, WorkspaceUserJpaRepo workspaceUserJpaRepo, UserJpaRepo userRepo, UserPermissionConfig userJpaRepoCustom) {
-        this.roleJpaRepo = roleJpaRepo;
-        this.rolePermissionJpaRepo = rolePermissionJpaRepo;
-        this.permissionJpaRepo = permissionJpaRepo;
-        this.workspaceUserJpaRepo = workspaceUserJpaRepo;
+    public AuthRepoImpl(UserJpaRepo userRepo, UserPermissionConfig userJpaRepoCustom) {
         this.userRepo = userRepo;
         this.userJpaRepoCustom = userJpaRepoCustom;
     }

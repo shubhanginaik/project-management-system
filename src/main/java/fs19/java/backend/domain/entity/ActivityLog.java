@@ -24,11 +24,8 @@ public class ActivityLog {
     @Enumerated(EnumType.STRING)
     @Column(name = "entity_type", nullable = false, length = 45)
     private EntityType entityType;
-
-
     @Column
     private UUID entityId;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "action", nullable = false)
     private ActionType action;

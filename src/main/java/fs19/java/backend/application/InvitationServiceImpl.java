@@ -96,7 +96,7 @@ public class InvitationServiceImpl implements InvitationService {
         }
         Role roleById = roleRepo.findById(invitationRequestDTO.getRoleId());
         if (roleById == null) {
-            logger.info("No Valid Role Result Found when trying to create. {}", invitationRequestDTO.getRoleId());
+            logger.info("No Valid Role information Found when trying to create. {}", invitationRequestDTO.getRoleId());
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ROLE_NOT_FOUND);
         } else {
             if (invitationRequestDTO.getWorkspaceId() != null) {
@@ -135,7 +135,7 @@ public class InvitationServiceImpl implements InvitationService {
     public InvitationResponseDTO delete(UUID invitationId) {
         Invitation myInvitation;
         if (invitationId == null) {
-            logger.info("Invitation Id is null, cannot proceed with Invitation delete. {}", invitationId);
+            logger.info("Invitation Id is null, cannot proceed with Invitation delete. {}", (Object) null);
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ID_NOT_FOUND);
         }
         myInvitation = invitationRepo.findById(invitationId);
@@ -155,7 +155,7 @@ public class InvitationServiceImpl implements InvitationService {
     public InvitationResponseDTO findById(UUID invitationId) {
         Invitation myInvitation;
         if (invitationId == null) {
-            logger.info("Invitation Id is null, cannot proceed with Invitation search.{}", invitationId);
+            logger.info("Invitation Id is null, cannot proceed with Invitation search.{}", (Object) null);
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVITATION_ID_NOT_FOUND);
         }
         myInvitation = invitationRepo.findById(invitationId);
