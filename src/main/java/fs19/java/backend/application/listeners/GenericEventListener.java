@@ -50,8 +50,7 @@ public class GenericEventListener {
         notificationDTO.setRead(false);
 
         // Handle different entity types
-        if (entity instanceof Comment) {
-            Comment comment = (Comment) entity;
+        if (entity instanceof Comment comment) {
             Task task = taskRepository.findById(comment.getTaskId().getId()).orElseThrow();
             User createdBy = userRepository.findById(comment.getCreatedBy().getId()).orElseThrow();
             String content = String.format(
@@ -77,7 +76,7 @@ public class GenericEventListener {
             notificationDTO.setContent(content);
             notificationDTO.setProjectId(project.getId());
             notificationDTO.setMentionedBy(createdBy.getId());
-            notificationDTO.setMentionedTo(null); // Adjust as needed
+            notificationDTO.setMentionedTo(createdBy.getId());
         } else if (entity instanceof Task task) {
             Project project = projectRepository.findById(task.getProject().getId()).orElseThrow();
             User createdBy = userRepository.findById(task.getCreatedUser().getId()).orElseThrow();

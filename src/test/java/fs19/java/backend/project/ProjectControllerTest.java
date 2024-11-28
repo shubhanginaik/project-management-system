@@ -92,7 +92,7 @@ class ProjectControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "admin", authorities = {"TEST-USER"})
+  @WithMockUser(username = "admin@gmail.com", authorities = {"TEST-USER"})
   @Order(1)
   @DisplayName("Test Create Project")
   void testCreateProject() throws Exception {
