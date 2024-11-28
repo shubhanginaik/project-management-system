@@ -8,7 +8,7 @@ import fs19.java.backend.domain.entity.RolePermission;
 import fs19.java.backend.domain.entity.enums.PermissionType;
 import fs19.java.backend.infrastructure.JpaRepositories.PermissionJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.RolePermissionJpaRepo;
-import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepoCustom;
+import fs19.java.backend.infrastructure.JpaRepositories.UserPermissionConfig;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class UserJpaRepoCustomImpl implements UserJpaRepoCustom {
+public class UserJpaRepoCustomImpl implements UserPermissionConfig {
 
     private final RolePermissionJpaRepo rolePermissionJpaRepo;
     private final PermissionJpaRepo permissionJpaRepo;

@@ -145,6 +145,6 @@ public class SecurityConfig {
         if (authentication.getCredentials() instanceof User) {
             return (User) authentication.getCredentials();
         }
-        return null;
+        return new User();
     }
 }

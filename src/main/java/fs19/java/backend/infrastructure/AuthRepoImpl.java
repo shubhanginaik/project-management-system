@@ -16,10 +16,10 @@ public class AuthRepoImpl {
     private final PermissionJpaRepo permissionJpaRepo;
     private final WorkspaceUserJpaRepo workspaceUserJpaRepo;
     private final UserJpaRepo userRepo;
-    private final UserJpaRepoCustom userJpaRepoCustom;
+    private final UserPermissionConfig userJpaRepoCustom;
 
 
-    public AuthRepoImpl(RoleJpaRepo roleJpaRepo, RolePermissionJpaRepo rolePermissionJpaRepo, PermissionJpaRepo permissionJpaRepo, WorkspaceUserJpaRepo workspaceUserJpaRepo, UserJpaRepo userRepo, UserJpaRepoCustom userJpaRepoCustom) {
+    public AuthRepoImpl(RoleJpaRepo roleJpaRepo, RolePermissionJpaRepo rolePermissionJpaRepo, PermissionJpaRepo permissionJpaRepo, WorkspaceUserJpaRepo workspaceUserJpaRepo, UserJpaRepo userRepo, UserPermissionConfig userJpaRepoCustom) {
         this.roleJpaRepo = roleJpaRepo;
         this.rolePermissionJpaRepo = rolePermissionJpaRepo;
         this.permissionJpaRepo = permissionJpaRepo;

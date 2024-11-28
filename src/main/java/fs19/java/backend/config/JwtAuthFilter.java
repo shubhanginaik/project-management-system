@@ -80,7 +80,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private void handleUserInfo(HttpServletRequest request, String token, UserDetails userDetails, String workspaceId, String username) {
         if (jwtValidator.isTokenValid(token, userDetails, workspaceId)) {
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(userDetails, userDetailsService.loadUserByUsername(username), userDetails.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(userDetails, userDetailsService.findUserByUserName(username), userDetails.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
