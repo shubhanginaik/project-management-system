@@ -96,16 +96,12 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     /**
      * Get role permission by record id
      *
-     * @param permissionId
+     * @param rolePermissionId
      * @return
      */
     @Override
-    public RolePermissionResponseDTO findByPermissionId(UUID permissionId) {
-        if (permissionId == null) {
-            logger.info("Role-Permission ID is null, cannot proceed with search.");
-            return RolePermissionMapper.toPermissionResponseDTO(new RolePermission(), ResponseStatus.ROLE_PERMISSION_ID_NOT_FOUND);
-        }
-        return rolePermissionRepo.findById(permissionId);
+    public RolePermissionResponseDTO findByPermissionId(UUID rolePermissionId) {
+        return rolePermissionRepo.findById(rolePermissionId);
     }
 
     /**
