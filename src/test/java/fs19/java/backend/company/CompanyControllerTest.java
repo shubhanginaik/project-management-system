@@ -108,7 +108,7 @@ class CompanyControllerTest {
         mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].name").value("ABC"));
+                .andExpect(jsonPath("$.data[0].name").value("Company-A"));
     }
 
     @Test
