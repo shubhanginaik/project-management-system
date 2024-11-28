@@ -162,7 +162,7 @@ public class InvitationServiceImpl implements InvitationService {
         if (myInvitation == null) {
             return InvitationMapper.toInvitationResponseDTO(new Invitation(), ResponseStatus.INVALID_INFORMATION_INVITATION_DETAILS_NOT_FOUND);
         }
-        activityLoggerService.logActivity(EntityType.INVITATION, myInvitation.getId(), ActionType.DELETED, myInvitation.getCreatedBy().getId());
+        activityLoggerService.logActivity(EntityType.INVITATION, myInvitation.getId(), ActionType.VIEWED, myInvitation.getCreatedBy().getId());
         return InvitationMapper.toInvitationResponseDTO(myInvitation, ResponseStatus.SUCCESSFULLY_FOUND);
     }
 }

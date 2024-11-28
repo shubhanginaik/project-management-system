@@ -4,6 +4,7 @@ import fs19.java.backend.application.dto.role.RolePermissionRequestDTO;
 import fs19.java.backend.application.dto.role.RolePermissionResponseDTO;
 import fs19.java.backend.application.mapper.RolePermissionMapper;
 import fs19.java.backend.application.service.RolePermissionService;
+import fs19.java.backend.config.SecurityConfig;
 import fs19.java.backend.domain.entity.RolePermission;
 import fs19.java.backend.domain.entity.enums.ActionType;
 import fs19.java.backend.domain.entity.enums.EntityType;
@@ -129,7 +130,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     public RolePermissionResponseDTO delete(UUID rolePermissionId) {
         if (rolePermissionId.toString() == null) {
             RolePermissionResponseDTO responseDTO = RolePermissionMapper.toPermissionResponseDTO(new RolePermission(), ResponseStatus.ROLE_PERMISSION_ID_NOT_FOUND);
-            activityLoggerService.logActivity(EntityType.ROLE_PERMISSION, responseDTO.getId(), ActionType.DELETED, rolePermissionId);
+            activityLoggerService.logActivity(EntityType.ROLE_PERMISSION, responseDTO.getId(), ActionType.DELETED, SecurityConfig.getCurrentUser().getId());
 
         }
         return rolePermissionRepo.delete(rolePermissionId);

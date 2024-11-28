@@ -4,6 +4,7 @@ import fs19.java.backend.application.dto.role.RoleRequestDTO;
 import fs19.java.backend.application.dto.role.RoleResponseDTO;
 import fs19.java.backend.application.mapper.RoleMapper;
 import fs19.java.backend.application.service.RoleService;
+import fs19.java.backend.config.SecurityConfig;
 import fs19.java.backend.domain.entity.Company;
 import fs19.java.backend.domain.entity.Role;
 import fs19.java.backend.domain.entity.enums.ActionType;
@@ -118,7 +119,7 @@ public class RoleServiceImpl implements RoleService {
         if (myRole == null) {
             return RoleMapper.toRoleResponseDTO(new Role(), ResponseStatus.INVALID_INFORMATION_ROLE_DETAILS_NOT_FOUND);
         }
-        //activityLoggerService.logActivity(EntityType.ROLE, myRole.getId(), ActionType.DELETED, myRole.getId());
+        activityLoggerService.logActivity(EntityType.ROLE, myRole.getId(), ActionType.DELETED, SecurityConfig.getCurrentUser().getId());
         return RoleMapper.toRoleResponseDTO(myRole, ResponseStatus.SUCCESSFULLY_DELETED);
     }
 

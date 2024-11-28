@@ -5,6 +5,7 @@ import fs19.java.backend.application.dto.task.TaskResponseDTO;
 import fs19.java.backend.application.events.GenericEvent;
 import fs19.java.backend.application.mapper.TaskMapper;
 import fs19.java.backend.application.service.TaskService;
+import fs19.java.backend.config.SecurityConfig;
 import fs19.java.backend.domain.entity.Project;
 import fs19.java.backend.domain.entity.Task;
 import fs19.java.backend.domain.entity.User;
@@ -119,7 +120,7 @@ public class TaskServiceImpl implements TaskService {
         if (myTask == null) {
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.INVALID_INFORMATION_TASK_DETAILS_NOT_FOUND);
         }
-        activityLoggerService.logActivity(EntityType.TASK, myTask.getId(), ActionType.DELETED, myTask.getCreatedUser().getId());
+        activityLoggerService.logActivity(EntityType.TASK, myTask.getId(), ActionType.DELETED, SecurityConfig.getCurrentUser().getId());
         eventPublisher.publishEvent(new GenericEvent<>(this, myTask, EntityType.TASK, "Deleted"));
         return TaskMapper.toTaskResponseDTO(myTask, ResponseStatus.SUCCESSFULLY_DELETED);
     }
