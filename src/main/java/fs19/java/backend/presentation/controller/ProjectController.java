@@ -31,7 +31,6 @@ public class ProjectController {
     this.projectService = projectService;
   }
 
-  @PreAuthorize("hasRole('ADMIN')")
   @Operation(summary = "Create a project", description = "Creates a new project with the provided details.")
   @PostMapping
   public ResponseEntity<GlobalResponse<ProjectReadDTO>> createProject(@Valid @RequestBody ProjectCreateDTO projectDTO) {
@@ -66,7 +65,6 @@ public class ProjectController {
         HttpStatus.OK);
   }
 
-  @PreAuthorize("hasRole('ADMIN')")
   @Operation(summary = "Get all projects", description = "Retrieves the details of all projects.")
   @GetMapping
   public ResponseEntity<GlobalResponse<List<ProjectReadDTO>>> getAllProjects() {
