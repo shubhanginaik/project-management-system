@@ -24,13 +24,13 @@ public class Permission {
     @Column(updatable = false, nullable = false)
     private UUID id;
     @NotNull
-    @Column(unique = true, nullable = false, length = 25)
+    @Column(unique = true, nullable = false, length = 45)
     private String name;
     @NotNull
     @Column(nullable = false, length = 100)
     private String url;
     @NotNull
-    @Column(nullable = false, length = 25)
+    @Column(name = "permission_type", nullable = false, length = 45)
     private PermissionType permissionType;
 }
 
