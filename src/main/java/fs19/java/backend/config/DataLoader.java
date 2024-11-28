@@ -63,13 +63,13 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Optional<User> byEmail = userJpaRepo.findByEmail("aaaa@gmail.com");
+        Optional<User> byEmail = userJpaRepo.findByEmail("admin@gmail.com");
         if (byEmail.isEmpty()) {
             // Step 1: Create a default admin user
             User user = new User();
             user.setFirstName("John");
             user.setLastName("Doe");
-            user.setEmail("aaaa@gmail.com");
+            user.setEmail("admin@gmail.com");
             user.setPassword(passwordEncoder.encode("123456789"));
             user.setCreatedDate(DateAndTime.getDateAndTime());
             User saveUser = userJpaRepo.save(user);
@@ -77,25 +77,22 @@ public class DataLoader implements CommandLineRunner {
 
             // Step 2: Create a default company
             Company company = new Company();
-            company.setName("ABC");
+            company.setName("Company-A");
             company.setCreatedBy(user);
             company.setCreatedDate(DateAndTime.getDateAndTime());
-            Company saveCompany =companyJpaRepo.save(company);
-
-
-
+            Company saveCompany = companyJpaRepo.save(company);
 
             // Step 3: Create roles (Admin, Member, etc.)
             Role adminRole = new Role();
             adminRole.setName(ADMIN_USER_NAME);
             adminRole.setCreatedDate(DateAndTime.getDateAndTime());
-            adminRole.setCompany(company);
+            adminRole.setCompany(saveCompany);
             Role saveAdminRole = roleJpaRepo.save(adminRole);
 
             Role memberRole = new Role();
             memberRole.setName("MEMBER");
             memberRole.setCreatedDate(DateAndTime.getDateAndTime());
-            memberRole.setCompany(company);
+            memberRole.setCompany(saveCompany);
             Role saveMemberRole = roleJpaRepo.save(memberRole);
 
             // Step 4: Create workspaces
@@ -103,11 +100,10 @@ public class DataLoader implements CommandLineRunner {
             workspace.setName("Workspace1");
             workspace.setDescription("Workspace1");
             workspace.setType(WorkspaceType.PUBLIC);
-            workspace.setCompanyId(company);
+            workspace.setCompanyId(saveCompany);
+            workspace.setCreatedDate(DateAndTime.getDateAndTime());
             workspace.setCreatedBy(user);
             Workspace saveWorkspace = workspaceJpaRepo.save(workspace);
-
-
 
 
             Workspace workspace2 = new Workspace();
@@ -115,9 +111,9 @@ public class DataLoader implements CommandLineRunner {
             workspace2.setDescription("Workspace2");
             workspace2.setType(WorkspaceType.PUBLIC);
             workspace2.setCompanyId(company);
+            workspace2.setCreatedDate(DateAndTime.getDateAndTime());
             workspace2.setCreatedBy(user);
             Workspace saveWorkspace2 = workspaceJpaRepo.save(workspace2);
-
 
 
             // Step 5: Assign users to workspaces
@@ -141,7 +137,7 @@ public class DataLoader implements CommandLineRunner {
             };
 
             for (String entity : entities) {
-                String baseUrl = "/api/v1/" + entity; // E.g., "/api/v1/users"
+                String baseUrl = "/api/v1/" + entity + "/**"; // E.g., "/api/v1/users"
                 assignCrudPermissionsForEntity(entity, baseUrl, saveAdminRole);
             }
 
@@ -165,9 +161,7 @@ public class DataLoader implements CommandLineRunner {
             task.setCreatedUser(user);
             task.setAssignedUser(user);
             task.setPriority("LOW_PRIORITY");
-            Task saveTask =taskJpaRepo.save(task);
-
-
+            Task saveTask = taskJpaRepo.save(task);
 
 
             Comment comment = new Comment();

@@ -66,8 +66,7 @@ public class GenericEventListener {
             notificationDTO.setProjectId(task.getProject().getId());
             notificationDTO.setMentionedBy(createdBy.getId());
             notificationDTO.setMentionedTo(task.getAssignedUser().getId());
-        } else if (entity instanceof Project) {
-            Project project = (Project) entity;
+        } else if (entity instanceof Project project) {
             User createdBy = userRepository.findById(project.getCreatedByUser().getId()).orElseThrow();
             String content = String.format(
                     "**New Project Created** \n\n**Project Name:** %s\n**Created By:** %s %s",
@@ -79,8 +78,7 @@ public class GenericEventListener {
             notificationDTO.setProjectId(project.getId());
             notificationDTO.setMentionedBy(createdBy.getId());
             notificationDTO.setMentionedTo(null); // Adjust as needed
-        } else if (entity instanceof Task) {
-            Task task = (Task) entity;
+        } else if (entity instanceof Task task) {
             Project project = projectRepository.findById(task.getProject().getId()).orElseThrow();
             User createdBy = userRepository.findById(task.getCreatedUser().getId()).orElseThrow();
             String content = String.format(

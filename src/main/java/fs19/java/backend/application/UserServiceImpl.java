@@ -10,14 +10,19 @@ import fs19.java.backend.domain.abstraction.UserRepository;
 import fs19.java.backend.domain.entity.*;
 import fs19.java.backend.domain.entity.enums.ActionType;
 import fs19.java.backend.domain.entity.enums.EntityType;
-import fs19.java.backend.infrastructure.JpaRepositories.*;
+import fs19.java.backend.infrastructure.JpaRepositories.InvitationJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.RoleJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.WorkspaceJpaRepo;
+import fs19.java.backend.infrastructure.JpaRepositories.WorkspaceUserJpaRepo;
 import fs19.java.backend.presentation.shared.exception.InvalidInvitationFoundException;
 import fs19.java.backend.presentation.shared.exception.UserNotFoundException;
 import fs19.java.backend.presentation.shared.exception.UserValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -37,24 +42,27 @@ public class UserServiceImpl implements UserService {
     private final WorkspaceJpaRepo workspaceJpaRepo;
     private final RoleJpaRepo roleJpaRepo;
     private final WorkspaceUserJpaRepo workspaceUserJpaRepo;
-
     private final ActivityLoggerService activityLoggerService;
 
-    public UserServiceImpl(UserRepository userRepository, InvitationJpaRepo invitationJpaRepo, WorkspaceJpaRepo workspaceJpaRepo, RoleJpaRepo roleJpaRepo, WorkspaceUserJpaRepo workspaceUserJpaRepo, ActivityLoggerService activityLoggerService) {
+    private final PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(UserRepository userRepository, InvitationJpaRepo invitationJpaRepo, WorkspaceJpaRepo workspaceJpaRepo, RoleJpaRepo roleJpaRepo, WorkspaceUserJpaRepo workspaceUserJpaRepo, ActivityLoggerService activityLoggerService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.invitationJpaRepo = invitationJpaRepo;
         this.workspaceJpaRepo = workspaceJpaRepo;
         this.roleJpaRepo = roleJpaRepo;
         this.workspaceUserJpaRepo = workspaceUserJpaRepo;
         this.activityLoggerService = activityLoggerService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UserReadDTO createUser(UserCreateDTO createUserDTO) {
         logger.info("Creating user with DTO: {}", createUserDTO);
 
         validateUserCreateDTO(createUserDTO);
-        User user = UserMapper.toEntity(createUserDTO);
+        User user = UserMapper.toEntity(createUserDTO, passwordEncoder.encode(createUserDTO.getPassword()));
         user.setCreatedDate(ZonedDateTime.now());
         user = userRepository.saveUser(user);
         updateWorkSpaceUserInfo(createUserDTO, user);
@@ -81,6 +89,7 @@ public class UserServiceImpl implements UserService {
 
         }
     }
+
     private void createWorkSpaceUserInfo(User user, Map<String, String> stringStringMap) {
         UUID roleId = UUID.fromString(stringStringMap.get("roleId"));
         UUID workspaceId = UUID.fromString(stringStringMap.get("workspaceId"));
@@ -94,16 +103,13 @@ public class UserServiceImpl implements UserService {
                 if (roleOptional.isPresent()) {
                     WorkspaceUser workspaceUser = WorkspaceUserMapper.toEntity(user, roleOptional.get(), workspaceOptional.get());
                     workspaceUserJpaRepo.save(workspaceUser);
-                }
-                else {
+                } else {
                     throw new InvalidInvitationFoundException("Invalid Invitation-Role Information");
                 }
-            }
-            else {
+            } else {
                 throw new InvalidInvitationFoundException("Invalid Invitation-workspace Information");
             }
-        }
-        else {
+        } else {
             throw new InvalidInvitationFoundException("Already accepted invitation Found");
         }
     }

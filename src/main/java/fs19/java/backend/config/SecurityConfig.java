@@ -79,6 +79,7 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/login").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/companies").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/workspaces").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                             .requestMatchers("/api/v1/accept-invitation/redirect").permitAll()
                             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
                     // Loop through dynamic role-permission mappings from the database

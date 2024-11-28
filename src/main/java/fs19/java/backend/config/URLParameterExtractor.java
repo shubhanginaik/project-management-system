@@ -1,5 +1,7 @@
 package fs19.java.backend.config;
 
+import fs19.java.backend.presentation.shared.exception.InvalidInvitationFoundException;
+
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +19,7 @@ public class URLParameterExtractor {
                 paramMap.put(key, value);
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+            throw new InvalidInvitationFoundException(e.getMessage() + ": Invalid Invitation URL");
         }
         return paramMap;
     }
