@@ -101,6 +101,7 @@ public class DataLoader implements CommandLineRunner {
             workspace.setDescription("Workspace1");
             workspace.setType(WorkspaceType.PUBLIC);
             workspace.setCompanyId(saveCompany);
+            workspace.setCreatedDate(DateAndTime.getDateAndTime());
             workspace.setCreatedBy(user);
             Workspace saveWorkspace = workspaceJpaRepo.save(workspace);
 
@@ -110,6 +111,7 @@ public class DataLoader implements CommandLineRunner {
             workspace2.setDescription("Workspace2");
             workspace2.setType(WorkspaceType.PUBLIC);
             workspace2.setCompanyId(company);
+            workspace2.setCreatedDate(DateAndTime.getDateAndTime());
             workspace2.setCreatedBy(user);
             Workspace saveWorkspace2 = workspaceJpaRepo.save(workspace2);
 
