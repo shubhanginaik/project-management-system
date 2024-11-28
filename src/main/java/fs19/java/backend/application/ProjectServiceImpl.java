@@ -21,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -62,9 +61,13 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectReadDTO createProject(ProjectCreateDTO projectDTO) {
         logger.info("Creating project with DTO: {}", projectDTO);
 
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User createdBy = userRepository.findByEmail(userDetails.getUsername())
-            .orElseThrow(() -> new ProjectValidationException("User not found with email " + userDetails.getUsername()));
+        User createdBy = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (createdBy.getId() == null) {
+             createdBy = userRepository.findById(projectDTO.getCreatedByUserId())
+            .orElseThrow(() -> new ProjectValidationException("User not found with ID " + projectDTO.getCreatedByUserId()));
+        }
+
         logger.info("User found for project creation: {}", createdBy);
 
         Workspace workspace = workspaceRepository.findById(projectDTO.getWorkspaceId())

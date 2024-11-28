@@ -65,7 +65,10 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.toEntity(createUserDTO, passwordEncoder.encode(createUserDTO.getPassword()));
         user.setCreatedDate(ZonedDateTime.now());
         user = userRepository.saveUser(user);
-        updateWorkSpaceUserInfo(createUserDTO, user);
+
+        if (createUserDTO.getInvitationUrl() != null && !createUserDTO.getInvitationUrl().isEmpty()) {
+            updateWorkSpaceUserInfo(createUserDTO, user);
+        }
         logger.info("User created and saved: {}", user);
 
         logger.info("EntityType: {}", EntityType.USER);
@@ -80,8 +83,8 @@ public class UserServiceImpl implements UserService {
     }
 
     private void updateWorkSpaceUserInfo(UserCreateDTO createUserDTO, User user) {
-        if (createUserDTO.getInvitation_url() != null && !createUserDTO.getInvitation_url().isEmpty()) {
-            Map<String, String> stringStringMap = URLParameterExtractor.extractParameters(createUserDTO.getInvitation_url());
+        if (createUserDTO.getInvitationUrl() != null && !createUserDTO.getInvitationUrl().isEmpty()) {
+            Map<String, String> stringStringMap = URLParameterExtractor.extractParameters(createUserDTO.getInvitationUrl());
             if (stringStringMap.isEmpty()) {
                 throw new InvalidInvitationFoundException("Invalid Invitation Information");
             }

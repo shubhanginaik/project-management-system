@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class ProjectController {
     this.projectService = projectService;
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @Operation(summary = "Create a project", description = "Creates a new project with the provided details.")
   @PostMapping
   public ResponseEntity<GlobalResponse<ProjectReadDTO>> createProject(@Valid @RequestBody ProjectCreateDTO projectDTO) {
@@ -64,6 +66,7 @@ public class ProjectController {
         HttpStatus.OK);
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @Operation(summary = "Get all projects", description = "Retrieves the details of all projects.")
   @GetMapping
   public ResponseEntity<GlobalResponse<List<ProjectReadDTO>>> getAllProjects() {

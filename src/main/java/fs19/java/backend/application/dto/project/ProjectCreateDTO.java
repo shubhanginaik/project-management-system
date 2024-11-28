@@ -15,6 +15,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class ProjectCreateDTO {
+
+  @Schema(type = "uuid", format = "string", description = "Project ID")
   UUID id;
 
   @Schema(type = "string", format = "string", description = "Name of the project", example = "Test Project")
