@@ -5,15 +5,12 @@ import fs19.java.backend.application.mapper.ActivityLogMapper;
 import fs19.java.backend.application.service.ActivityLogService;
 import fs19.java.backend.domain.entity.ActivityLog;
 import fs19.java.backend.domain.entity.User;
-import fs19.java.backend.domain.entity.enums.EntityType;
 import fs19.java.backend.infrastructure.JpaRepositories.ActivityLogJpaRepo;
 import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.presentation.shared.exception.ActivityLogNotFoundException;
 import fs19.java.backend.presentation.shared.exception.UserNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -41,13 +38,22 @@ public class ActivityLogServiceImpl implements ActivityLogService {
     @Override
     public ActivityLogDTO createActivityLog(ActivityLogDTO activityLogDTO) {
         logger.info("Creating activity log: {}", activityLogDTO);
-        User user = userRepository.findById(activityLogDTO.getUserId())
-                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, activityLogDTO.getUserId())));
-        ActivityLog activityLog = ActivityLogMapper.toEntity(activityLogDTO, user);
-        activityLog.setCreatedDate(ZonedDateTime.now());
-        ActivityLog savedActivityLog = activityLogRepository.save(activityLog);
-        logger.info("Activity log created successfully: {}", savedActivityLog);
-        return ActivityLogMapper.toDTO(savedActivityLog);
+//        User user = userRepository.findById(activityLogDTO.getUserId())
+//                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, activityLogDTO.getUserId())));
+        if (activityLogDTO.getUserId() == null) {
+            logger.info("Activity log Not created: Created User Not Found: {}", activityLogDTO);
+            return new ActivityLogDTO();
+        }
+        Optional<User> user = userRepository.findById(activityLogDTO.getUserId());
+        if (user.isPresent()) {
+            ActivityLog activityLog = ActivityLogMapper.toEntity(activityLogDTO, user.get());
+            activityLog.setCreatedDate(ZonedDateTime.now());
+            ActivityLog savedActivityLog = activityLogRepository.save(activityLog);
+            logger.info("Activity log created successfully: {}", savedActivityLog);
+            return ActivityLogMapper.toDTO(savedActivityLog);
+        }
+        logger.info("Activity log Not created: Created User Not Found: {}", activityLogDTO);
+        return new ActivityLogDTO();
     }
 
     @Override
