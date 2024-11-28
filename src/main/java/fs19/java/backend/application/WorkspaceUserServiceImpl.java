@@ -107,10 +107,22 @@ public class WorkspaceUserServiceImpl implements WorkspaceUserService {
   private void updateWorkspaceUserFields(WorkspaceUserRequestDTO workspaceUsersDTO,
     WorkspaceUser workspaceUser) {
     logger.info("Updating workspace user fields with DTO: {}", workspaceUsersDTO);
-    if (workspaceUsersDTO.getRoleId() != null) {
+     if (workspaceUsersDTO.getRoleId() != null) {
       Role role = findRoleById(workspaceUsersDTO.getRoleId());
       logger.info("Role found: {}", role);
       workspaceUser.setRole(role);
+
+      if (workspaceUsersDTO.getWorkspaceId() != null) {
+        Workspace workspace = findWorkspaceById(workspaceUsersDTO.getWorkspaceId());
+        logger.info("Workspace found: {}", workspace);
+        workspaceUser.setWorkspace(workspace);
+      }
+
+      if (workspaceUsersDTO.getUserId() != null) {
+        User user = findUserById(workspaceUsersDTO.getUserId());
+        logger.info("User found: {}", user);
+        workspaceUser.setUser(user);
+      }
     }
   }
 
