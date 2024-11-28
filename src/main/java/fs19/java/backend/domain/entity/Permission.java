@@ -27,7 +27,7 @@ public class Permission {
     @Column(unique = true, nullable = false, length = 25)
     private String name;
     @NotNull
-    @Column(nullable = false, length = 25)
+    @Column(nullable = false, length = 100)
     private String url;
     @NotNull
     @Column(nullable = false, length = 25)

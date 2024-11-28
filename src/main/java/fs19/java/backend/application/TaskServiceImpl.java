@@ -2,6 +2,7 @@ package fs19.java.backend.application;
 
 import fs19.java.backend.application.dto.task.TaskRequestDTO;
 import fs19.java.backend.application.dto.task.TaskResponseDTO;
+import fs19.java.backend.application.events.GenericEvent;
 import fs19.java.backend.application.mapper.TaskMapper;
 import fs19.java.backend.application.service.TaskService;
 import fs19.java.backend.domain.entity.Project;
@@ -14,6 +15,7 @@ import fs19.java.backend.presentation.controller.ActivityLogController;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,11 +28,13 @@ public class TaskServiceImpl implements TaskService {
     private static final Logger logger = LogManager.getLogger(ActivityLogController.class);
     private final TaskRepoImpl taskRepo;
     private final ActivityLoggerService activityLoggerService;
+    private final ApplicationEventPublisher eventPublisher;
 
 
-    public TaskServiceImpl(TaskRepoImpl taskRepo, ActivityLoggerService activityLoggerService) {
+    public TaskServiceImpl(TaskRepoImpl taskRepo, ActivityLoggerService activityLoggerService, ApplicationEventPublisher eventPublisher) {
         this.taskRepo = taskRepo;
         this.activityLoggerService = activityLoggerService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -55,6 +59,7 @@ public class TaskServiceImpl implements TaskService {
                 Task task = TaskMapper.toTask(taskRequestDTO, createdUserById.get(), assignedUser, projectById.get());
                 Task saveTask = taskRepo.save(task);
                 activityLoggerService.logActivity(EntityType.TASK, saveTask.getId(), ActionType.CREATED, saveTask.getCreatedUser().getId());
+                eventPublisher.publishEvent(new GenericEvent<>(this, saveTask, EntityType.TASK, "Created"));
                 return TaskMapper.toTaskResponseDTO(saveTask, ResponseStatus.SUCCESSFULLY_CREATED);
             } else {
                 logger.info("Project-Not Found {}", taskRequestDTO);
@@ -91,6 +96,7 @@ public class TaskServiceImpl implements TaskService {
             if (projectById.isPresent()) {
                 Task task = taskRepo.update(taskId, taskRequestDTO, assignedUser, projectById.get());
                 activityLoggerService.logActivity(EntityType.TASK, task.getId(), ActionType.UPDATED, task.getCreatedUser().getId());
+                eventPublisher.publishEvent(new GenericEvent<>(this, task, EntityType.TASK, "Updated"));
                 return TaskMapper.toTaskResponseDTO(task, ResponseStatus.SUCCESSFULLY_UPDATED);
             } else {
                 logger.info("Project-Not Found {}", taskRequestDTO);
@@ -114,6 +120,7 @@ public class TaskServiceImpl implements TaskService {
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.INVALID_INFORMATION_TASK_DETAILS_NOT_FOUND);
         }
         activityLoggerService.logActivity(EntityType.TASK, myTask.getId(), ActionType.DELETED, myTask.getCreatedUser().getId());
+        eventPublisher.publishEvent(new GenericEvent<>(this, myTask, EntityType.TASK, "Deleted"));
         return TaskMapper.toTaskResponseDTO(myTask, ResponseStatus.SUCCESSFULLY_DELETED);
     }
 
