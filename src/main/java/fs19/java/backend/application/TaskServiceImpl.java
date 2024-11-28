@@ -12,7 +12,6 @@ import fs19.java.backend.domain.entity.User;
 import fs19.java.backend.domain.entity.enums.ActionType;
 import fs19.java.backend.domain.entity.enums.EntityType;
 import fs19.java.backend.infrastructure.TaskRepoImpl;
-import fs19.java.backend.presentation.controller.ActivityLogController;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +25,7 @@ import java.util.UUID;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    private static final Logger logger = LogManager.getLogger(ActivityLogController.class);
+    private static final Logger logger = LogManager.getLogger(TaskServiceImpl.class);
     private final TaskRepoImpl taskRepo;
     private final ActivityLoggerService activityLoggerService;
     private final ApplicationEventPublisher eventPublisher;
@@ -41,7 +40,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDTO create(TaskRequestDTO taskRequestDTO) {
         if (taskRequestDTO.getName().isEmpty()) { // expected valid name only and that validation is enough
-            logger.info("Task Name from DTO is null, cannot proceed with Task creation. {}", taskRequestDTO);
+            logger.info("Task Name is null, cannot proceed with Task creation. {}", taskRequestDTO);
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_NAME_NOT_FOUND);
         }
         Optional<User> createdUserById = taskRepo.findTaskUserByUserId(taskRequestDTO.getCreatedUserId());
@@ -50,7 +49,7 @@ public class TaskServiceImpl implements TaskService {
             if (taskRequestDTO.getAssignedUserId() != null) {
                 Optional<User> assignedUserById = taskRepo.findTaskUserByUserId(taskRequestDTO.getCreatedUserId());
                 if (assignedUserById.isEmpty()) {
-                    logger.info("Assigned User-Not Found {}", taskRequestDTO);
+                    logger.info("Assigned-User information not found {}", taskRequestDTO);
                     return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_LEVEL_ASSIGNED_USER_NOT_FOUND);
                 }
                 assignedUser = assignedUserById.get();
@@ -63,11 +62,11 @@ public class TaskServiceImpl implements TaskService {
                 eventPublisher.publishEvent(new GenericEvent<>(this, saveTask, EntityType.TASK, "Created"));
                 return TaskMapper.toTaskResponseDTO(saveTask, ResponseStatus.SUCCESSFULLY_CREATED);
             } else {
-                logger.info("Project-Not Found {}", taskRequestDTO);
+                logger.info("Project information Found {}", taskRequestDTO);
                 return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.PROJECT_ID_NOT_FOUND);
             }
         } else {
-            logger.info("Created User-Not Found {}", taskRequestDTO);
+            logger.info("Created User information not Found {}", taskRequestDTO);
             return TaskMapper.toTaskResponseDTO(new Task(), ResponseStatus.TASK_LEVEL_CREATED_USER_NOT_FOUND);
         }
     }

@@ -10,7 +10,6 @@ import fs19.java.backend.domain.entity.enums.ActionType;
 import fs19.java.backend.domain.entity.enums.EntityType;
 import fs19.java.backend.infrastructure.JpaRepositories.UserJpaRepo;
 import fs19.java.backend.infrastructure.RolePermissionRepoImpl;
-import fs19.java.backend.presentation.controller.ActivityLogController;
 import fs19.java.backend.presentation.shared.status.ResponseStatus;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +26,7 @@ import java.util.UUID;
 @Service
 public class RolePermissionServiceImpl implements RolePermissionService {
 
-    private static final Logger logger = LogManager.getLogger(ActivityLogController.class);
+    private static final Logger logger = LogManager.getLogger(RolePermissionServiceImpl.class);
     private final RolePermissionRepoImpl rolePermissionRepo;
     private final ActivityLoggerService activityLoggerService;
     private final UserJpaRepo userJpaRepo;
@@ -60,7 +59,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
             activityLoggerService.logActivity(EntityType.ROLE_PERMISSION, responseDTO.getId(), ActionType.CREATED, userJpaRepo.findById(rolePermissionRequestDTO.getCreated_user()).get().getId());
             return responseDTO;
         }
-        logger.info("Record Already created,Please use the existing information (Role permission id :" + resultIfExist.getId() + ") {}", rolePermissionRepo);
+        logger.info("Record Already created,Please use the existing information (Role permission id :{}) {}", resultIfExist.getId(), rolePermissionRepo);
         return RolePermissionMapper.toPermissionResponseDTO(resultIfExist, ResponseStatus.ROLE_PERMISSION_ID_RECORD_ALREADY_EXIST);
     }
 

@@ -26,7 +26,7 @@ import java.util.UUID;
 @Service
 public class PermissionServiceImpl implements PermissionService {
 
-    private static final Logger logger = LogManager.getLogger(ActivityLogController.class);
+    private static final Logger logger = LogManager.getLogger(PermissionServiceImpl.class);
 
     private final PermissionRepoImpl permissionRepo;
     private final UserServiceImpl userService;
