@@ -1,7 +1,45 @@
+# Maven build directory
 target/
-pom.xml
-Dockerfile
-README.md
-.mvn/
-mvnw
-src/main/resources/application.properties
+
+# Gradle build directory
+build/
+
+# IDE-specific files and folders
+*.iml
+.idea/
+*.classpath
+*.project
+*.settings/
+out/
+
+# Operating system-specific files
+*.DS_Store
+Thumbs.db
+*.~lock.*
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.lock
+
+# Git-related files
+.git/
+.gitignore
+
+# Environment files
+.env
+
+# Docker-related files
+docker-compose.override.yml
+docker-compose.yml
+
+# Node.js/Frontend files (if applicable)
+node_modules/
+dist/
+
+# Test results and reports
+*.test-results/
+**/test-output/
