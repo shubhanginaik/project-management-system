@@ -1,0 +1,7 @@
+target/
+pom.xml
+Dockerfile
+README.md
+.mvn/
+mvnw
+src/main/resources/application.properties
