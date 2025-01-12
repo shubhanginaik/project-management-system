@@ -4,6 +4,8 @@ import fs19.java.backend.application.UserDetailsServiceImpl;
 import fs19.java.backend.domain.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Collections;
+import java.util.stream.Collectors;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -15,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +28,9 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.List;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * Responsible to handle JWT security configuration
@@ -73,12 +79,21 @@ public class SecurityConfig {
     @Profile("!test")
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         final List<SecurityRole> rolePermissions = getRolePermissionsFromDatabase();
-        http.cors(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable).sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> {
+        http
+            .cors(c ->{
+              CorsConfigurationSource source = corsConfigurationSource();
+              c.configurationSource(source);
+            })
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> {
                     // Public endpoints that can be accessed without authentication
                     auth
                             .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/login").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/companies").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/workspaces").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/workspace-users").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/workspaces/**").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                             .requestMatchers("/api/v1/accept-invitation/redirect").permitAll()
                             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll();
@@ -117,6 +132,22 @@ public class SecurityConfig {
         return userDetailsService.findAllPermissions();
     }
 
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowCredentials(true);
+    configuration.addAllowedOriginPattern("*"); // Allow all origins
+    configuration.addAllowedHeader("*"); // Allow all headers
+    configuration.addAllowedMethod("*"); // Allow all HTTP methods
+
+    //configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+//    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+//        configuration.setAllowedHeaders(List.of("*"));
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source. registerCorsConfiguration("/**", configuration);
+    return source;
+  }
 
     @Bean
     AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
@@ -147,4 +178,15 @@ public class SecurityConfig {
         }
         return new User();
     }
+
+  public static List<String> getCurrentUserRoles() {
+    SecurityContext securityContext = SecurityContextHolder.getContext();
+    Authentication authentication = securityContext.getAuthentication();
+    if (authentication != null && authentication.isAuthenticated()) {
+      return authentication.getAuthorities().stream()
+          .map(GrantedAuthority::getAuthority)
+          .collect(Collectors.toList());
+    }
+    return Collections.emptyList();
+  }
 }
